@@ -28,8 +28,9 @@ const Investors = () => {
         <div className="container-wide">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {investors.map((investor) => (
-              <div
+              <Link
                 key={investor.id}
+                to={`/investor/${investor.name.toLowerCase().replace(/\s+/g, '-')}`}
                 className="bg-card rounded-xl border border-border p-6 hover:border-primary/30 hover:shadow-lg transition-all group"
               >
                 <div className="flex items-start gap-4 mb-4">
@@ -80,7 +81,7 @@ const Investors = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 

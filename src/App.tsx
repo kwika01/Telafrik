@@ -7,8 +7,12 @@ import Index from "./pages/Index";
 import Directory from "./pages/Directory";
 import StartupProfile from "./pages/StartupProfile";
 import Investors from "./pages/Investors";
+import InvestorProfile from "./pages/InvestorProfile";
 import Trending from "./pages/Trending";
 import Search from "./pages/Search";
+import Sectors from "./pages/Sectors";
+import SectorPage from "./pages/SectorPage";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,8 +28,12 @@ const App = () => (
           <Route path="/directory" element={<Directory />} />
           <Route path="/startup/:slug" element={<StartupProfile />} />
           <Route path="/investors" element={<Investors />} />
+          <Route path="/investor/:slug" element={<InvestorProfile />} />
           <Route path="/trending" element={<Trending />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/sectors" element={<Sectors />} />
+          <Route path="/sectors/:slug" element={<SectorPage />} />
+          <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
