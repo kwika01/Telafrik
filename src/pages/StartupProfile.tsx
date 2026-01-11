@@ -19,6 +19,8 @@ import ConfidenceIndicator from '@/components/startups/ConfidenceIndicator';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ClaimCompanyModal from '@/components/claims/ClaimCompanyModal';
+import CorrectionRequestModal from '@/components/claims/CorrectionRequestModal';
 import {
   Table,
   TableBody,
@@ -121,10 +123,7 @@ const StartupProfile = () => {
                   </a>
                 </Button>
               )}
-              <Button size="sm">
-                <Flag className="h-4 w-4 mr-2" />
-                Claim Company
-              </Button>
+              <ClaimCompanyModal companyName={startup.name} companyId={startup.id} />
             </div>
           </div>
         </div>
@@ -366,9 +365,7 @@ const StartupProfile = () => {
                 <p className="text-sm text-muted-foreground mb-4">
                   Claim your profile to update information, add verified metrics, and gain visibility.
                 </p>
-                <Button className="w-full" variant="outline">
-                  Request Correction
-                </Button>
+                <CorrectionRequestModal companyName={startup.name} companyId={startup.id} />
               </div>
 
               {/* Similar Companies */}
