@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, TrendingUp, DollarSign, Building2, Users, Globe, Zap } from 'lucide-react';
+import { ArrowRight, TrendingUp, DollarSign, Building2, Users, Globe, Zap, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import GlobalSearch from '@/components/search/GlobalSearch';
 import StartupCard from '@/components/startups/StartupCard';
+import BottomBanner from '@/components/ui/BottomBanner';
 import { Button } from '@/components/ui/button';
 import { startups, sectors, countries } from '@/lib/mockData';
 
@@ -11,88 +13,185 @@ const Index = () => {
   const recentlyFunded = startups.filter((s) => s.recentlyFunded).slice(0, 4);
 
   const stats = [
-    { label: 'Startups Tracked', value: '2,400+', icon: Building2 },
-    { label: 'Total Funding', value: '$8.2B', icon: DollarSign },
-    { label: 'Investors', value: '450+', icon: Users },
-    { label: 'Countries', value: '54', icon: Globe },
+    { label: 'Startups Tracked', value: '2,400+', icon: Building2, color: 'from-violet-500 to-fuchsia-500' },
+    { label: 'Total Funding', value: '$8.2B', icon: DollarSign, color: 'from-emerald-400 to-cyan-500' },
+    { label: 'Investors', value: '450+', icon: Users, color: 'from-orange-400 to-amber-500' },
+    { label: 'Countries', value: '54', icon: Globe, color: 'from-cyan-400 to-blue-500' },
   ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
 
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary py-20 md:py-28">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-success rounded-full blur-3xl" />
+      <section className="relative overflow-hidden bg-gradient-hero-colorful py-20 md:py-28">
+        {/* Animated background orbs */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            animate={{ 
+              x: [0, 50, 0], 
+              y: [0, -30, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{ 
+              x: [0, -40, 0], 
+              y: [0, 40, 0],
+              scale: [1, 1.2, 1]
+            }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-fuchsia-500/20 rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{ 
+              x: [0, 30, 0], 
+              y: [0, -50, 0]
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+            className="absolute top-1/2 right-1/3 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{ 
+              x: [0, -20, 0], 
+              y: [0, 20, 0]
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+            className="absolute bottom-1/3 left-1/3 w-48 h-48 bg-orange-500/15 rounded-full blur-3xl"
+          />
         </div>
         
         <div className="container-wide relative">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 text-primary-foreground/80 text-sm mb-6 animate-fade-in">
-              <Zap className="h-4 w-4" />
+          <motion.div 
+            className="max-w-3xl mx-auto text-center"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            <motion.div 
+              variants={itemVariants}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 text-primary-foreground/90 text-sm mb-6"
+            >
+              <motion.span
+                animate={{ rotate: [0, 15, -15, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Sparkles className="h-4 w-4 text-amber-400" />
+              </motion.span>
               Africa's Investment Intelligence Platform
-            </div>
+            </motion.div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 animate-slide-up">
+            <motion.h1 
+              variants={itemVariants}
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
+            >
               Discover Africa's Most{' '}
               <span className="text-gradient-gold">Promising Startups</span>
-            </h1>
+            </motion.h1>
             
-            <p className="text-lg md:text-xl text-primary-foreground/70 mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <motion.p 
+              variants={itemVariants}
+              className="text-lg md:text-xl text-primary-foreground/70 mb-10"
+            >
               Track funding rounds, valuations, and growth metrics across 2,400+ startups in 54 African countries.
-            </p>
+            </motion.p>
 
-            <div className="max-w-2xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <motion.div 
+              variants={itemVariants}
+              className="max-w-2xl mx-auto mb-8"
+            >
               <GlobalSearch size="lg" />
-            </div>
+            </motion.div>
 
-            <div className="flex flex-wrap justify-center gap-3 text-sm text-primary-foreground/60 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <motion.div 
+              variants={itemVariants}
+              className="flex flex-wrap justify-center gap-3 text-sm text-primary-foreground/60"
+            >
               <span>Popular:</span>
-              {['Fintech', 'Nigeria', 'Series A', 'Healthtech'].map((term) => (
-                <Link
+              {['Fintech', 'Nigeria', 'Series A', 'Healthtech'].map((term, i) => (
+                <motion.div
                   key={term}
-                  to={`/search?q=${term}`}
-                  className="px-3 py-1 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  {term}
-                </Link>
+                  <Link
+                    to={`/search?q=${term}`}
+                    className="px-3 py-1 rounded-full bg-primary-foreground/10 hover:bg-gradient-to-r hover:from-violet-500/30 hover:to-fuchsia-500/30 border border-transparent hover:border-violet-500/30 transition-all"
+                  >
+                    {term}
+                  </Link>
+                </motion.div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 border-b border-border">
+      <section className="py-12 border-b border-border bg-background">
         <div className="container-wide">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={containerVariants}
+          >
             {stats.map((stat, index) => (
-              <div
+              <motion.div
                 key={stat.label}
-                className="text-center animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="text-center group"
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-secondary mb-3">
-                  <stat.icon className="h-6 w-6 text-accent" />
-                </div>
+                <motion.div 
+                  className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${stat.color} mb-3 shadow-lg`}
+                  whileHover={{ rotate: [0, -10, 10, 0] }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <stat.icon className="h-7 w-7 text-white" />
+                </motion.div>
                 <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">
                   {stat.value}
                 </div>
                 <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Trending Section */}
-      <section className="py-16">
+      <section className="py-16 bg-background">
         <div className="container-wide">
-          <div className="flex items-center justify-between mb-8">
+          <motion.div 
+            className="flex items-center justify-between mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-5 w-5 text-accent" />
-                <span className="text-sm font-medium text-accent uppercase tracking-wider">
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <TrendingUp className="h-5 w-5 text-orange-400" />
+                </motion.div>
+                <span className="text-sm font-medium bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent uppercase tracking-wider">
                   Trending Now
                 </span>
               </div>
@@ -100,25 +199,34 @@ const Index = () => {
                 Startups Gaining Momentum
               </h2>
             </div>
-            <Button variant="outline" asChild className="hidden md:inline-flex">
-              <Link to="/trending">
-                View All
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+            <motion.div whileHover={{ x: 5 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="outline" asChild className="hidden md:inline-flex border-violet-500/30 hover:bg-violet-500/10 hover:border-violet-500">
+                <Link to="/trending">
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </motion.div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <motion.div 
+            className="grid md:grid-cols-3 gap-6"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
             {trendingStartups.map((startup, index) => (
-              <div
+              <motion.div
                 key={startup.id}
-                className="animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                variants={itemVariants}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300 }}
               >
                 <StartupCard startup={startup} featured />
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           <div className="mt-6 md:hidden">
             <Button variant="outline" asChild className="w-full">
@@ -134,11 +242,21 @@ const Index = () => {
       {/* Recently Funded */}
       <section className="py-16 bg-secondary/30">
         <div className="container-wide">
-          <div className="flex items-center justify-between mb-8">
+          <motion.div 
+            className="flex items-center justify-between mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign className="h-5 w-5 text-success" />
-                <span className="text-sm font-medium text-success uppercase tracking-wider">
+                <motion.div
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <DollarSign className="h-5 w-5 text-emerald-400" />
+                </motion.div>
+                <span className="text-sm font-medium bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent uppercase tracking-wider">
                   Fresh Capital
                 </span>
               </div>
@@ -146,106 +264,179 @@ const Index = () => {
                 Recently Funded Startups
               </h2>
             </div>
-            <Button variant="outline" asChild className="hidden md:inline-flex">
-              <Link to="/directory?sort=recently-funded">
-                View All
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+            <motion.div whileHover={{ x: 5 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="outline" asChild className="hidden md:inline-flex border-emerald-500/30 hover:bg-emerald-500/10 hover:border-emerald-500">
+                <Link to="/directory?sort=recently-funded">
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </motion.div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div 
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
             {recentlyFunded.map((startup, index) => (
-              <div
+              <motion.div
                 key={startup.id}
-                className="animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                variants={itemVariants}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300 }}
               >
                 <StartupCard startup={startup} />
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Browse by Sector */}
-      <section className="py-16">
+      <section className="py-16 bg-background">
         <div className="container-wide">
-          <div className="text-center mb-10">
+          <motion.div 
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-              Browse by Sector
+              Browse by <span className="text-gradient-rainbow">Sector</span>
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
               Explore African startups across key industries driving innovation and growth.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-5 gap-4"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
             {sectors.map((sector, index) => (
-              <Link
+              <motion.div
                 key={sector}
-                to={`/directory?sector=${encodeURIComponent(sector)}`}
-                className="group p-4 rounded-xl border border-border bg-card hover:border-primary/30 hover:shadow-md transition-all text-center animate-scale-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05, y: -5 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <span className="font-medium text-foreground group-hover:text-primary transition-colors">
-                  {sector}
-                </span>
-              </Link>
+                <Link
+                  to={`/directory?sector=${encodeURIComponent(sector)}`}
+                  className="group block p-4 rounded-xl border border-border bg-card hover:border-violet-500/50 hover:bg-gradient-to-br hover:from-violet-500/10 hover:to-fuchsia-500/10 transition-all text-center shadow-sm hover:shadow-lg hover:shadow-violet-500/10"
+                >
+                  <span className="font-medium text-foreground group-hover:text-violet-400 transition-colors">
+                    {sector}
+                  </span>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Browse by Country */}
       <section className="py-16 bg-secondary/30">
         <div className="container-wide">
-          <div className="text-center mb-10">
+          <motion.div 
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-              Top Startup Ecosystems
+              Top Startup <span className="text-gradient-gold">Ecosystems</span>
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
               Discover the leading African countries for startup investment and innovation.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-5 gap-4"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+          >
             {countries.map((country, index) => (
-              <Link
+              <motion.div
                 key={country}
-                to={`/directory?country=${encodeURIComponent(country)}`}
-                className="group p-4 rounded-xl border border-border bg-card hover:border-primary/30 hover:shadow-md transition-all text-center"
+                variants={itemVariants}
+                whileHover={{ scale: 1.05, y: -5 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <span className="font-medium text-foreground group-hover:text-primary transition-colors">
-                  {country}
-                </span>
-              </Link>
+                <Link
+                  to={`/directory?country=${encodeURIComponent(country)}`}
+                  className="group block p-4 rounded-xl border border-border bg-card hover:border-amber-500/50 hover:bg-gradient-to-br hover:from-amber-500/10 hover:to-orange-500/10 transition-all text-center shadow-sm hover:shadow-lg hover:shadow-amber-500/10"
+                >
+                  <span className="font-medium text-foreground group-hover:text-amber-400 transition-colors">
+                    {country}
+                  </span>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary">
-        <div className="container-wide">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-orange-500 opacity-90" />
+        <motion.div
+          animate={{ x: [0, 100, 0], y: [0, -50, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{ x: [0, -80, 0], y: [0, 60, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          className="absolute bottom-0 right-0 w-80 h-80 bg-yellow-300/20 rounded-full blur-3xl"
+        />
+        
+        <div className="container-wide relative">
+          <motion.div 
+            className="max-w-3xl mx-auto text-center"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <Zap className="h-12 w-12 text-yellow-300 mx-auto mb-6" />
+            </motion.div>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Get Full Access to African Startup Intelligence
             </h2>
-            <p className="text-lg text-primary-foreground/70 mb-8">
+            <p className="text-lg text-white/80 mb-8">
               Unlock advanced filters, company comparisons, data exports, and real-time alerts.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary" asChild>
-                <Link to="/signup">Start Free Trial</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-                <Link to="/pricing">View Pricing</Link>
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button size="lg" className="bg-white text-violet-700 hover:bg-white/90 shadow-xl" asChild>
+                  <Link to="/signup">Start Free Trial</Link>
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button size="lg" variant="outline" asChild className="border-white/30 text-white hover:bg-white/10">
+                  <Link to="/pricing">View Pricing</Link>
+                </Button>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
+
+      {/* Bottom Banner */}
+      <BottomBanner />
     </Layout>
   );
 };
