@@ -13,11 +13,17 @@ import Trending from "./pages/Trending";
 import Search from "./pages/Search";
 import Sectors from "./pages/Sectors";
 import SectorPage from "./pages/SectorPage";
+import Countries from "./pages/Countries";
+import Founders from "./pages/Founders";
+import Deals from "./pages/Deals";
+import Signals from "./pages/Signals";
+import Reports from "./pages/Reports";
 import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
 import Methodology from "./pages/Methodology";
 import Compare from "./pages/Compare";
 import Watchlist from "./pages/Watchlist";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,11 +46,18 @@ const App = () => (
           <Route path="/search" element={<Search />} />
           <Route path="/sectors" element={<Sectors />} />
           <Route path="/sectors/:slug" element={<SectorPage />} />
+          <Route path="/countries" element={<Countries />} />
+          <Route path="/founders" element={<Founders />} />
+          <Route path="/deals" element={<Deals />} />
+          <Route path="/signals" element={<Signals />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/methodology" element={<Methodology />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/auth" element={<Auth />} />
+          {/* Hidden admin route */}
+          <Route path="/lum0ra-admin-x7k9" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
