@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
 import Directory from "./pages/Directory";
 import StartupProfile from "./pages/StartupProfile";
 import Investors from "./pages/Investors";
@@ -13,6 +14,10 @@ import Search from "./pages/Search";
 import Sectors from "./pages/Sectors";
 import SectorPage from "./pages/SectorPage";
 import Auth from "./pages/Auth";
+import Pricing from "./pages/Pricing";
+import Methodology from "./pages/Methodology";
+import Compare from "./pages/Compare";
+import Watchlist from "./pages/Watchlist";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,7 +30,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/directory" element={<Directory />} />
+          <Route path="/companies" element={<Directory />} />
           <Route path="/startup/:slug" element={<StartupProfile />} />
           <Route path="/investors" element={<Investors />} />
           <Route path="/investor/:slug" element={<InvestorProfile />} />
@@ -33,6 +40,10 @@ const App = () => (
           <Route path="/search" element={<Search />} />
           <Route path="/sectors" element={<Sectors />} />
           <Route path="/sectors/:slug" element={<SectorPage />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/methodology" element={<Methodology />} />
+          <Route path="/compare" element={<Compare />} />
+          <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

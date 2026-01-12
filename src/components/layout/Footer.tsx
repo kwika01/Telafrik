@@ -1,24 +1,28 @@
 import { Link } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 
 const Footer = () => {
   const footerLinks = {
     Platform: [
+      { label: 'Companies', path: '/companies' },
       { label: 'Startups', path: '/directory' },
+      { label: 'Founders', path: '/founders' },
       { label: 'Investors', path: '/investors' },
-      { label: 'Trending', path: '/trending' },
-      { label: 'Reports', path: '/reports' },
-    ],
-    Company: [
-      { label: 'About', path: '/about' },
-      { label: 'Careers', path: '/careers' },
-      { label: 'Contact', path: '/contact' },
-      { label: 'Press', path: '/press' },
+      { label: 'Sectors', path: '/sectors' },
+      { label: 'Deals', path: '/deals' },
     ],
     Resources: [
+      { label: 'Reports', path: '/reports' },
+      { label: 'Signals', path: '/signals' },
       { label: 'API', path: '/api' },
       { label: 'Documentation', path: '/docs' },
       { label: 'Methodology', path: '/methodology' },
-      { label: 'Data Partners', path: '/partners' },
+    ],
+    Company: [
+      { label: 'About', path: '/about' },
+      { label: 'Pricing', path: '/pricing' },
+      { label: 'Contact', path: '/contact' },
+      { label: 'Careers', path: '/careers' },
     ],
     Legal: [
       { label: 'Privacy', path: '/privacy' },
@@ -28,28 +32,33 @@ const Footer = () => {
   };
 
   return (
-    <footer className="border-t border-border bg-secondary/30">
+    <footer className="border-t border-border bg-card/50">
       <div className="container-wide py-12 md:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <span className="text-sm font-bold text-primary-foreground">A</span>
+                <Sparkles className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="text-lg font-semibold text-foreground">
-                Africa<span className="text-accent">Base</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="text-lg font-semibold text-foreground leading-tight">
+                  Lumora
+                </span>
+                <span className="text-[10px] text-muted-foreground -mt-0.5 tracking-wide">
+                  by Ennylytics
+                </span>
+              </div>
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Africa's definitive startup & investment intelligence platform.
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+              Illuminating Africa's companies, capital, and growth. The definitive intelligence platform for African markets.
             </p>
           </div>
 
           {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-medium text-foreground mb-3">{category}</h4>
+              <h4 className="font-medium text-foreground mb-3 text-sm">{category}</h4>
               <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.path}>
@@ -68,11 +77,11 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} AfricaBase. All rights reserved.
+            © {new Date().getFullYear()} Lumora by Ennylytics. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <a
-              href="https://twitter.com/africabase"
+              href="https://twitter.com/lumora"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -82,7 +91,7 @@ const Footer = () => {
               </svg>
             </a>
             <a
-              href="https://linkedin.com/company/africabase"
+              href="https://linkedin.com/company/lumora"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
