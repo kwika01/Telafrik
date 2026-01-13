@@ -64,7 +64,7 @@ export function ChatWidget() {
               <Sparkles className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground text-sm">Lumora AI</h3>
+              <h3 className="font-semibold text-foreground text-sm">TelAfrik AI</h3>
               <p className="text-xs text-muted-foreground">Your Africa intelligence assistant</p>
             </div>
           </div>

@@ -43,7 +43,7 @@ const Header = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-lg font-semibold text-foreground leading-tight">
-                Lumora
+                TelAfrik
               </span>
               <span className="text-[10px] text-muted-foreground -mt-0.5 tracking-wide">
                 by Ennylytics
