@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import QuickActions from '@/components/dashboard/QuickActions';
 
 const Dashboard = () => {
   // Mock data - will be replaced with real data
@@ -70,11 +71,14 @@ const Dashboard = () => {
     <AppLayout>
       <div className="p-6 lg:p-8 space-y-8">
         {/* Header */}
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Illuminating Africa's companies, capital, and growth.
-          </p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Illuminating Africa's companies, capital, and growth.
+            </p>
+          </div>
+          <QuickActions />
         </div>
 
         {/* Stats Grid */}
