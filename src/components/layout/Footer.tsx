@@ -42,8 +42,8 @@ const Footer = () => {
                 <Sparkles className="h-4 w-4 text-primary-foreground" />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-semibold text-foreground leading-tight">
-                  Lumora
+              <span className="text-lg font-semibold text-foreground leading-tight">
+                  TelAfrik
                 </span>
                 <span className="text-[10px] text-muted-foreground -mt-0.5 tracking-wide">
                   by Ennylytics
@@ -77,11 +77,11 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Lumora by Ennylytics. All rights reserved.
+            © {new Date().getFullYear()} TelAfrik by Ennylytics. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <a
-              href="https://twitter.com/lumora"
+              href="https://twitter.com/TelAfrik"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -91,7 +91,7 @@ const Footer = () => {
               </svg>
             </a>
             <a
-              href="https://linkedin.com/company/lumora"
+              href="https://linkedin.com/company/telafrik"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
