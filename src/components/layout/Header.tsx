@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Search, Menu, X, ChevronDown, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ const Header = () => {
     { label: 'Startups', path: '/directory' },
     { label: 'Founders', path: '/founders' },
     { label: 'Sectors', path: '/sectors' },
+    { label: 'About', path: '/about' },
   ];
 
   const moreNavItems = [
@@ -33,16 +35,30 @@ const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <motion.header 
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="sticky top-0 z-50 w-full border-b border-border/50 bg-gradient-to-r from-background via-secondary/30 to-background backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
+    >
+      {/* Animated gradient border */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-shimmer" 
+           style={{ backgroundSize: '200% 100%' }} 
+      />
+      
       <div className="container-full">
-        <div className="flex h-14 items-center justify-between">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
-            </div>
+          <Link to="/" className="flex items-center gap-2 group">
+            <motion.div 
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-accent to-primary shadow-lg shadow-primary/25"
+            >
+              <Sparkles className="h-5 w-5 text-primary-foreground" />
+            </motion.div>
             <div className="flex flex-col">
-              <span className="text-lg font-semibold text-foreground leading-tight">
+              <span className="text-lg font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
                 TelAfrik
               </span>
               <span className="text-[10px] text-muted-foreground -mt-0.5 tracking-wide">
@@ -52,37 +68,54 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-0.5">
-            {mainNavItems.map((item) => (
-              <Link
+          <nav className="hidden lg:flex items-center gap-1">
+            {mainNavItems.map((item, index) => (
+              <motion.div
                 key={item.path}
-                to={item.path}
-                className={isActive(item.path) ? 'nav-link-active' : 'nav-link'}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 + 0.2 }}
               >
-                {item.label}
-              </Link>
+                <Link
+                  to={item.path}
+                  className={`relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
+                    isActive(item.path) 
+                      ? 'text-primary bg-primary/10' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80'
+                  }`}
+                >
+                  {item.label}
+                  {isActive(item.path) && (
+                    <motion.div
+                      layoutId="activeNav"
+                      className="absolute inset-0 bg-primary/10 rounded-lg -z-10"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </Link>
+              </motion.div>
             ))}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="nav-link flex items-center gap-1">
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  className="nav-link flex items-center gap-1"
+                >
                   More
                   <ChevronDown className="h-3.5 w-3.5" />
-                </button>
+                </motion.button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-48 bg-card/95 backdrop-blur-xl border-border/50">
                 {moreNavItems.map((item) => (
-                  <DropdownMenuItem key={item.path} asChild>
+                  <DropdownMenuItem key={item.path} asChild className="hover:bg-primary/10 focus:bg-primary/10">
                     <Link to={item.path}>{item.label}</Link>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/about">About Us</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className="hover:bg-primary/10 focus:bg-primary/10">
                   <Link to="/pricing">Pricing</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className="hover:bg-primary/10 focus:bg-primary/10">
                   <Link to="/methodology">Methodology</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -91,83 +124,98 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <Link to="/search" className="hidden sm:flex">
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                <Search className="h-4 w-4" />
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link to="/search" className="hidden sm:flex">
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-secondary/80">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex text-muted-foreground hover:text-foreground">
+                <Link to="/auth">Log in</Link>
               </Button>
-            </Link>
-            <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex text-muted-foreground">
-              <Link to="/auth">Log in</Link>
-            </Button>
-            <Button size="sm" asChild className="hidden sm:inline-flex">
-              <Link to="/auth">Start Free</Link>
-            </Button>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.02, boxShadow: "0 0 20px hsl(173 80% 45% / 0.4)" }} 
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button size="sm" asChild className="hidden sm:inline-flex bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg shadow-primary/25">
+                <Link to="/auth">Start Free</Link>
+              </Button>
+            </motion.div>
 
             {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden h-8 w-8"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden h-9 w-9"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </motion.div>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-border animate-fade-in">
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden py-4 border-t border-border/50"
+          >
             <nav className="flex flex-col gap-1">
-              {[...mainNavItems, ...moreNavItems].map((item) => (
-                <Link
+              {[...mainNavItems, ...moreNavItems].map((item, index) => (
+                <motion.div
                   key={item.path}
-                  to={item.path}
-                  className={`px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
-                    isActive(item.path)
-                      ? 'text-foreground bg-secondary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.03 }}
                 >
-                  {item.label}
-                </Link>
+                  <Link
+                    to={item.path}
+                    className={`px-3 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                      isActive(item.path)
+                        ? 'text-primary bg-primary/10'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                </motion.div>
               ))}
-              <div className="h-px bg-border my-2" />
-              <Link
-                to="/about"
-                className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                About Us
-              </Link>
+              <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent my-3" />
               <Link
                 to="/pricing"
-                className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Pricing
               </Link>
               <Link
                 to="/methodology"
-                className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Methodology
               </Link>
               <div className="flex gap-2 pt-4 px-3">
-                <Button variant="outline" size="sm" asChild className="flex-1">
+                <Button variant="outline" size="sm" asChild className="flex-1 border-border/50">
                   <Link to="/auth">Log in</Link>
                 </Button>
-                <Button size="sm" asChild className="flex-1">
+                <Button size="sm" asChild className="flex-1 bg-gradient-to-r from-primary to-accent">
                   <Link to="/auth">Start Free</Link>
                 </Button>
               </div>
             </nav>
-          </div>
+          </motion.div>
         )}
       </div>
-    </header>
+    </motion.header>
   );
 };
 
