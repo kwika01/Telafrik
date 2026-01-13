@@ -77,6 +77,9 @@ const Header = () => {
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
+                  <Link to="/about">About Us</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link to="/pricing">Pricing</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -131,6 +134,13 @@ const Header = () => {
                 </Link>
               ))}
               <div className="h-px bg-border my-2" />
+              <Link
+                to="/about"
+                className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                About Us
+              </Link>
               <Link
                 to="/pricing"
                 className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground"

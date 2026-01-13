@@ -23,6 +23,7 @@ import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
 import Methodology from "./pages/Methodology";
 import Compare from "./pages/Compare";
+import About from "./pages/About";
 import Watchlist from "./pages/Watchlist";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
@@ -55,6 +56,7 @@ const App = () => (
           <Route path="/reports" element={<Reports />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/methodology" element={<Methodology />} />
+          <Route path="/about" element={<About />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/auth" element={<Auth />} />
