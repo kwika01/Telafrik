@@ -5,10 +5,10 @@ import { Card, CardContent } from '@/components/ui/card';
 
 const teamMembers = [
   {
-    name: 'Emmanuel Onyekachi',
+    name: 'Ernest Mensa',
     role: 'Founder & CEO',
     bio: 'Passionate about democratizing access to African startup data and empowering investors with actionable intelligence.',
-    avatar: 'EO',
+    avatar: 'EM',
   },
   {
     name: 'Adaeze Nwosu',
