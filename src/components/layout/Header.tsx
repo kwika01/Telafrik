@@ -18,20 +18,21 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   const mainNavItems = [
+    { label: 'Home', path: '/' },
     { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Companies', path: '/companies' },
+  ];
+
+  const resourcesNavItems = [
     { label: 'Startups', path: '/directory' },
     { label: 'Founders', path: '/founders' },
     { label: 'Sectors', path: '/sectors' },
-    { label: 'About', path: '/about' },
-  ];
-
-  const moreNavItems = [
+    { label: 'Companies', path: '/companies' },
     { label: 'Countries/Markets', path: '/countries' },
     { label: 'Funding & Deals', path: '/deals' },
     { label: 'Signals', path: '/signals' },
     { label: 'Reports', path: '/reports' },
     { label: 'Investors', path: '/investors' },
+    { label: 'About', path: '/about' },
   ];
 
   return (
@@ -101,12 +102,12 @@ const Header = () => {
                   whileHover={{ scale: 1.02 }}
                   className="nav-link flex items-center gap-1"
                 >
-                  More
+                  Resources
                   <ChevronDown className="h-3.5 w-3.5" />
                 </motion.button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 bg-card/95 backdrop-blur-xl border-border/50">
-                {moreNavItems.map((item) => (
+                {resourcesNavItems.map((item) => (
                   <DropdownMenuItem key={item.path} asChild className="hover:bg-primary/10 focus:bg-primary/10">
                     <Link to={item.path}>{item.label}</Link>
                   </DropdownMenuItem>
@@ -168,7 +169,7 @@ const Header = () => {
             className="lg:hidden py-4 border-t border-border/50"
           >
             <nav className="flex flex-col gap-1">
-              {[...mainNavItems, ...moreNavItems].map((item, index) => (
+              {[...mainNavItems, ...resourcesNavItems].map((item, index) => (
                 <motion.div
                   key={item.path}
                   initial={{ opacity: 0, x: -20 }}
