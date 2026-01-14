@@ -19,6 +19,7 @@ const Header = () => {
 
   const mainNavItems = [
     { label: 'Home', path: '/' },
+    { label: 'About', path: '/about' },
     { label: 'Dashboard', path: '/dashboard' },
   ];
 
@@ -32,7 +33,6 @@ const Header = () => {
     { label: 'Signals', path: '/signals' },
     { label: 'Reports', path: '/reports' },
     { label: 'Investors', path: '/investors' },
-    { label: 'About', path: '/about' },
   ];
 
   return (
