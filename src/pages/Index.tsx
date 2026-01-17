@@ -140,6 +140,22 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Mission Statement */}
+      <section className="py-10 bg-gradient-to-r from-violet-950/50 via-background to-fuchsia-950/50 border-y border-border">
+        <div className="container-wide">
+          <motion.p 
+            className="text-center text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <span className="font-semibold text-foreground">TelAfrik</span> by{' '}
+            <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent font-semibold">Ennylytics</span>{' '}
+            is the intelligence hub for the African startup ecosystem, utilizing deep data to identify high-potential ventures and connect them with global investors looking for the continent's most promising opportunities.
+          </motion.p>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-12 border-b border-border bg-background">
         <div className="container-wide">
