@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
-import { Target, Eye, Heart, Users, Globe, Lightbulb, TrendingUp, Award } from 'lucide-react';
+import { Target, Eye, Heart, Users, Globe, Lightbulb, TrendingUp, Award, MapPin } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const teamMembers = [
@@ -54,10 +54,10 @@ const values = [
 ];
 
 const milestones = [
-  { year: '2022', event: 'TelAfrik founded in Lagos, Nigeria' },
-  { year: '2023', event: 'Launched beta with 500+ African startups tracked' },
-  { year: '2024', event: 'Expanded coverage to 54 African countries' },
-  { year: '2025', event: 'Reached 2,000+ startups and 500+ investors on platform' },
+  { year: '2025', event: 'Founded in Mansfield, Texas, with a mission to connect African startups and global investors through trusted data and intelligence.' },
+  { year: '2025', event: 'Launched beta platform, tracking 500+ African startups across key sectors including fintech, healthtech, agritech, logistics, and climate tech.' },
+  { year: '2025', event: 'Reached 2,000+ startups and 500+ investors on the platform, validating strong demand for structured African startup data.' },
+  { year: '2026', event: 'Expanded coverage to all 54 African countries, deepening data quality on startups, funding rounds, investors, and ecosystem signals.' },
 ];
 
 const About = () => {
@@ -88,22 +88,64 @@ const About = () => {
               className="text-center max-w-4xl mx-auto"
             >
               <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary font-medium text-sm mb-6">
-                Our Story
+                About TelAfrik
               </span>
               <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-violet-500 to-fuchsia-500">
-                Illuminating Africa's Innovation Economy
+                The Definitive Data & Intelligence Platform for African Startups
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                TelAfrik is the definitive intelligence platform for Africa's startup ecosystem. 
-                We're on a mission to democratize access to data and insights that power better 
-                investment decisions and accelerate Africa's economic transformation.
+                Powering smarter investments, stronger ecosystems, and sustainable growth across all 54 African countries.
               </p>
+              <div className="flex items-center justify-center gap-2 mt-6 text-muted-foreground">
+                <MapPin className="h-5 w-5 text-primary" />
+                <span>Headquartered in Mansfield, Texas</span>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* The Story */}
+        <section className="py-20 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-4xl mx-auto"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+                The <span className="text-gradient-gold">TelAfrik</span> Story
+              </h2>
+              
+              <div className="prose prose-lg dark:prose-invert mx-auto space-y-6">
+                <p className="text-muted-foreground leading-relaxed">
+                  TelAfrik was born out of a clear and persistent gap in Africa's innovation ecosystem.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Despite Africa's startup landscape attracting billions of dollars in venture capital and development funding, there was no single, reliable, and structured source of truth for understanding the companies driving this growth. Critical information was fragmented across press releases, pitch decks, social media, and disconnected databases—making informed decision-making unnecessarily difficult.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Investors struggled to discover credible deal flow and track emerging sectors. Founders lacked benchmarks to measure traction and valuations. Journalists depended on scattered or outdated sources. Researchers and policymakers faced persistent data gaps that limited insight into Africa's innovation economy.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Founded in 2025 by a team of data enthusiasts and long-term believers in Africa's potential, TelAfrik set out to solve this problem at its core.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  We built the infrastructure to systematically track, verify, and analyze startups, funding rounds, investors, and market signals across the African continent. Our platform combines structured company data, ecosystem intelligence, and continuously updated insights—designed specifically for Africa's unique markets.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Today, TelAfrik serves as a trusted intelligence layer for venture capital firms, angel investors, accelerators, development finance institutions, researchers, and media organizations seeking accurate, up-to-date visibility into Africa's startup ecosystem.
+                </p>
+                <p className="text-muted-foreground leading-relaxed font-medium">
+                  Headquartered in Mansfield, Texas, TelAfrik was founded with a global perspective and a clear mission: to make it easier for African startups and global investors to discover each other, make better decisions, and accelerate innovation across the continent.
+                </p>
+              </div>
             </motion.div>
           </div>
         </section>
 
         {/* Mission & Vision */}
-        <section className="py-20 bg-muted/30">
+        <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               <motion.div
@@ -119,9 +161,7 @@ const About = () => {
                     </div>
                     <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      To be the single source of truth for African startup and investment data, 
-                      empowering investors, founders, and institutions with the intelligence 
-                      they need to make informed decisions and drive sustainable growth across the continent.
+                      To make it easier for African startups and global investors to discover each other, make better decisions, and accelerate innovation across the continent.
                     </p>
                   </CardContent>
                 </Card>
@@ -140,9 +180,7 @@ const About = () => {
                     </div>
                     <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      A world where every promising African startup has access to capital and 
-                      every investor can discover the next unicorn. We envision TelAfrik as 
-                      the infrastructure that connects Africa's innovation economy to global opportunities.
+                      To become the definitive data and intelligence platform for African startups, powering smarter investments, stronger ecosystems, and sustainable growth across all 54 African countries.
                     </p>
                   </CardContent>
                 </Card>
@@ -151,49 +189,11 @@ const About = () => {
           </div>
         </section>
 
-        {/* The Story */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="max-w-4xl mx-auto"
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-                The <span className="text-gradient-gold">TelAfrik</span> Story
-              </h2>
-              
-              <div className="prose prose-lg dark:prose-invert mx-auto">
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  TelAfrik was born from a simple frustration: despite Africa's booming startup ecosystem 
-                  attracting billions in investment, there was no comprehensive, reliable source of 
-                  data about the companies driving this growth.
-                </p>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  Investors struggled to find deal flow. Founders couldn't benchmark themselves. 
-                  Journalists relied on scattered sources. Researchers faced data gaps at every turn.
-                </p>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  Founded in 2022 by a team of data enthusiasts and Africa believers, TelAfrik 
-                  set out to change this. We built the infrastructure to track, verify, and 
-                  analyze every startup, funding round, and market signal across the continent.
-                </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  Today, TelAfrik is trusted by leading VCs, accelerators, development finance 
-                  institutions, and media organizations as their go-to source for African 
-                  startup intelligence.
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
         {/* Timeline */}
         <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-              Our <span className="text-gradient-rainbow">Journey</span>
+              TelAfrik <span className="text-gradient-rainbow">Timeline</span>
             </h2>
             
             <div className="max-w-3xl mx-auto">
@@ -202,7 +202,7 @@ const About = () => {
                 
                 {milestones.map((milestone, index) => (
                   <motion.div
-                    key={milestone.year}
+                    key={`${milestone.year}-${index}`}
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
