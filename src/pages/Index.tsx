@@ -83,7 +83,7 @@ const Index = () => {
           >
             <motion.div 
               variants={itemVariants}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 text-primary-foreground/90 text-sm mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-500/30 to-fuchsia-500/30 border border-violet-400/50 text-white text-sm font-medium mb-6 backdrop-blur-sm shadow-lg"
             >
               <motion.span
                 animate={{ rotate: [0, 15, -15, 0] }}
@@ -96,15 +96,17 @@ const Index = () => {
             
             <motion.h1 
               variants={itemVariants}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-lg"
+              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}
             >
               Discover Africa's Most{' '}
-              <span className="text-gradient-gold">Promising Startups</span>
+              <span className="text-gradient-gold drop-shadow-md">Promising Startups</span>
             </motion.h1>
             
             <motion.p 
               variants={itemVariants}
-              className="text-lg md:text-xl text-primary-foreground/70 mb-10"
+              className="text-lg md:text-xl text-white/90 mb-10 drop-shadow-md"
+              style={{ textShadow: '0 1px 10px rgba(0,0,0,0.4)' }}
             >
               Track funding rounds, valuations, and growth metrics across 2,400+ startups in 54 African countries.
             </motion.p>
@@ -118,9 +120,9 @@ const Index = () => {
 
             <motion.div 
               variants={itemVariants}
-              className="flex flex-wrap justify-center gap-3 text-sm text-primary-foreground/60"
+              className="flex flex-wrap justify-center gap-3 text-sm text-white/80"
             >
-              <span>Popular:</span>
+              <span className="font-medium">Popular:</span>
               {['Fintech', 'Nigeria', 'Series A', 'Healthtech'].map((term, i) => (
                 <motion.div
                   key={term}
@@ -129,7 +131,7 @@ const Index = () => {
                 >
                   <Link
                     to={`/search?q=${term}`}
-                    className="px-3 py-1 rounded-full bg-primary-foreground/10 hover:bg-gradient-to-r hover:from-violet-500/30 hover:to-fuchsia-500/30 border border-transparent hover:border-violet-500/30 transition-all"
+                    className="px-3 py-1.5 rounded-full bg-white/15 hover:bg-gradient-to-r hover:from-violet-500/40 hover:to-fuchsia-500/40 border border-white/20 hover:border-violet-400/50 transition-all text-white font-medium backdrop-blur-sm"
                   >
                     {term}
                   </Link>
