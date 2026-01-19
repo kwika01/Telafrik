@@ -36,6 +36,9 @@ const Index = () => {
     <Layout>
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-hero-colorful py-20 md:py-28">
+        {/* Dark overlay for better text contrast */}
+        <div className="absolute inset-0 bg-black/40" />
+        
         {/* Animated background orbs */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
