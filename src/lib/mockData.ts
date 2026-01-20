@@ -939,6 +939,9 @@ export const countries = [
   'Ethiopia',
   'Algeria',
   'Morocco',
+  'Tunisia',
+  'Côte d\'Ivoire',
+  'Cameroon',
 ];
 
 export const stages = ['Pre-Seed', 'Seed', 'Series A', 'Series B', 'Series C+', 'Growth'];
