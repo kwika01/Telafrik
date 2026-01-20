@@ -265,7 +265,7 @@ const SectorPage = () => {
               <SelectContent>
                 <SelectItem value="all">All Countries</SelectItem>
                 {countries.map((country) => (
-                  <SelectItem key={country} value={country}>{country}</SelectItem>
+                  <SelectItem key={country.name} value={country.name}>{country.flag} {country.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

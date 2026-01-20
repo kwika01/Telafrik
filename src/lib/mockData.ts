@@ -927,21 +927,21 @@ export const sectors = [
 ];
 
 export const countries = [
-  'Nigeria',
-  'Kenya',
-  'South Africa',
-  'Egypt',
-  'Ghana',
-  'Senegal',
-  'Rwanda',
-  'Uganda',
-  'Tanzania',
-  'Ethiopia',
-  'Algeria',
-  'Morocco',
-  'Tunisia',
-  'Côte d\'Ivoire',
-  'Cameroon',
+  { name: 'Nigeria', flag: '🇳🇬' },
+  { name: 'Kenya', flag: '🇰🇪' },
+  { name: 'South Africa', flag: '🇿🇦' },
+  { name: 'Egypt', flag: '🇪🇬' },
+  { name: 'Ghana', flag: '🇬🇭' },
+  { name: 'Senegal', flag: '🇸🇳' },
+  { name: 'Rwanda', flag: '🇷🇼' },
+  { name: 'Uganda', flag: '🇺🇬' },
+  { name: 'Tanzania', flag: '🇹🇿' },
+  { name: 'Ethiopia', flag: '🇪🇹' },
+  { name: 'Algeria', flag: '🇩🇿' },
+  { name: 'Morocco', flag: '🇲🇦' },
+  { name: 'Tunisia', flag: '🇹🇳' },
+  { name: 'Côte d\'Ivoire', flag: '🇨🇮' },
+  { name: 'Cameroon', flag: '🇨🇲' },
 ];
 
 export const stages = ['Pre-Seed', 'Seed', 'Series A', 'Series B', 'Series C+', 'Growth'];
