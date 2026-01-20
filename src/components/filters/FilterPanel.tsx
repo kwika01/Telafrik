@@ -120,13 +120,13 @@ const FilterPanel = ({ onFilterChange }: FilterPanelProps) => {
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2 space-y-2">
             {countries.map((country) => (
-              <label key={country} className="flex items-center gap-2 cursor-pointer">
+              <label key={country.name} className="flex items-center gap-2 cursor-pointer">
                 <Checkbox
-                  checked={filters.countries.includes(country)}
-                  onCheckedChange={() => toggleFilter('countries', country)}
+                  checked={filters.countries.includes(country.name)}
+                  onCheckedChange={() => toggleFilter('countries', country.name)}
                 />
                 <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  {country}
+                  {country.flag} {country.name}
                 </span>
               </label>
             ))}

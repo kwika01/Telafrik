@@ -550,17 +550,18 @@ const Index = () => {
               ];
               return (
                 <motion.div
-                  key={country}
+                  key={country.name}
                   variants={itemVariants}
                   whileHover={{ scale: 1.08, y: -8, rotate: [-1, 1, 0] }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Link
-                    to={`/directory?country=${encodeURIComponent(country)}`}
+                    to={`/directory?country=${encodeURIComponent(country.name)}`}
                     className={`group block p-5 rounded-xl border border-border bg-gradient-to-br ${colors[index % 5]} transition-all text-center shadow-sm hover:shadow-xl`}
                   >
+                    <span className="text-2xl mb-1 block">{country.flag}</span>
                     <span className="font-semibold text-foreground group-hover:text-white transition-colors">
-                      {country}
+                      {country.name}
                     </span>
                   </Link>
                 </motion.div>
