@@ -27,6 +27,10 @@ import About from "./pages/About";
 import Watchlist from "./pages/Watchlist";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import Konekt from "./pages/Konekt";
+import KonektMatches from "./pages/KonektMatches";
+import KonektIntros from "./pages/KonektIntros";
+import KonektConnections from "./pages/KonektConnections";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +64,11 @@ const App = () => (
           <Route path="/compare" element={<Compare />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/auth" element={<Auth />} />
+          {/* KonektAfrik - connections & intros */}
+          <Route path="/konekt" element={<Konekt />} />
+          <Route path="/konekt/matches" element={<KonektMatches />} />
+          <Route path="/konekt/intros" element={<KonektIntros />} />
+          <Route path="/konekt/connections" element={<KonektConnections />} />
           {/* Hidden admin route */}
           <Route path="/lum0ra-admin-x7k9" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
