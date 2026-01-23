@@ -144,8 +144,249 @@ const About = () => {
           </div>
         </section>
 
-        {/* Mission & Vision */}
+        {/* Why Now Section */}
         <section className="py-20">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-4xl mx-auto"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">
+                Why <span className="text-gradient-rainbow">Now</span>
+              </h2>
+              <p className="text-xl text-center text-muted-foreground mb-12">
+                Africa's startup ecosystem has reached an inflection point—but its infrastructure has not.
+              </p>
+
+              <div className="prose prose-lg dark:prose-invert mx-auto space-y-6 mb-16">
+                <p className="text-muted-foreground leading-relaxed">
+                  Over the last decade, Africa has produced thousands of venture-backed startups, attracted billions of dollars in private capital, and created a new generation of founders building globally relevant technology companies. The ecosystem is no longer emerging; it is scaling.
+                </p>
+                <p className="text-muted-foreground leading-relaxed font-medium">
+                  Yet, the core infrastructure required to support a mature venture market is still missing.
+                </p>
+              </div>
+
+              {/* Fragmentation Section */}
+              <div className="mb-16">
+                <h3 className="text-2xl font-bold mb-6 text-center">
+                  Fragmentation Is Now the <span className="text-primary">Bottleneck</span>
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  Today, African startup and investor data is fragmented across newsletters, media articles, spreadsheets, WhatsApp groups, LinkedIn posts, pitch decks, and global platforms that were not designed for African markets.
+                </p>
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                  {[
+                    'Investors struggle to get reliable, comparable deal flow',
+                    'Founders struggle to gain visibility beyond their immediate networks',
+                    'Corporates, DFIs, and governments lack structured intelligence',
+                    'Analysts and researchers rely on manual, error-prone aggregation',
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="flex items-start gap-3 p-4 bg-destructive/5 border border-destructive/20 rounded-lg"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-destructive mt-2 shrink-0" />
+                      <p className="text-sm text-muted-foreground">{item}</p>
+                    </motion.div>
+                  ))}
+                </div>
+                <p className="text-muted-foreground text-center italic">
+                  This fragmentation was tolerable when deal volume was small.<br />
+                  <span className="font-semibold text-foreground">It is untenable at today's scale.</span>
+                </p>
+              </div>
+
+              {/* Outgrown Manual Discovery */}
+              <div className="mb-16">
+                <h3 className="text-2xl font-bold mb-6 text-center">
+                  Africa Has Outgrown <span className="text-gradient-gold">Manual Discovery</span>
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-6 text-center">
+                  What has changed is not interest in Africa—it is <strong>velocity</strong>.
+                </p>
+                <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                  {[
+                    'More startups are raising earlier and faster',
+                    'More funds are actively deploying across multiple African markets',
+                    'More cross-border and diaspora investors are participating',
+                    'More governments and institutions require data-backed insight',
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg"
+                    >
+                      <TrendingUp className="h-5 w-5 text-primary shrink-0" />
+                      <p className="text-sm text-foreground">{item}</p>
+                    </motion.div>
+                  ))}
+                </div>
+                <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
+                  <CardContent className="p-6 text-center">
+                    <p className="text-muted-foreground mb-4">
+                      At this scale, manual discovery breaks.
+                    </p>
+                    <p className="text-muted-foreground mb-4">
+                      Every major venture ecosystem—Silicon Valley, Europe, China, India—only truly accelerated after a <strong className="text-foreground">system of record</strong> emerged to standardize data, surface signals, and connect actors efficiently.
+                    </p>
+                    <p className="text-lg font-semibold text-primary">
+                      Africa is the last major venture market without that system.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Global Platforms */}
+              <div className="mb-16">
+                <h3 className="text-2xl font-bold mb-6 text-center">
+                  Global Platforms Are <span className="text-muted-foreground">Not Solving This</span>
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-6 text-center">
+                  Global tools like Crunchbase, PitchBook, and Dealroom are invaluable—but they are <strong>Africa-light</strong>.
+                </p>
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  <Card className="border-muted">
+                    <CardContent className="p-6">
+                      <h4 className="font-semibold mb-4 text-foreground">They rely on:</h4>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                          Voluntary reporting
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                          Western media signals
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                          Global heuristics that do not reflect African realities
+                        </li>
+                      </ul>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-destructive/30 bg-destructive/5">
+                    <CardContent className="p-6">
+                      <h4 className="font-semibold mb-4 text-foreground">As a result:</h4>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                          Coverage is incomplete
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                          Context is missing
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                          Local investors, founders, and regulators are underserved
+                        </li>
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </div>
+                <p className="text-center text-muted-foreground">
+                  Africa does not need a copy of global tools.<br />
+                  <span className="font-semibold text-foreground">It needs infrastructure designed for its markets, data gaps, and growth patterns.</span>
+                </p>
+              </div>
+
+              {/* Timing Is Right */}
+              <div className="mb-16">
+                <h3 className="text-2xl font-bold mb-6 text-center">
+                  The Timing Is <span className="text-gradient-rainbow">Now Right</span>
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-8 text-center">
+                  Three forces are converging:
+                </p>
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  {[
+                    {
+                      title: 'Ecosystem Maturity',
+                      description: 'The number of fundable startups and active investors has crossed the threshold where a unified platform creates immediate value.',
+                      icon: Users,
+                    },
+                    {
+                      title: 'Data Exhaust',
+                      description: 'African startups now leave digital signals—funding, hiring, traction, expansion—that can be captured and structured for the first time.',
+                      icon: TrendingUp,
+                    },
+                    {
+                      title: 'Demand for Trust',
+                      description: 'Capital allocators increasingly require verified data, audit trails, and repeatable insights—not anecdotes.',
+                      icon: Award,
+                    },
+                  ].map((item, index) => (
+                    <motion.div
+                      key={item.title}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.15 }}
+                    >
+                      <Card className="h-full border-2 border-primary/20 hover:border-primary/40 transition-colors">
+                        <CardContent className="p-6 text-center">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-violet-500/20 flex items-center justify-center mx-auto mb-4">
+                            <item.icon className="h-6 w-6 text-primary" />
+                          </div>
+                          <h4 className="font-semibold mb-2">{item.title}</h4>
+                          <p className="text-sm text-muted-foreground">{item.description}</p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+                <p className="text-center text-muted-foreground italic">
+                  Together, these forces create a narrow window where a first-class, Africa-first system of record can become the default.
+                </p>
+              </div>
+
+              {/* Why TelAfrik */}
+              <div className="text-center">
+                <h3 className="text-2xl font-bold mb-6">
+                  Why <span className="text-gradient-gold">TelAfrik</span>
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-8">
+                  TelAfrik exists because the African venture ecosystem is ready for <strong className="text-foreground">infrastructure</strong>, not another directory or community.
+                </p>
+                <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-violet-500/10 to-fuchsia-500/10">
+                  <CardContent className="p-8">
+                    <p className="text-lg text-muted-foreground mb-6">By unifying:</p>
+                    <div className="flex flex-wrap justify-center gap-4 mb-8">
+                      {[
+                        'Structured startup and investor data',
+                        'Live market signals',
+                        'Trusted founder–investor connections',
+                      ].map((item, index) => (
+                        <span
+                          key={index}
+                          className="px-4 py-2 rounded-full bg-primary/10 text-primary font-medium text-sm"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary via-violet-500 to-fuchsia-500">
+                      TelAfrik transforms fragmentation into clarity, and discovery into infrastructure.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Mission & Vision */}
+        <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               <motion.div
