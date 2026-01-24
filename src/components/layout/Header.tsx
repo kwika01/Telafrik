@@ -21,6 +21,7 @@ const Header = () => {
     { label: 'Home', path: '/' },
     { label: 'About', path: '/about' },
     { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Ask TelAfrik', path: '/ask', highlight: true },
   ];
 
   const resourcesNavItems = [
@@ -79,12 +80,15 @@ const Header = () => {
               >
                 <Link
                   to={item.path}
-                  className={`relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
+                  className={`relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-300 flex items-center gap-1.5 ${
                     isActive(item.path) 
                       ? 'text-primary bg-primary/10' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80'
+                      : item.highlight
+                        ? 'text-primary hover:bg-primary/10'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80'
                   }`}
                 >
+                  {item.highlight && <Sparkles className="h-3.5 w-3.5" />}
                   {item.label}
                   {isActive(item.path) && (
                     <motion.div
