@@ -75,14 +75,21 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative border-t border-border/40 overflow-hidden bg-gradient-to-b from-background to-muted/20">
-      {/* Subtle background elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/3 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-accent/3 rounded-full blur-3xl" />
+    <footer className="relative border-t border-primary/20 overflow-hidden">
+      {/* Vibrant gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-primary/5 to-accent/10" />
+      
+      {/* Colorful animated orbs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-20 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-20 right-1/4 w-72 h-72 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl" />
       </div>
+      
+      {/* Top gradient border */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
-      <div className="container-wide py-12 relative z-10">
+      <div className="container-wide py-12 md:py-16 relative z-10">
         <motion.div 
           variants={containerVariants}
           initial="hidden"
@@ -94,13 +101,13 @@ const Footer = () => {
           <motion.div variants={itemVariants} className="col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4 group">
               <motion.div 
-                whileHover={{ scale: 1.05 }}
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent shadow-md"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-accent to-violet-500 shadow-lg shadow-primary/30"
               >
-                <Sparkles className="h-4 w-4 text-primary-foreground" />
+                <Sparkles className="h-5 w-5 text-primary-foreground" />
               </motion.div>
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
+                <span className="text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent leading-tight group-hover:from-primary group-hover:to-accent transition-all">
                   TelAfrik
                 </span>
                 <span className="text-[10px] text-muted-foreground -mt-0.5">
@@ -112,69 +119,76 @@ const Footer = () => {
               The definitive intelligence platform for African markets.
             </p>
             
-            {/* Newsletter */}
+            {/* Newsletter with colorful button */}
             <div className="flex gap-2 max-w-xs">
               <Input 
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email" 
-                className="h-9 text-sm bg-background/50"
+                className="h-9 text-sm bg-background/80 border-primary/20 focus:border-primary/50"
               />
-              <Button size="sm" className="h-9 px-3">
+              <Button size="sm" className="h-9 px-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-md shadow-primary/20">
                 <Send className="h-3.5 w-3.5" />
               </Button>
             </div>
           </motion.div>
 
-          {/* Links */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <motion.div key={category} variants={itemVariants}>
-              <h4 className="font-medium text-foreground mb-3 text-sm">
-                {category}
-              </h4>
-              <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.path}>
-                    <Link
-                      to={link.path}
-                      className="group text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-                    >
-                      {link.label}
-                      <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+          {/* Links with colored category indicators */}
+          {Object.entries(footerLinks).map(([category, links], idx) => {
+            const colors = ['text-primary', 'text-violet-400', 'text-orange-400', 'text-emerald-400'];
+            return (
+              <motion.div key={category} variants={itemVariants}>
+                <h4 className="font-semibold text-foreground mb-3 text-sm flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full ${colors[idx]} bg-current`} />
+                  {category}
+                </h4>
+                <ul className="space-y-2">
+                  {links.map((link) => (
+                    <li key={link.path}>
+                      <Link
+                        to={link.path}
+                        className="group text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                      >
+                        {link.label}
+                        <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
-        {/* Bottom bar */}
+        {/* Bottom bar with gradient */}
         <motion.div 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-10 pt-6 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-4"
+          className="mt-10 pt-6 border-t border-primary/10 flex flex-col sm:flex-row justify-between items-center gap-4"
         >
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} TelAfrik by Ennylytics
+            © {new Date().getFullYear()} <span className="text-foreground font-medium">TelAfrik</span> by Ennylytics
           </p>
-          <div className="flex items-center gap-2">
-            {socialLinks.map((social) => (
-              <motion.a
-                key={social.name}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                aria-label={social.name}
-              >
-                {social.icon}
-              </motion.a>
-            ))}
+          <div className="flex items-center gap-1">
+            {socialLinks.map((social, idx) => {
+              const hoverColors = ['hover:text-primary hover:bg-primary/10', 'hover:text-blue-400 hover:bg-blue-400/10'];
+              return (
+                <motion.a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`p-2 rounded-lg text-muted-foreground transition-colors ${hoverColors[idx]}`}
+                  aria-label={social.name}
+                >
+                  {social.icon}
+                </motion.a>
+              );
+            })}
           </div>
         </motion.div>
       </div>
