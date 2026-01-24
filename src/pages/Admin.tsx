@@ -20,6 +20,7 @@ import {
   MoreHorizontal,
   FileText,
   Settings,
+  Loader2,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -27,6 +28,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 // Mock data
 const mockCompanies = [
@@ -52,6 +54,26 @@ const mockDataQualityIssues = [
 const Admin = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const { isAdmin, isLoading } = useAdminAuth();
+
+  // Show loading state while checking admin status
+  if (isLoading) {
+    return (
+      <AppLayout showSidebar={false}>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-muted-foreground">Verifying access...</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // If not admin, the hook will redirect - but show nothing while redirecting
+  if (!isAdmin) {
+    return null;
+  }
 
   const stats = [
     { label: 'Total Companies', value: '2,847', icon: Building2, change: '+12 today' },
