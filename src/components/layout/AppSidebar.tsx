@@ -120,22 +120,22 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
           </nav>
         </div>
 
-        {/* KonektAfrik - Coming Soon */}
+        {/* KonektAfrik */}
         <div className="px-3 mb-6">
           <h3 className="px-3 mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <span className="text-violet-400">●</span> KonektAfrik
-            <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 font-medium">Soon</span>
+            <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-violet-400 font-medium">New</span>
           </h3>
           <nav className="space-y-1">
             {konektNavItems.map((item) => (
-              <div
+              <Link
                 key={item.path}
-                className="sidebar-link opacity-50 cursor-not-allowed pointer-events-none"
-                title="Coming Soon"
+                to={item.path}
+                className={isActive(item.path) ? 'sidebar-link-active' : 'sidebar-link'}
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
-              </div>
+              </Link>
             ))}
           </nav>
         </div>
