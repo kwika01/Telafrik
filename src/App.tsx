@@ -25,6 +25,7 @@ import Methodology from "./pages/Methodology";
 import Compare from "./pages/Compare";
 import About from "./pages/About";
 import Watchlist from "./pages/Watchlist";
+import Ask from "./pages/Ask";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import Konekt from "./pages/Konekt";
@@ -63,6 +64,7 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/watchlist" element={<Watchlist />} />
+          <Route path="/ask" element={<Ask />} />
           <Route path="/auth" element={<Auth />} />
           {/* KonektAfrik - connections & intros */}
           <Route path="/konekt" element={<Konekt />} />

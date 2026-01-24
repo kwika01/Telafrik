@@ -16,6 +16,7 @@ import {
   Sparkles,
   MessageSquare,
   UserPlus,
+  BrainCircuit,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -32,6 +33,7 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
   // TelAfrik Data - startup & investor database
   const dataNavItems = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Ask TelAfrik', path: '/ask', icon: BrainCircuit, highlight: true },
     { label: 'Companies', path: '/companies', icon: Building2 },
     { label: 'Startups', path: '/directory', icon: Rocket },
     { label: 'Founders', path: '/founders', icon: Users },
@@ -73,10 +75,16 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={isActive(item.path) ? 'sidebar-link-active' : 'sidebar-link'}
+                className={cn(
+                  isActive(item.path) ? 'sidebar-link-active' : 'sidebar-link',
+                  item.highlight && !isActive(item.path) && 'text-primary'
+                )}
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
+                {item.highlight && (
+                  <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-gradient-to-r from-primary/20 to-accent/20 text-primary font-medium">AI</span>
+                )}
               </Link>
             ))}
           </nav>

@@ -1,1 +1,7 @@
 project_id = "ovedxjllegwgsvexxgsf"
+
+[functions.lumora-chat]
+verify_jwt = true
+
+[functions.ask-telafrik]
+verify_jwt = false
