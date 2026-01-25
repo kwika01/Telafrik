@@ -32,6 +32,11 @@ import Konekt from "./pages/Konekt";
 import KonektMatches from "./pages/KonektMatches";
 import KonektIntros from "./pages/KonektIntros";
 import KonektConnections from "./pages/KonektConnections";
+import KonektAfrikLanding from "./pages/KonektAfrikLanding";
+import KonektAfrikMatch from "./pages/KonektAfrikMatch";
+import KonektAfrikResults from "./pages/KonektAfrikResults";
+import KonektAfrikIntros from "./pages/KonektAfrikIntros";
+import AdminIntros from "./pages/AdminIntros";
 
 const queryClient = new QueryClient();
 
@@ -71,8 +76,14 @@ const App = () => (
           <Route path="/konekt/matches" element={<KonektMatches />} />
           <Route path="/konekt/intros" element={<KonektIntros />} />
           <Route path="/konekt/connections" element={<KonektConnections />} />
-          {/* Hidden admin route */}
+          {/* KonektAfrik AI Matching */}
+          <Route path="/konektafrik" element={<KonektAfrikLanding />} />
+          <Route path="/konekt/match" element={<KonektAfrikMatch />} />
+          <Route path="/konekt/results" element={<KonektAfrikResults />} />
+          <Route path="/konekt/my-intros" element={<KonektAfrikIntros />} />
+          {/* Hidden admin routes */}
           <Route path="/lum0ra-admin-x7k9" element={<Admin />} />
+          <Route path="/admin/intros" element={<AdminIntros />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
