@@ -520,6 +520,70 @@ export type Database = {
           },
         ]
       }
+      intro_requests: {
+        Row: {
+          admin_notes: string | null
+          contact_email: string | null
+          created_at: string
+          founder_message: string | null
+          id: string
+          investor_id: string
+          match_result_id: string | null
+          startup_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          contact_email?: string | null
+          created_at?: string
+          founder_message?: string | null
+          id?: string
+          investor_id: string
+          match_result_id?: string | null
+          startup_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          contact_email?: string | null
+          created_at?: string
+          founder_message?: string | null
+          id?: string
+          investor_id?: string
+          match_result_id?: string | null
+          startup_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intro_requests_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intro_requests_match_result_id_fkey"
+            columns: ["match_result_id"]
+            isOneToOne: false
+            referencedRelation: "match_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intro_requests_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investor_regions: {
         Row: {
           id: string
@@ -631,6 +695,107 @@ export type Database = {
             columns: ["hq_country_id"]
             isOneToOne: false
             referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          investor_preferences: string | null
+          raise_amount_max: number | null
+          raise_amount_min: number | null
+          raise_stage: string
+          sector: string | null
+          startup_id: string
+          sub_sector: string | null
+          target_geos: string[] | null
+          traction_notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          investor_preferences?: string | null
+          raise_amount_max?: number | null
+          raise_amount_min?: number | null
+          raise_stage: string
+          sector?: string | null
+          startup_id: string
+          sub_sector?: string | null
+          target_geos?: string[] | null
+          traction_notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          investor_preferences?: string | null
+          raise_amount_max?: number | null
+          raise_amount_min?: number | null
+          raise_stage?: string
+          sector?: string | null
+          startup_id?: string
+          sub_sector?: string | null
+          target_geos?: string[] | null
+          traction_notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_profiles_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_results: {
+        Row: {
+          created_at: string
+          fit_score: number
+          fit_tags: string[] | null
+          id: string
+          investor_id: string
+          match_profile_id: string
+          why_bullets: Json | null
+        }
+        Insert: {
+          created_at?: string
+          fit_score?: number
+          fit_tags?: string[] | null
+          id?: string
+          investor_id: string
+          match_profile_id: string
+          why_bullets?: Json | null
+        }
+        Update: {
+          created_at?: string
+          fit_score?: number
+          fit_tags?: string[] | null
+          id?: string
+          investor_id?: string
+          match_profile_id?: string
+          why_bullets?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_results_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_results_match_profile_id_fkey"
+            columns: ["match_profile_id"]
+            isOneToOne: false
+            referencedRelation: "match_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -778,6 +943,66 @@ export type Database = {
         Update: {
           created_at?: string
           entity_type?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_shortlist_items: {
+        Row: {
+          created_at: string
+          id: string
+          investor_id: string
+          shortlist_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          investor_id: string
+          shortlist_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          investor_id?: string
+          shortlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_shortlist_items_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_shortlist_items_shortlist_id_fkey"
+            columns: ["shortlist_id"]
+            isOneToOne: false
+            referencedRelation: "saved_shortlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_shortlists: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
           id?: string
           name?: string
           updated_at?: string

@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.ask-telafrik]
 verify_jwt = false
+
+[functions.konekt-match]
+verify_jwt = false
