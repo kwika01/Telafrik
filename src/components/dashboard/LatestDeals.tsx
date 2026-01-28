@@ -24,8 +24,8 @@ const LatestDeals = ({ deals }: LatestDealsProps) => {
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-primary/10">
-            <DollarSign className="h-4 w-4 text-primary" />
+          <div className="p-1.5 rounded-lg bg-gold/10 border border-gold/20">
+            <DollarSign className="h-4 w-4 text-gold" />
           </div>
           <h2 className="font-semibold text-foreground">Latest Deals</h2>
         </div>
@@ -47,17 +47,17 @@ const LatestDeals = ({ deals }: LatestDealsProps) => {
             className="flex items-center justify-between py-3 px-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-violet-500/20 flex items-center justify-center">
-                <span className="text-xs font-bold text-primary">{deal.company.charAt(0)}</span>
+              <div className="w-8 h-8 rounded-lg bg-emerald/10 border border-emerald/20 flex items-center justify-center">
+                <span className="text-xs font-bold text-emerald">{deal.company.charAt(0)}</span>
               </div>
               <div>
-                <div className="font-medium text-foreground group-hover:text-primary transition-colors">
+                <div className="font-medium text-foreground group-hover:text-emerald transition-colors">
                   {deal.company}
                 </div>
                 <div className="text-xs text-muted-foreground">{deal.round} • {deal.date}</div>
               </div>
             </div>
-            <div className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-violet-500">
+            <div className="text-lg font-bold text-gold">
               {deal.amount}
             </div>
           </motion.div>

@@ -1,128 +1,110 @@
 import { Link } from 'react-router-dom';
-import { MapPin, TrendingUp, ExternalLink, Building2 } from 'lucide-react';
+import { MapPin, TrendingUp, ExternalLink, Building2, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Startup } from '@/lib/mockData';
 import { Badge } from '@/components/ui/badge';
-import ConfidenceIndicator from './ConfidenceIndicator';
+import type { CompanyListItem } from '@/types/domain';
+import { formatCurrency } from '@/types/domain';
 
 interface StartupCardProps {
-  startup: Startup;
+  company: CompanyListItem;
   featured?: boolean;
 }
 
-const StartupCard = ({ startup, featured = false }: StartupCardProps) => {
+const StartupCard = ({ company, featured = false }: StartupCardProps) => {
+  const isTrending = (company.trendingScore || 0) > 50;
+  
   return (
     <motion.div
-      whileHover={{ y: -4, scale: 1.01 }}
+      whileHover={{ y: -4 }}
       whileTap={{ scale: 0.99 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
     >
       <Link
-        to={`/startup/${startup.slug}`}
-        className={`group block bg-card rounded-xl border border-border hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 ${
+        to={`/startup/${company.slug}`}
+        className={`group block bg-card rounded-xl border border-border hover:border-emerald/30 hover:shadow-lg transition-all duration-200 ${
           featured ? 'p-6' : 'p-5'
-        } relative overflow-hidden`}
+        }`}
       >
-        {/* Gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
-        <div className="relative z-10">
-          <div className="flex items-start gap-4">
-            {/* Logo */}
-            <motion.div 
-              className={`flex-shrink-0 ${featured ? 'w-16 h-16' : 'w-12 h-12'} rounded-xl bg-gradient-to-br from-secondary to-secondary/50 overflow-hidden ring-2 ring-transparent group-hover:ring-primary/20 transition-all`}
-              whileHover={{ rotate: [0, -5, 5, 0] }}
-              transition={{ duration: 0.5 }}
-            >
+        <div className="flex items-start gap-4">
+          {/* Logo */}
+          <div 
+            className={`flex-shrink-0 ${featured ? 'w-14 h-14' : 'w-11 h-11'} rounded-lg bg-muted overflow-hidden flex items-center justify-center`}
+          >
+            {company.logoUrl ? (
               <img
-                src={startup.logo}
-                alt={startup.name}
+                src={company.logoUrl}
+                alt={company.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(startup.name)}&background=6366f1&color=fff&size=128`;
+                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=6366f1&color=fff&size=128`;
                 }}
               />
-            </motion.div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className={`font-semibold text-foreground group-hover:text-primary transition-colors truncate ${featured ? 'text-lg' : 'text-base'}`}>
-                  {startup.name}
-                </h3>
-                {startup.trending && (
-                  <Badge variant="secondary" className="flex-shrink-0 text-xs bg-gradient-to-r from-accent/20 to-orange-500/20 text-accent border-0 animate-pulse">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    Trending
-                  </Badge>
-                )}
-                {startup.recentlyFunded && !startup.trending && (
-                  <Badge variant="secondary" className="flex-shrink-0 text-xs bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-600 border-0">
-                    💰 Funded
-                  </Badge>
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-1 mb-3 group-hover:text-foreground/70 transition-colors">
-                {startup.tagline}
-              </p>
-
-              {/* Meta info */}
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1 bg-secondary/50 px-2 py-1 rounded-full">
-                  <MapPin className="h-3 w-3 text-primary" />
-                  {startup.hqCountry}
-                </span>
-                <span className="px-2 py-1 rounded-full bg-gradient-to-r from-primary/10 to-violet-500/10 text-primary font-medium">
-                  {startup.sector}
-                </span>
-                <span className="px-2 py-1 rounded-full bg-secondary/50">
-                  {startup.stage}
-                </span>
-              </div>
-            </div>
-
-            {/* External link icon */}
-            <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+            ) : (
+              <Building2 className={`${featured ? 'h-7 w-7' : 'h-5 w-5'} text-muted-foreground`} />
+            )}
           </div>
 
-          {/* Financial Metrics */}
-          <div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-2 gap-4">
-            <div className="group/metric">
-              <div className="flex items-center gap-1 mb-1">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">Valuation</span>
-                <ConfidenceIndicator 
-                  score={startup.valuation.confidenceScore} 
-                  source={startup.valuation.source}
-                  size="sm"
-                />
-              </div>
-              <p className="text-sm font-bold text-foreground group-hover/metric:text-primary transition-colors">
-                {startup.valuation.range}
-              </p>
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className={`font-semibold text-foreground group-hover:text-emerald transition-colors truncate ${featured ? 'text-lg' : 'text-base'}`}>
+                {company.name}
+              </h3>
+              {isTrending && (
+                <Badge variant="secondary" className="flex-shrink-0 text-[10px] bg-terracotta/10 text-terracotta border-0 gap-0.5">
+                  <TrendingUp className="h-2.5 w-2.5" />
+                  Hot
+                </Badge>
+              )}
+              {company.isVerified && (
+                <Badge variant="secondary" className="flex-shrink-0 text-[10px] bg-emerald/10 text-emerald border-0">
+                  ✓
+                </Badge>
+              )}
             </div>
-            <div className="group/metric">
-              <div className="flex items-center gap-1 mb-1">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">Total Raised</span>
-              </div>
-              <p className="text-sm font-bold text-foreground group-hover/metric:text-accent transition-colors">
-                {startup.totalFunding}
-              </p>
+            <p className="text-sm text-muted-foreground line-clamp-1 mb-3">
+              {company.tagline || 'No description available'}
+            </p>
+
+            {/* Meta info */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+              {company.hqCountry && (
+                <span className="flex items-center gap-1 bg-muted px-2 py-0.5 rounded">
+                  <MapPin className="h-3 w-3 text-gold" />
+                  {company.hqCountry.name}
+                </span>
+              )}
+              {company.sector && (
+                <span className="px-2 py-0.5 rounded bg-indigo/10 text-indigo font-medium">
+                  {company.sector.name}
+                </span>
+              )}
+              {company.yearFounded && (
+                <span className="px-2 py-0.5 rounded bg-muted">
+                  Est. {company.yearFounded}
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Founders preview on featured cards */}
-          {featured && startup.founders.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-border/50">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-3 w-3 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">
-                  Founded by <span className="text-foreground font-medium">{startup.founders[0].name}</span>
-                  {startup.founders.length > 1 && ` +${startup.founders.length - 1}`}
-                </span>
-              </div>
-            </div>
-          )}
+          {/* External link icon */}
+          <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
         </div>
+
+        {/* Financial Metrics */}
+        {(company.totalFundingUsd > 0) && (
+          <div className="mt-4 pt-4 border-t border-border">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground uppercase tracking-wider">
+                <DollarSign className="h-3 w-3 text-gold" />
+                Total Raised
+              </span>
+              <span className="text-sm font-bold text-gold">
+                {formatCurrency(company.totalFundingUsd)}
+              </span>
+            </div>
+          </div>
+        )}
       </Link>
     </motion.div>
   );

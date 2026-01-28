@@ -18,20 +18,20 @@ const MarketHeatmap = ({ markets }: MarketHeatmapProps) => {
     switch (activity) {
       case 'very-high':
         return {
-          bg: 'bg-primary',
-          ring: 'ring-primary/30',
+          bg: 'bg-emerald',
+          ring: 'ring-emerald/30',
           label: 'Very High',
         };
       case 'high':
         return {
-          bg: 'bg-primary/70',
-          ring: 'ring-primary/20',
+          bg: 'bg-gold',
+          ring: 'ring-gold/30',
           label: 'High',
         };
       case 'medium':
         return {
-          bg: 'bg-primary/40',
-          ring: 'ring-primary/10',
+          bg: 'bg-indigo',
+          ring: 'ring-indigo/30',
           label: 'Medium',
         };
       default:
@@ -52,8 +52,8 @@ const MarketHeatmap = ({ markets }: MarketHeatmapProps) => {
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-primary/10">
-            <Globe className="h-4 w-4 text-primary" />
+          <div className="p-1.5 rounded-lg bg-indigo/10 border border-indigo/20">
+            <Globe className="h-4 w-4 text-indigo" />
           </div>
           <h2 className="font-semibold text-foreground">Market Activity</h2>
         </div>
@@ -79,7 +79,7 @@ const MarketHeatmap = ({ markets }: MarketHeatmapProps) => {
             >
               <div className={`w-3 h-3 rounded-full ${styles.bg} ring-4 ${styles.ring}`} />
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm text-foreground truncate group-hover:text-primary transition-colors">
+                <div className="font-medium text-sm text-foreground truncate group-hover:text-emerald transition-colors">
                   {market.country}
                 </div>
                 <div className="text-xs text-muted-foreground">{market.companies.toLocaleString()} companies</div>

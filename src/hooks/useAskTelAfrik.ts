@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 
 export type SearchScope = 'startups' | 'investors' | 'founders' | 'funding';
 
@@ -45,7 +45,6 @@ export function useAskTelAfrik() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSession, setCurrentSession] = useState<ChatSession | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const { toast } = useToast();
 
   const fetchSessions = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -89,10 +88,8 @@ export function useAskTelAfrik() {
   const createSession = useCallback(async (scope: SearchScope = 'startups'): Promise<ChatSession | null> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast({
-        title: 'Authentication required',
+      toast.error('Authentication required', {
         description: 'Please sign in to use Ask TelAfrik',
-        variant: 'destructive',
       });
       return null;
     }
@@ -105,11 +102,7 @@ export function useAskTelAfrik() {
 
     if (error) {
       console.error('Failed to create session:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create chat session',
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: 'Failed to create chat session' });
       return null;
     }
 
@@ -118,7 +111,7 @@ export function useAskTelAfrik() {
     setCurrentSession(session);
     setMessages([]);
     return session;
-  }, [toast]);
+  }, []);
 
   const updateSessionTitle = useCallback(async (sessionId: string, title: string) => {
     const { error } = await supabase
@@ -145,11 +138,7 @@ export function useAskTelAfrik() {
 
     if (error) {
       console.error('Failed to delete session:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete chat',
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: 'Failed to delete chat' });
       return;
     }
 
@@ -158,7 +147,7 @@ export function useAskTelAfrik() {
       setCurrentSession(null);
       setMessages([]);
     }
-  }, [currentSession, toast]);
+  }, [currentSession]);
 
   const selectSession = useCallback(async (session: ChatSession) => {
     setCurrentSession(session);
@@ -224,16 +213,12 @@ export function useAskTelAfrik() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);
-      toast({
-        title: 'Error',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: errorMessage });
       return null;
     } finally {
       setIsLoading(false);
     }
-  }, [fetchSessions, toast]);
+  }, [fetchSessions]);
 
   return {
     isLoading,

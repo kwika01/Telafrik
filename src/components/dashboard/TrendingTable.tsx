@@ -25,8 +25,8 @@ const TrendingTable = ({ companies }: TrendingTableProps) => {
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-primary/10">
-            <TrendingUp className="h-4 w-4 text-primary" />
+          <div className="p-1.5 rounded-lg bg-terracotta/10 border border-terracotta/20">
+            <TrendingUp className="h-4 w-4 text-terracotta" />
           </div>
           <h2 className="font-semibold text-foreground">Trending Companies</h2>
         </div>
@@ -59,16 +59,16 @@ const TrendingTable = ({ companies }: TrendingTableProps) => {
               >
                 <td className="py-3">
                   <div className="flex items-center gap-3">
-                    <span className="w-5 h-5 flex items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                    <span className="w-5 h-5 flex items-center justify-center rounded-full bg-muted/70 border border-border text-xs font-medium text-muted-foreground">
                       {index + 1}
                     </span>
-                    <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                    <span className="font-medium text-foreground group-hover:text-foreground transition-colors">
                       {company.name}
                     </span>
                   </div>
                 </td>
                 <td className="py-3">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/60 border border-border text-foreground">
                     {company.sector}
                   </span>
                 </td>
@@ -80,14 +80,14 @@ const TrendingTable = ({ companies }: TrendingTableProps) => {
                         initial={{ width: 0 }}
                         animate={{ width: `${company.momentum}%` }}
                         transition={{ delay: 0.5 + index * 0.1, duration: 0.8, ease: 'easeOut' }}
-                        className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
+                        className="h-full bg-terracotta rounded-full"
                       />
                     </div>
                     <span className="text-sm font-medium text-foreground w-8">{company.momentum}</span>
                   </div>
                 </td>
                 <td className="py-3 text-right">
-                  <span className="inline-flex items-center text-sm font-medium text-emerald-500">
+                  <span className="inline-flex items-center text-sm font-medium text-emerald">
                     <TrendingUp className="h-3 w-3 mr-1" />
                     {company.change}
                   </span>

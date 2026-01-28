@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 import type { StructuredResponse, EntityResult } from '@/hooks/useAskTelAfrik';
 
 interface ResultsPanelProps {
@@ -162,7 +162,6 @@ const EmptyState = () => (
 
 export const ResultsPanel = ({ response, isLoading, onSaveToCollection }: ResultsPanelProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const { toast } = useToast();
 
   if (isLoading) {
     return (
@@ -207,8 +206,7 @@ export const ResultsPanel = ({ response, isLoading, onSaveToCollection }: Result
     a.click();
     URL.revokeObjectURL(url);
 
-    toast({
-      title: 'Export complete',
+    toast.success('Export complete', {
       description: `Exported ${response.results.length} results to CSV`,
     });
   };
@@ -217,8 +215,7 @@ export const ResultsPanel = ({ response, isLoading, onSaveToCollection }: Result
     if (onSaveToCollection) {
       onSaveToCollection(response.results);
     } else {
-      toast({
-        title: 'Coming soon',
+      toast.info('Coming soon', {
         description: 'Save to collection feature is being built',
       });
     }

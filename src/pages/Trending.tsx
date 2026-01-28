@@ -1,14 +1,16 @@
-import { TrendingUp, Flame, ArrowUp } from 'lucide-react';
-import Layout from '@/components/layout/Layout';
+import { TrendingUp, Flame, ArrowUp, Loader2 } from 'lucide-react';
+import AppLayout from '@/components/layout/AppLayout';
 import StartupCard from '@/components/startups/StartupCard';
-import { startups } from '@/lib/mockData';
+import { useTrendingCompanies } from '@/api/queries/useCompanies';
 
 const Trending = () => {
-  const trendingStartups = startups.filter((s) => s.trending);
-  const hotStartups = startups.slice(0, 3);
+  const { data: trendingCompanies = [], isLoading, error } = useTrendingCompanies(12);
+  
+  const hotStartups = trendingCompanies.slice(0, 3);
+  const risingStartups = trendingCompanies.slice(3);
 
   return (
-    <Layout>
+    <AppLayout>
       {/* Header */}
       <section className="bg-primary py-12">
         <div className="container-wide">
@@ -34,16 +36,32 @@ const Trending = () => {
             <h2 className="text-xl font-bold text-foreground">Hot Right Now</h2>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6">
-            {hotStartups.map((startup, index) => (
-              <div key={startup.id} className="relative">
-                <div className="absolute -top-3 -left-3 z-10 w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold text-sm">
-                  #{index + 1}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-destructive">Failed to load trending startups. Please try again.</p>
+            </div>
+          ) : hotStartups.length > 0 ? (
+            <div className="grid md:grid-cols-3 gap-6">
+              {hotStartups.map((company, index) => (
+                <div key={company.id} className="relative">
+                  <div className="absolute -top-3 -left-3 z-10 w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold text-sm">
+                    #{index + 1}
+                  </div>
+                  <StartupCard company={company} featured />
                 </div>
-                <StartupCard startup={startup} featured />
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-card rounded-xl border border-border">
+              <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">No trending startups at the moment.</p>
+              <p className="text-sm text-muted-foreground mt-2">Check back soon for updates!</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -55,17 +73,17 @@ const Trending = () => {
             <h2 className="text-xl font-bold text-foreground">Rising Momentum</h2>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trendingStartups.map((startup) => (
-              <StartupCard key={startup.id} startup={startup} />
-            ))}
-          </div>
-
-          {trendingStartups.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No trending startups at the moment.</p>
+          {!isLoading && risingStartups.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {risingStartups.map((company) => (
+                <StartupCard key={company.id} company={company} />
+              ))}
             </div>
-          )}
+          ) : !isLoading && risingStartups.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">More trending startups coming soon.</p>
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -77,13 +95,13 @@ const Trending = () => {
             <p className="text-sm text-muted-foreground leading-relaxed">
               Our trending algorithm considers multiple signals including recent funding announcements,
               press mentions, website traffic changes, social media engagement, and user interest on
-              AfricaBase. Startups are ranked based on momentum over the past 7-30 days relative to
+              TelAfrik. Startups are ranked based on momentum over the past 7-30 days relative to
               their baseline activity.
             </p>
           </div>
         </div>
       </section>
-    </Layout>
+    </AppLayout>
   );
 };
 

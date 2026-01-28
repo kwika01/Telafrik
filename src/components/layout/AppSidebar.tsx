@@ -63,12 +63,12 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
   ];
 
   return (
-    <aside className={cn("w-56 flex-shrink-0 border-r border-sidebar-border bg-sidebar-background", className)}>
-      <div className="flex flex-col h-full py-4">
+    <aside className={cn("w-60 flex-shrink-0 border-r border-border bg-background", className)}>
+      <div className="flex flex-col h-full py-6 px-2">
         {/* TelAfrik Data */}
-        <div className="px-3 mb-6">
-          <h3 className="px-3 mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            <span className="text-primary">●</span> TelAfrik Data
+        <div className="px-2 mb-6">
+          <h3 className="px-3 mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" /> TelAfrik Data
           </h3>
           <nav className="space-y-1">
             {dataNavItems.map((item) => (
@@ -91,9 +91,9 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
         </div>
 
         {/* TelAfrik Signals */}
-        <div className="px-3 mb-6">
-          <h3 className="px-3 mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            <span className="text-orange-400">●</span> TelAfrik Signals
+        <div className="px-2 mb-6">
+          <h3 className="px-3 mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-terracotta" /> TelAfrik Signals
           </h3>
           <nav className="space-y-1">
             {signalsNavItems.map((item) => (
@@ -110,9 +110,9 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
         </div>
 
         {/* TelAfrik Insights */}
-        <div className="px-3 mb-6">
-          <h3 className="px-3 mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            <span className="text-emerald-400">●</span> TelAfrik Insights
+        <div className="px-2 mb-6">
+          <h3 className="px-3 mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald" /> TelAfrik Insights
           </h3>
           <nav className="space-y-1">
             {insightsNavItems.map((item) => (
@@ -129,10 +129,10 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
         </div>
 
         {/* KonektAfrik */}
-        <div className="px-3 mb-6">
-          <h3 className="px-3 mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            <span className="text-violet-400">●</span> KonektAfrik
-            <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-violet-400 font-medium">New</span>
+        <div className="px-2 mb-6">
+          <h3 className="px-3 mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo" /> KonektAfrik
+            <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-indigo/10 text-indigo font-medium">New</span>
           </h3>
           <nav className="space-y-1">
             {konektNavItems.map((item) => (
@@ -149,7 +149,7 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
         </div>
 
         {/* Bottom section */}
-        <div className="mt-auto px-3">
+        <div className="mt-auto px-2 pt-4 border-t border-border">
           <nav className="space-y-1">
             <Link to="/pricing" className="sidebar-link">
               <CreditCard className="h-4 w-4" />

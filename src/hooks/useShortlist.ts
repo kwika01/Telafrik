@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 
 export interface Shortlist {
   id: string;
@@ -26,7 +26,6 @@ export interface ShortlistItem {
 export function useShortlist() {
   const [shortlists, setShortlists] = useState<Shortlist[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const fetchShortlists = useCallback(async () => {
     setIsLoading(true);
@@ -66,14 +65,10 @@ export function useShortlist() {
       await fetchShortlists();
       return data;
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to create shortlist',
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: 'Failed to create shortlist' });
       return null;
     }
-  }, [fetchShortlists, toast]);
+  }, [fetchShortlists]);
 
   const addToShortlist = useCallback(async (shortlistId: string, investorId: string) => {
     try {
@@ -83,30 +78,20 @@ export function useShortlist() {
 
       if (error) {
         if (error.code === '23505') {
-          toast({
-            title: 'Already Added',
-            description: 'This investor is already in your shortlist',
-          });
+          toast.info('Already Added', { description: 'This investor is already in your shortlist' });
           return true;
         }
         throw error;
       }
 
-      toast({
-        title: 'Added to Shortlist',
-        description: 'Investor saved to your shortlist',
-      });
+      toast.success('Added to Shortlist', { description: 'Investor saved to your shortlist' });
       await fetchShortlists();
       return true;
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to add to shortlist',
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: 'Failed to add to shortlist' });
       return false;
     }
-  }, [fetchShortlists, toast]);
+  }, [fetchShortlists]);
 
   const removeFromShortlist = useCallback(async (itemId: string) => {
     try {
@@ -119,14 +104,10 @@ export function useShortlist() {
       await fetchShortlists();
       return true;
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to remove from shortlist',
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: 'Failed to remove from shortlist' });
       return false;
     }
-  }, [fetchShortlists, toast]);
+  }, [fetchShortlists]);
 
   const getOrCreateDefaultShortlist = useCallback(async () => {
     await fetchShortlists();

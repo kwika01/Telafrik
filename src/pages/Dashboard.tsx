@@ -18,19 +18,19 @@ const Dashboard = () => {
   ];
 
   const trendingCompanies = [
-    { name: 'Flutterwave', sector: 'Fintech', country: 'Nigeria', momentum: 94, change: '+12' },
-    { name: 'Andela', sector: 'HR Tech', country: 'Pan-Africa', momentum: 91, change: '+8' },
-    { name: 'Moniepoint', sector: 'Fintech', country: 'Nigeria', momentum: 89, change: '+15' },
-    { name: 'Paystack', sector: 'Fintech', country: 'Nigeria', momentum: 87, change: '+5' },
-    { name: 'SeamlessHR', sector: 'HR Tech', country: 'Nigeria', momentum: 85, change: '+10' },
+    { name: 'Flutterwave', sector: 'Fintech', country: 'Nigeria', momentum: 94, change: '+12', verified: true },
+    { name: 'Andela', sector: 'HR Tech', country: 'Pan-Africa', momentum: 91, change: '+8', verified: true },
+    { name: 'Moniepoint', sector: 'Fintech', country: 'Nigeria', momentum: 89, change: '+15', verified: true },
+    { name: 'Paystack', sector: 'Fintech', country: 'Nigeria', momentum: 87, change: '+5', verified: true },
+    { name: 'SeamlessHR', sector: 'HR Tech', country: 'Nigeria', momentum: 85, change: '+10', verified: false },
   ];
 
   const latestDeals = [
-    { company: 'Moniepoint', amount: '$110M', round: 'Series C', date: 'Jan 2024' },
-    { company: 'Flutterwave', amount: '$250M', round: 'Series D', date: 'Dec 2023' },
-    { company: 'MNT-Halan', amount: '$400M', round: 'Series C', date: 'Nov 2023' },
-    { company: 'OPay', amount: '$120M', round: 'Series C', date: 'Oct 2023' },
-    { company: 'Wave', amount: '$200M', round: 'Series A', date: 'Sep 2023' },
+    { company: 'Moniepoint', amount: '$110M', round: 'Series C', date: 'Jan 2024', sector: 'Fintech' },
+    { company: 'Flutterwave', amount: '$250M', round: 'Series D', date: 'Dec 2023', sector: 'Fintech' },
+    { company: 'MNT-Halan', amount: '$400M', round: 'Series C', date: 'Nov 2023', sector: 'Fintech' },
+    { company: 'OPay', amount: '$120M', round: 'Series C', date: 'Oct 2023', sector: 'Fintech' },
+    { company: 'Wave', amount: '$200M', round: 'Series A', date: 'Sep 2023', sector: 'Fintech' },
   ];
 
   const sectorSpotlight = {
@@ -39,17 +39,18 @@ const Dashboard = () => {
     totalFunding: '$180M',
     growth: '+34%',
     description: 'Payroll, HRIS, and workforce management solutions seeing strong growth across Africa.',
+    topCompanies: ['SeamlessHR', 'Workpay', 'Bento'],
   };
 
   const marketHeatmap = [
-    { country: 'Nigeria', activity: 'very-high', companies: 892 },
-    { country: 'Kenya', activity: 'high', companies: 456 },
-    { country: 'South Africa', activity: 'high', companies: 398 },
-    { country: 'Egypt', activity: 'high', companies: 312 },
-    { country: 'Ghana', activity: 'medium', companies: 187 },
-    { country: 'Rwanda', activity: 'medium', companies: 134 },
-    { country: 'Tanzania', activity: 'medium', companies: 98 },
-    { country: 'Ethiopia', activity: 'medium', companies: 76 },
+    { country: 'Nigeria', activity: 'very-high', companies: 892, funding: '$2.1B', growth: '+18%' },
+    { country: 'Kenya', activity: 'high', companies: 456, funding: '$890M', growth: '+22%' },
+    { country: 'South Africa', activity: 'high', companies: 398, funding: '$650M', growth: '+15%' },
+    { country: 'Egypt', activity: 'high', companies: 312, funding: '$540M', growth: '+28%' },
+    { country: 'Ghana', activity: 'medium', companies: 187, funding: '$210M', growth: '+12%' },
+    { country: 'Rwanda', activity: 'medium', companies: 134, funding: '$95M', growth: '+35%' },
+    { country: 'Tanzania', activity: 'medium', companies: 98, funding: '$78M', growth: '+20%' },
+    { country: 'Ethiopia', activity: 'medium', companies: 76, funding: '$45M', growth: '+45%' },
   ];
 
   return (

@@ -12,7 +12,7 @@ import {
   MessageCircle,
   Star
 } from 'lucide-react';
-import Layout from '@/components/layout/Layout';
+import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -113,7 +113,7 @@ const KonektConnections = () => {
   ];
 
   return (
-    <Layout>
+    <AppLayout>
       {/* Header */}
       <section className="py-12 border-b border-border/50 bg-gradient-to-b from-emerald-950/30 to-background">
         <div className="container-wide">
@@ -264,7 +264,7 @@ const KonektConnections = () => {
           </div>
         </div>
       </section>
-    </Layout>
+    </AppLayout>
   );
 };
 

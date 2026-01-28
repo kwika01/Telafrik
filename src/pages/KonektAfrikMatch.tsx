@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/components/layout/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useKonektMatch, MatchProfileInput } from '@/hooks/useKonektMatch';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 
 const RAISE_STAGES = [
   { value: 'pre-seed', label: 'Pre-seed' },
@@ -42,7 +42,6 @@ interface UserStartup {
 
 const KonektAfrikMatch = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { generateMatches, isLoading } = useKonektMatch();
   
   const [step, setStep] = useState(1);
@@ -66,10 +65,8 @@ const KonektAfrikMatch = () => {
     const fetchUserData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({
-          title: 'Authentication Required',
+        toast.error('Authentication Required', {
           description: 'Please sign in to use KonektAfrik AI matching.',
-          variant: 'destructive',
         });
         navigate('/auth');
         return;
@@ -104,7 +101,7 @@ const KonektAfrikMatch = () => {
     };
 
     fetchUserData();
-  }, [navigate, toast]);
+  }, [navigate]);
 
   const handleStartupSelect = (startupId: string) => {
     const startup = userStartups.find(s => s.id === startupId);
@@ -127,10 +124,8 @@ const KonektAfrikMatch = () => {
 
   const handleGenerateMatches = async () => {
     if (!formData.startup_id || !formData.raise_stage || !formData.sector) {
-      toast({
-        title: 'Missing Information',
+      toast.error('Missing Information', {
         description: 'Please fill in all required fields.',
-        variant: 'destructive',
       });
       return;
     }

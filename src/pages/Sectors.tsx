@@ -1,239 +1,160 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Building2, Wallet, Users, Heart, Leaf, GraduationCap, Truck, ShoppingBag, Building, Shield, TrendingUp, DollarSign } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Layout from '@/components/layout/Layout';
-import { sectorsData } from '@/lib/sectorData';
-import { startups } from '@/lib/mockData';
-
-const iconMap: Record<string, React.ReactNode> = {
-  Wallet: <Wallet className="h-8 w-8" />,
-  Users: <Users className="h-8 w-8" />,
-  Heart: <Heart className="h-8 w-8" />,
-  Leaf: <Leaf className="h-8 w-8" />,
-  GraduationCap: <GraduationCap className="h-8 w-8" />,
-  Truck: <Truck className="h-8 w-8" />,
-  ShoppingBag: <ShoppingBag className="h-8 w-8" />,
-  Building: <Building className="h-8 w-8" />,
-  Shield: <Shield className="h-8 w-8" />,
-};
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
+import { ArrowRight, Building2, TrendingUp, DollarSign, Loader2, Layers, Zap } from 'lucide-react';
+import AppLayout from '@/components/layout/AppLayout';
+import { useSectors } from '@/api/queries/useSectors';
+import { Button } from '@/components/ui/button';
 
 const Sectors = () => {
-  // Calculate real startup counts per sector
-  const sectorCounts = sectorsData.map(sector => {
-    const count = startups.filter(s => 
-      s.sector.toLowerCase() === sector.name.toLowerCase() ||
-      s.sector.toLowerCase().replace(/\s+/g, '-') === sector.slug
-    ).length;
-    return { ...sector, realCount: count };
-  });
+  const { data: sectors = [], isLoading, error } = useSectors();
 
-  // Get trending count for each sector
-  const getTrendingCount = (sectorName: string) => {
-    return startups.filter(s => 
-      (s.sector.toLowerCase() === sectorName.toLowerCase()) && s.trending
-    ).length;
-  };
-
-  // Get total funding for each sector
-  const getSectorFunding = (sectorName: string) => {
-    const sectorStartups = startups.filter(s => 
-      s.sector.toLowerCase() === sectorName.toLowerCase()
-    );
-    let total = 0;
-    sectorStartups.forEach(s => {
-      const amount = parseFloat(s.totalFunding.replace(/[^0-9.]/g, ''));
-      total += amount;
-    });
-    return total >= 1000 ? `$${(total / 1000).toFixed(1)}B` : `$${total.toFixed(0)}M`;
-  };
+  // Calculate totals
+  const totalStartups = sectors.reduce((acc, s) => acc + (s.startupCount || 0), 0);
 
   return (
-    <Layout>
+    <AppLayout>
       {/* Header */}
-      <section className="bg-gradient-to-br from-primary via-primary to-violet-600 py-12 md:py-16 relative overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"
-            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-            transition={{ duration: 8, repeat: Infinity }}
-          />
-          <motion.div
-            className="absolute bottom-0 left-1/4 w-48 h-48 bg-accent/20 rounded-full blur-2xl"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
-            transition={{ duration: 6, repeat: Infinity, delay: 1 }}
-          />
-        </div>
-        
-        <div className="container-wide relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4">
-              Sector Intelligence
+      <section className="section-sm border-b border-border">
+        <div className="container-wide">
+          <div className="max-w-3xl">
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-2 mb-4">
+              <Layers className="h-4 w-4 text-indigo" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-indigo">Sector Intelligence</span>
+            </div>
+
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground mb-3">
+              Explore by <span className="text-indigo">Sector</span>
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl">
+            <p className="text-muted-foreground max-w-2xl">
               Explore African startups across key industries driving innovation and economic growth across the continent.
             </p>
-          </motion.div>
+          </div>
           
           {/* Stats row */}
-          <motion.div 
-            className="mt-8 flex flex-wrap gap-6 md:gap-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
+          <div className="mt-8 flex flex-wrap gap-6">
             <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-accent" />
-              <span className="text-primary-foreground">
-                <span className="font-bold text-xl">{sectorsData.length}</span> sectors
+              <div className="w-8 h-8 rounded-lg bg-indigo/10 border border-indigo/20 flex items-center justify-center">
+                <Building2 className="h-4 w-4 text-indigo" />
+              </div>
+              <span className="text-foreground">
+                <span className="font-bold text-lg text-indigo">{sectors.length}</span>{' '}
+                <span className="text-muted-foreground text-sm">sectors</span>
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-accent" />
-              <span className="text-primary-foreground">
-                <span className="font-bold text-xl">{startups.length}+</span> startups tracked
+              <div className="w-8 h-8 rounded-lg bg-emerald/10 border border-emerald/20 flex items-center justify-center">
+                <TrendingUp className="h-4 w-4 text-emerald" />
+              </div>
+              <span className="text-foreground">
+                <span className="font-bold text-lg text-emerald">{totalStartups}+</span>{' '}
+                <span className="text-muted-foreground text-sm">startups tracked</span>
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-accent" />
-              <span className="text-primary-foreground">
-                <span className="font-bold text-xl">$3B+</span> total funding
+              <div className="w-8 h-8 rounded-lg bg-gold/10 border border-gold/20 flex items-center justify-center">
+                <DollarSign className="h-4 w-4 text-gold" />
+              </div>
+              <span className="text-foreground">
+                <span className="font-bold text-lg text-gold">$3B+</span>{' '}
+                <span className="text-muted-foreground text-sm">total funding</span>
               </span>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Sectors Grid */}
-      <section className="py-10 md:py-14 bg-gradient-to-b from-background to-secondary/20">
+      <section className="section">
         <div className="container-wide">
-          <motion.div 
-            className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {sectorCounts.map((sector, index) => (
-              <motion.div key={sector.id} variants={itemVariants}>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <div className="w-12 h-12 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-center mx-auto mb-4">
+                <Building2 className="h-6 w-6 text-destructive" />
+              </div>
+              <p className="text-destructive">Failed to load sectors. Please try again.</p>
+            </div>
+          ) : sectors.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="w-14 h-14 rounded-lg bg-muted flex items-center justify-center mx-auto mb-4">
+                <Building2 className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">No sectors available yet</h3>
+              <p className="text-muted-foreground text-sm">Sector data is being populated. Check back soon!</p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {sectors.map((sector) => (
                 <Link
+                  key={sector.id}
                   to={`/sectors/${sector.slug}`}
-                  className="group block bg-card rounded-xl border border-border p-5 md:p-6 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 h-full relative overflow-hidden"
+                  className="group block bg-card rounded-xl border border-border p-5 hover:border-indigo/40 hover:shadow-md transition-all duration-200 h-full relative overflow-hidden"
                 >
-                  {/* Gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Subtle top accent bar */}
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-indigo scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                   
-                  <div className="relative z-10">
-                    <div className="flex items-start justify-between mb-4">
-                      <motion.div 
-                        className="p-3 rounded-xl bg-gradient-to-br from-secondary to-secondary/50 text-primary group-hover:from-primary group-hover:to-primary group-hover:text-primary-foreground transition-all duration-300"
-                        whileHover={{ rotate: [0, -10, 10, 0], scale: 1.05 }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        {iconMap[sector.icon] || <Building2 className="h-8 w-8" />}
-                      </motion.div>
-                      <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-11 h-11 rounded-lg bg-indigo/10 border border-indigo/20 flex items-center justify-center text-xl">
+                      {sector.icon || '🏢'}
                     </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-indigo group-hover:translate-x-1 transition-all" />
+                  </div>
 
-                    <h2 className="text-lg md:text-xl font-semibold text-foreground group-hover:text-primary transition-colors mb-2">
-                      {sector.name}
-                    </h2>
-                    
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 group-hover:text-foreground/70 transition-colors">
-                      {sector.description}
-                    </p>
+                  <h2 className="text-lg font-semibold text-foreground group-hover:text-indigo transition-colors mb-2">
+                    {sector.name}
+                  </h2>
+                  
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                    {sector.description}
+                  </p>
 
-                    {/* Stats */}
-                    <div className="flex flex-wrap items-center gap-3 text-xs">
-                      <span className="flex items-center gap-1.5 bg-secondary/50 px-2.5 py-1 rounded-full">
-                        <Building2 className="h-3.5 w-3.5 text-primary" />
-                        <span className="font-semibold text-foreground">{sector.realCount || sector.startupCount}</span>
-                        <span className="text-muted-foreground">startups</span>
-                      </span>
-                      {getTrendingCount(sector.name) > 0 && (
-                        <span className="flex items-center gap-1.5 bg-gradient-to-r from-accent/10 to-orange-500/10 px-2.5 py-1 rounded-full">
-                          <TrendingUp className="h-3.5 w-3.5 text-accent" />
-                          <span className="font-semibold text-accent">{getTrendingCount(sector.name)}</span>
-                          <span className="text-muted-foreground">trending</span>
-                        </span>
-                      )}
-                    </div>
+                  {/* Stats */}
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <span className="flex items-center gap-1.5 bg-emerald/10 border border-emerald/20 px-2.5 py-1 rounded-full">
+                      <Building2 className="h-3 w-3 text-emerald" />
+                      <span className="font-semibold text-emerald">{sector.startupCount || 0}</span>
+                      <span className="text-muted-foreground">startups</span>
+                    </span>
                   </div>
                 </Link>
-              </motion.div>
-            ))}
-          </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 md:py-16">
+      <section className="section-lg bg-primary">
         <div className="container-wide">
-          <motion.div 
-            className="bg-gradient-to-r from-primary via-violet-600 to-primary rounded-2xl p-8 md:p-12 text-center relative overflow-hidden"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            {/* Animated orbs */}
-            <motion.div
-              className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 5, repeat: Infinity }}
-            />
-            <motion.div
-              className="absolute bottom-0 left-0 w-48 h-48 bg-accent/20 rounded-full blur-2xl"
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 6, repeat: Infinity, delay: 1 }}
-            />
-            
-            <div className="relative z-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-4">
-                Can't find what you're looking for?
-              </h2>
-              <p className="text-primary-foreground/80 mb-6 max-w-xl mx-auto">
-                Browse our complete directory or use our AI-powered search to find specific startups, founders, or investors.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link 
-                  to="/directory"
-                  className="inline-flex items-center justify-center gap-2 bg-white text-primary font-semibold px-6 py-3 rounded-lg hover:bg-white/90 transition-colors"
-                >
-                  <Building2 className="h-5 w-5" />
+          <div className="max-w-3xl mx-auto text-center">
+            <Zap className="h-10 w-10 text-gold mx-auto mb-6" />
+            <h2 className="text-2xl md:text-3xl font-semibold text-primary-foreground mb-4">
+              Can't find what you're looking for?
+            </h2>
+            <p className="text-primary-foreground/70 mb-8 max-w-xl mx-auto">
+              Browse our complete directory or use our AI-powered search to find specific startups, founders, or investors.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-white text-primary hover:bg-white/90" asChild>
+                <Link to="/directory">
+                  <Building2 className="mr-2 h-4 w-4" />
                   Browse Directory
                 </Link>
-                <Link 
-                  to="/search"
-                  className="inline-flex items-center justify-center gap-2 bg-white/10 text-primary-foreground font-semibold px-6 py-3 rounded-lg border border-white/20 hover:bg-white/20 transition-colors"
-                >
+              </Button>
+              <Button size="lg" variant="outline" asChild className="border-white/30 text-white hover:bg-white/10">
+                <Link to="/search">
                   Search Startups
-                  <ArrowRight className="h-5 w-5" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
-              </div>
+              </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
-    </Layout>
+    </AppLayout>
   );
 };
 

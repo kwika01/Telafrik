@@ -197,19 +197,6 @@ const Reports = () => {
             ))}
           </div>
         </section>
-
-        {/* CTA */}
-        <div className="data-card bg-primary/5 border-primary/20 text-center py-8">
-          <h3 className="text-xl font-semibold text-foreground mb-2">
-            Need a Custom Report?
-          </h3>
-          <p className="text-muted-foreground mb-4 max-w-xl mx-auto">
-            Enterprise clients can request custom research on specific sectors, countries, or companies.
-          </p>
-          <Button asChild>
-            <Link to="/contact">Contact Us</Link>
-          </Button>
-        </div>
       </div>
     </AppLayout>
   );

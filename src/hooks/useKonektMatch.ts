@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 
 export interface MatchProfileInput {
   startup_id: string;
@@ -47,7 +47,6 @@ export function useKonektMatch() {
   const [error, setError] = useState<string | null>(null);
   const [matchResults, setMatchResults] = useState<MatchResult[]>([]);
   const [matchProfileId, setMatchProfileId] = useState<string | null>(null);
-  const { toast } = useToast();
 
   const createMatchProfile = useCallback(async (input: MatchProfileInput): Promise<string | null> => {
     try {
@@ -121,8 +120,7 @@ export function useKonektMatch() {
       const data: MatchResponse = await response.json();
       setMatchResults(data.matches);
 
-      toast({
-        title: 'Matches Generated!',
+      toast.success('Matches Generated!', {
         description: `Found ${data.matches.length} investor matches for your startup.`,
       });
 
@@ -130,16 +128,12 @@ export function useKonektMatch() {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to generate matches';
       setError(message);
-      toast({
-        title: 'Error',
-        description: message,
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: message });
       return null;
     } finally {
       setIsLoading(false);
     }
-  }, [createMatchProfile, toast]);
+  }, [createMatchProfile]);
 
   const loadExistingResults = useCallback(async (profileId: string) => {
     try {

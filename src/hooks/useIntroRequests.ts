@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 
 export type IntroStatus = 'queued' | 'sent' | 'replied' | 'closed';
 
@@ -32,7 +32,6 @@ export interface IntroRequest {
 export function useIntroRequests(isAdmin = false) {
   const [introRequests, setIntroRequests] = useState<IntroRequest[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const fetchIntroRequests = useCallback(async (statusFilter?: IntroStatus) => {
     setIsLoading(true);
@@ -56,15 +55,11 @@ export function useIntroRequests(isAdmin = false) {
       setIntroRequests((data as IntroRequest[]) || []);
     } catch (err) {
       console.error('Error fetching intro requests:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to load intro requests',
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: 'Failed to load intro requests' });
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, []);
 
   const createIntroRequest = useCallback(async (
     startupId: string,
@@ -95,22 +90,17 @@ export function useIntroRequests(isAdmin = false) {
 
       if (error) throw error;
 
-      toast({
-        title: 'Intro Request Submitted!',
+      toast.success('Intro Request Submitted!', {
         description: 'Your request has been queued and our team will review it shortly.',
       });
 
       return data;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to submit intro request';
-      toast({
-        title: 'Error',
-        description: message,
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: message });
       return null;
     }
-  }, [toast]);
+  }, []);
 
   const updateIntroStatus = useCallback(async (
     introId: string,
@@ -130,22 +120,17 @@ export function useIntroRequests(isAdmin = false) {
 
       if (error) throw error;
 
-      toast({
-        title: 'Status Updated',
+      toast.success('Status Updated', {
         description: `Intro request status changed to ${status}`,
       });
 
       await fetchIntroRequests();
       return true;
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to update status',
-        variant: 'destructive',
-      });
+      toast.error('Error', { description: 'Failed to update status' });
       return false;
     }
-  }, [fetchIntroRequests, toast]);
+  }, [fetchIntroRequests]);
 
   useEffect(() => {
     fetchIntroRequests();

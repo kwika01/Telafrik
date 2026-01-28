@@ -11,7 +11,7 @@ import {
   Building2,
   Users
 } from 'lucide-react';
-import Layout from '@/components/layout/Layout';
+import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -87,7 +87,7 @@ const KonektIntros = () => {
   };
 
   return (
-    <Layout>
+    <AppLayout>
       {/* Header */}
       <section className="py-12 border-b border-border/50 bg-gradient-to-b from-cyan-950/30 to-background">
         <div className="container-wide">
@@ -237,7 +237,7 @@ const KonektIntros = () => {
           </div>
         </div>
       </section>
-    </Layout>
+    </AppLayout>
   );
 };
 

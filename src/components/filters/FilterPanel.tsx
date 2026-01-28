@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -7,9 +7,22 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { sectors, countries, stages } from '@/lib/mockData';
+import { useSectors } from '@/api/queries/useSectors';
+import { useCountries } from '@/api/queries/useCountries';
+
+// Funding stages (static - from our enum)
+const FUNDING_STAGES = ['Pre-seed', 'Seed', 'Series A', 'Series B', 'Series C', 'Series D+', 'Growth'];
+
+const DEFAULT_FILTERS: FilterState = {
+  sectors: [],
+  countries: [],
+  stages: [],
+  fundingMin: '',
+  fundingMax: '',
+};
 
 interface FilterPanelProps {
+  filters?: FilterState;
   onFilterChange?: (filters: FilterState) => void;
 }
 
@@ -21,14 +34,12 @@ export interface FilterState {
   fundingMax: string;
 }
 
-const FilterPanel = ({ onFilterChange }: FilterPanelProps) => {
-  const [filters, setFilters] = useState<FilterState>({
-    sectors: [],
-    countries: [],
-    stages: [],
-    fundingMin: '',
-    fundingMax: '',
-  });
+const FilterPanel = ({ filters: controlledFilters, onFilterChange }: FilterPanelProps) => {
+  const { data: sectors = [], isLoading: sectorsLoading } = useSectors();
+  const { data: countries = [], isLoading: countriesLoading } = useCountries();
+
+  const [internalFilters, setInternalFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const filters = controlledFilters ?? internalFilters;
 
   const [openSections, setOpenSections] = useState({
     sectors: true,
@@ -44,20 +55,13 @@ const FilterPanel = ({ onFilterChange }: FilterPanelProps) => {
         ? filters[category].filter((v) => v !== value)
         : [...filters[category], value],
     };
-    setFilters(newFilters);
+    if (controlledFilters == null) setInternalFilters(newFilters);
     onFilterChange?.(newFilters);
   };
 
   const clearFilters = () => {
-    const emptyFilters: FilterState = {
-      sectors: [],
-      countries: [],
-      stages: [],
-      fundingMin: '',
-      fundingMax: '',
-    };
-    setFilters(emptyFilters);
-    onFilterChange?.(emptyFilters);
+    if (controlledFilters == null) setInternalFilters(DEFAULT_FILTERS);
+    onFilterChange?.(DEFAULT_FILTERS);
   };
 
   const activeFilterCount = 
@@ -95,17 +99,26 @@ const FilterPanel = ({ onFilterChange }: FilterPanelProps) => {
             <ChevronDown className={`h-4 w-4 transition-transform ${openSections.sectors ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2 space-y-2">
-            {sectors.slice(0, 8).map((sector) => (
-              <label key={sector} className="flex items-center gap-2 cursor-pointer">
-                <Checkbox
-                  checked={filters.sectors.includes(sector)}
-                  onCheckedChange={() => toggleFilter('sectors', sector)}
-                />
-                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  {sector}
-                </span>
-              </label>
-            ))}
+            {sectorsLoading ? (
+              <div className="flex items-center gap-2 text-muted-foreground text-sm py-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Loading sectors...
+              </div>
+            ) : sectors.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-2">No sectors available</p>
+            ) : (
+              sectors.slice(0, 10).map((sector) => (
+                <label key={sector.slug} className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox
+                    checked={filters.sectors.includes(sector.slug)}
+                    onCheckedChange={() => toggleFilter('sectors', sector.slug)}
+                  />
+                  <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    {sector.icon} {sector.name}
+                  </span>
+                </label>
+              ))
+            )}
           </CollapsibleContent>
         </Collapsible>
 
@@ -118,18 +131,27 @@ const FilterPanel = ({ onFilterChange }: FilterPanelProps) => {
             Country
             <ChevronDown className={`h-4 w-4 transition-transform ${openSections.countries ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
-          <CollapsibleContent className="pt-2 space-y-2">
-            {countries.map((country) => (
-              <label key={country.name} className="flex items-center gap-2 cursor-pointer">
-                <Checkbox
-                  checked={filters.countries.includes(country.name)}
-                  onCheckedChange={() => toggleFilter('countries', country.name)}
-                />
-                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  {country.flag} {country.name}
-                </span>
-              </label>
-            ))}
+          <CollapsibleContent className="pt-2 space-y-2 max-h-64 overflow-y-auto">
+            {countriesLoading ? (
+              <div className="flex items-center gap-2 text-muted-foreground text-sm py-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Loading countries...
+              </div>
+            ) : countries.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-2">No countries available</p>
+            ) : (
+              countries.map((country) => (
+                <label key={country.code} className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox
+                    checked={filters.countries.includes(country.code)}
+                    onCheckedChange={() => toggleFilter('countries', country.code)}
+                  />
+                  <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    {country.flagEmoji} {country.name}
+                  </span>
+                </label>
+              ))
+            )}
           </CollapsibleContent>
         </Collapsible>
 
@@ -143,7 +165,7 @@ const FilterPanel = ({ onFilterChange }: FilterPanelProps) => {
             <ChevronDown className={`h-4 w-4 transition-transform ${openSections.stages ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2 space-y-2">
-            {stages.map((stage) => (
+            {FUNDING_STAGES.map((stage) => (
               <label key={stage} className="flex items-center gap-2 cursor-pointer">
                 <Checkbox
                   checked={filters.stages.includes(stage)}

@@ -6,11 +6,10 @@ import { ChatPanel } from '@/components/ask/ChatPanel';
 import { ResultsPanel } from '@/components/ask/ResultsPanel';
 import { useAskTelAfrik, type SearchScope, type StructuredResponse } from '@/hooks/useAskTelAfrik';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/lib/toast';
 
 const Ask = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [scope, setScope] = useState<SearchScope>('startups');
   const [currentResponse, setCurrentResponse] = useState<StructuredResponse | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -34,8 +33,7 @@ const Ask = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setIsAuthenticated(false);
-        toast({
-          title: 'Sign in required',
+        toast.info('Sign in required', {
           description: 'Please sign in to use Ask TelAfrik',
         });
         navigate('/auth');
@@ -45,7 +43,7 @@ const Ask = () => {
       }
     };
     checkAuth();
-  }, [fetchSessions, navigate, toast]);
+  }, [fetchSessions, navigate]);
 
   // Create initial session if none exists
   useEffect(() => {

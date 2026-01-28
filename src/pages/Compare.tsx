@@ -8,8 +8,6 @@ import {
   X, 
   Plus,
   Building2,
-  Lock,
-  ArrowRight,
 } from 'lucide-react';
 
 // Mock data for demonstration
@@ -242,24 +240,6 @@ const Compare = () => {
             </Button>
           </div>
         )}
-
-        {/* Pro Feature Notice */}
-        <div className="data-card bg-primary/5 border-primary/20 flex items-center gap-4">
-          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <Lock className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-medium text-foreground">Compare is a Pro feature</h3>
-            <p className="text-sm text-muted-foreground">
-              Free users can compare 1 time. Upgrade to Pro for unlimited comparisons.
-            </p>
-          </div>
-          <Button size="sm" asChild>
-            <Link to="/pricing">
-              Upgrade <ArrowRight className="h-3 w-3 ml-1" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </AppLayout>
   );
