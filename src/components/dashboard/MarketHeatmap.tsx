@@ -55,7 +55,7 @@ const MarketHeatmap = ({ markets }: MarketHeatmapProps) => {
           <div className="p-1.5 rounded-lg bg-indigo/10 border border-indigo/20">
             <Globe className="h-4 w-4 text-indigo" />
           </div>
-          <h2 className="font-semibold text-foreground">Market Activity</h2>
+          <h2 className="font-bold text-foreground tracking-tight">Market Activity</h2>
         </div>
         <Button variant="ghost" size="sm" asChild className="group">
           <Link to="/countries" className="text-muted-foreground hover:text-foreground">
@@ -79,10 +79,10 @@ const MarketHeatmap = ({ markets }: MarketHeatmapProps) => {
             >
               <div className={`w-3 h-3 rounded-full ${styles.bg} ring-4 ${styles.ring}`} />
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm text-foreground truncate group-hover:text-emerald transition-colors">
+                <div className="font-semibold text-sm text-foreground truncate group-hover:text-emerald transition-colors">
                   {market.country}
                 </div>
-                <div className="text-xs text-muted-foreground">{market.companies.toLocaleString()} companies</div>
+                <div className="text-xs text-muted-foreground font-medium tabular-nums">{market.companies.toLocaleString()} companies</div>
               </div>
             </motion.div>
           );

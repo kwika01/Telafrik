@@ -7,8 +7,18 @@ interface AfricaMapSVGProps {
   onCountryHover: (code: string | null) => void;
   onCountryClick: (code: string) => void;
   className?: string;
-  /** Show startup count badges on major countries */
-  showCounts?: boolean;
+  /** Live startup counts by country code from Supabase */
+  startupCounts?: Map<string, number>;
+}
+
+/** Returns an emerald shade based on startup count for choropleth */
+function getCountryFill(count: number): string {
+  if (count === 0) return 'hsl(220, 13%, 93%)';
+  if (count < 10) return 'hsl(158, 60%, 88%)';
+  if (count < 30) return 'hsl(158, 70%, 75%)';
+  if (count < 60) return 'hsl(158, 75%, 60%)';
+  if (count < 100) return 'hsl(158, 80%, 48%)';
+  return 'hsl(158, 94%, 35%)'; // 100+ startups - darkest emerald
 }
 
 // Simplified Africa map paths with ISO country codes
@@ -102,6 +112,7 @@ const AfricaMapSVG = memo(({
   onCountryHover,
   onCountryClick,
   className,
+  startupCounts = new Map(),
 }: AfricaMapSVGProps) => {
   return (
     <svg
@@ -145,6 +156,8 @@ const AfricaMapSVG = memo(({
       {Object.entries(COUNTRY_PATHS).map(([code, path]) => {
         const isHovered = hoveredCountry === code;
         const isSelected = selectedCountry === code;
+        const count = startupCounts.get(code) ?? 0;
+        const fill = getCountryFill(count);
         
         if (isHovered || isSelected) return null;
         
@@ -152,16 +165,19 @@ const AfricaMapSVG = memo(({
           <path
             key={code}
             d={path}
-            fill="hsl(220, 13%, 92%)"
-            stroke="hsl(220, 13%, 85%)"
-            strokeWidth="1"
-            className="cursor-pointer transition-all duration-200"
-            style={{ filter: 'url(#country-shadow)' }}
+            fill={fill}
+            stroke="hsl(220, 13%, 80%)"
+            strokeWidth="1.2"
+            className="cursor-pointer transition-all duration-200 ease-out"
+            style={{ 
+              filter: 'url(#country-shadow)',
+              transformOrigin: 'center',
+            }}
             onMouseEnter={() => onCountryHover(code)}
             onMouseLeave={() => onCountryHover(null)}
             onClick={() => onCountryClick(code)}
             role="button"
-            aria-label={COUNTRY_NAMES[code] || code}
+            aria-label={`${COUNTRY_NAMES[code] || code}${count > 0 ? ` (${count} startups)` : ''}`}
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -176,11 +192,16 @@ const AfricaMapSVG = memo(({
       {hoveredCountry && !selectedCountry && COUNTRY_PATHS[hoveredCountry] && (
         <path
           d={COUNTRY_PATHS[hoveredCountry]}
-          fill="hsl(43, 74%, 60%)"
-          stroke="hsl(43, 74%, 40%)"
-          strokeWidth="2.5"
-          className="cursor-pointer transition-all duration-150"
-          style={{ filter: 'url(#hover-glow)' }}
+          fill="hsl(43, 74%, 68%)"
+          stroke="hsl(43, 74%, 38%)"
+          strokeWidth="3"
+          className="cursor-pointer"
+          style={{ 
+            filter: 'url(#hover-glow)',
+            transformOrigin: 'center',
+            transform: 'scale(1.008)',
+            transition: 'all 150ms ease-out',
+          }}
           onMouseEnter={() => onCountryHover(hoveredCountry)}
           onMouseLeave={() => onCountryHover(null)}
           onClick={() => onCountryClick(hoveredCountry)}
@@ -193,11 +214,16 @@ const AfricaMapSVG = memo(({
       {selectedCountry && COUNTRY_PATHS[selectedCountry] && (
         <path
           d={COUNTRY_PATHS[selectedCountry]}
-          fill="hsl(158, 94%, 34%)"
-          stroke="hsl(158, 94%, 22%)"
-          strokeWidth="3"
+          fill="hsl(158, 94%, 38%)"
+          stroke="hsl(158, 94%, 26%)"
+          strokeWidth="3.5"
           className="cursor-pointer"
-          style={{ filter: 'url(#selected-glow)' }}
+          style={{ 
+            filter: 'url(#selected-glow) drop-shadow(0 3px 6px hsl(158 94% 30% / 0.2))',
+            transformOrigin: 'center',
+            transform: 'scale(1.015)',
+            transition: 'all 200ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+          }}
           onMouseEnter={() => onCountryHover(selectedCountry)}
           onMouseLeave={() => onCountryHover(null)}
           onClick={() => onCountryClick(selectedCountry)}

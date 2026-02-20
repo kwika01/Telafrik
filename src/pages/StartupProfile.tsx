@@ -35,7 +35,7 @@ const StartupProfile = () => {
   const { slug } = useParams();
   const { data: company, isLoading, error } = useCompanyDetails(slug);
   const { data: similarCompanies = [] } = useSimilarCompanies(
-    company?.sector_id,
+    company?.sector?.name ?? company?.sector_id,
     company?.id
   );
 
@@ -70,14 +70,17 @@ const StartupProfile = () => {
   }
 
   // Extract data with safe defaults
-  const founders = company.company_founders || [];
+  const founders = company.founder ? [{ name: company.founder, role: 'Founder' }] : [];
   const fundingRounds = company.funding_rounds || [];
-  const operatingCountries = company.company_countries || [];
+  const operatingCountries = company.operating_countries || '';
   const isTrending = (company.trending_score || 0) > 50;
 
   // Calculate total funding
   const totalFundingUsd = company.total_funding_usd || 0;
-  const totalFundingDisplay = totalFundingUsd > 0 ? formatCurrency(totalFundingUsd) : 'Undisclosed';
+  const totalFundingDisplay = totalFundingUsd > 0 ? formatCurrency(totalFundingUsd) : company.valuation_range || 'Not disclosed';
+
+  const tagline = company.tagline || company.about?.substring(0, 120) || `${company.sector?.name || 'Startup'} company`;
+  const yearFounded = company.year_founded || null;
 
   return (
     <AppLayout>
@@ -110,15 +113,15 @@ const StartupProfile = () => {
                     </Badge>
                   )}
                 </div>
-                <p className="text-lg text-muted-foreground mb-4">{company.tagline}</p>
+                <p className="text-lg text-muted-foreground mb-4">{tagline}</p>
                 <div className="flex flex-wrap items-center gap-3 text-sm">
-                  {company.hq_country && (
+                  {company.hq_country?.name && (
                     <span className="flex items-center gap-1.5 text-muted-foreground">
                       <MapPin className="h-4 w-4" />
-                      {company.hq_country.flag_emoji} {company.hq_country.name}
+                      {company.hq_country.flag_emoji || ''} {company.hq_country.name}
                     </span>
                   )}
-                  {company.sector && (
+                  {company.sector?.name && (
                     <Link 
                       to={`/sectors/${company.sector.slug}`}
                       className="px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground font-medium hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -131,30 +134,35 @@ const StartupProfile = () => {
                       {company.business_model}
                     </span>
                   )}
+                  {company.stage && (
+                    <span className="px-2.5 py-1 rounded-full bg-muted text-foreground font-medium">
+                      {company.stage}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Actions */}
             <div className="md:ml-auto flex flex-wrap gap-3">
-              {company.website_url && (
+              {company.website && (
                 <Button variant="outline" size="sm" asChild>
-                  <a href={company.website_url} target="_blank" rel="noopener noreferrer">
+                  <a href={company.website} target="_blank" rel="noopener noreferrer">
                     <Globe className="h-4 w-4 mr-2" />
                     Website
                   </a>
                 </Button>
               )}
-              {company.linkedin_url && (
+              {company.linkedin && (
                 <Button variant="outline" size="icon" asChild>
-                  <a href={company.linkedin_url} target="_blank" rel="noopener noreferrer">
+                  <a href={company.linkedin} target="_blank" rel="noopener noreferrer">
                     <Linkedin className="h-4 w-4" />
                   </a>
                 </Button>
               )}
-              {company.twitter_url && (
+              {company.twitter && (
                 <Button variant="outline" size="icon" asChild>
-                  <a href={company.twitter_url} target="_blank" rel="noopener noreferrer">
+                  <a href={company.twitter} target="_blank" rel="noopener noreferrer">
                     <Twitter className="h-4 w-4" />
                   </a>
                 </Button>
@@ -179,30 +187,24 @@ const StartupProfile = () => {
             {/* Year Founded */}
             <div className="space-y-1">
               <span className="metric-label">Founded</span>
-              <p className="text-xl font-bold text-foreground">{company.year_founded || '—'}</p>
+              <p className="text-xl font-bold text-foreground">{yearFounded || '—'}</p>
               <p className="text-xs text-muted-foreground">Year established</p>
             </div>
 
             {/* Headcount */}
             <div className="space-y-1">
-              <span className="metric-label">Employees</span>
-              <p className="text-xl font-bold text-foreground">
-                {company.employee_count_min && company.employee_count_max 
-                  ? `${company.employee_count_min}-${company.employee_count_max}`
-                  : '—'}
+              <span className="metric-label">Team</span>
+              <p className="text-xl font-bold text-foreground">{founders.length || '—'}</p>
+              <p className="text-xs text-muted-foreground">
+                {founders.length === 1 ? 'Founder' : founders.length > 1 ? 'Founders' : 'Team'}
               </p>
-              {company.is_hiring && (
-                <Badge variant="secondary" className="bg-success/10 text-success border-0">
-                  Hiring
-                </Badge>
-              )}
             </div>
 
-            {/* Team Size */}
+            {/* Sector */}
             <div className="space-y-1">
-              <span className="metric-label">Founders</span>
-              <p className="text-xl font-bold text-foreground">{founders.length}</p>
-              <p className="text-xs text-muted-foreground">Leadership team</p>
+              <span className="metric-label">Sector</span>
+              <p className="text-xl font-bold text-foreground">{company.sector?.name || '—'}</p>
+              <p className="text-xs text-muted-foreground">Industry</p>
             </div>
           </div>
         </div>
@@ -252,19 +254,19 @@ const StartupProfile = () => {
                     <dl className="grid grid-cols-2 gap-4">
                       <div>
                         <dt className="text-sm text-muted-foreground">Founded</dt>
-                        <dd className="font-medium text-foreground">{company.year_founded || '—'}</dd>
+                        <dd className="font-medium text-foreground">{company.year_founded || yearFounded || '—'}</dd>
                       </div>
                       <div>
                         <dt className="text-sm text-muted-foreground">Headquarters</dt>
                         <dd className="font-medium text-foreground">
-                          {company.hq_country ? `${company.hq_country.flag_emoji} ${company.hq_country.name}` : '—'}
+                          {company.hq_country?.name || '—'}
                         </dd>
                       </div>
-                      {operatingCountries.length > 0 && (
-                        <div>
+                      {company.operating_countries && (
+                        <div className="col-span-2">
                           <dt className="text-sm text-muted-foreground">Operating Countries</dt>
                           <dd className="font-medium text-foreground">
-                            {operatingCountries.map((c: any) => c.country?.name).filter(Boolean).join(', ') || '—'}
+                            {company.operating_countries}
                           </dd>
                         </div>
                       )}
@@ -272,20 +274,50 @@ const StartupProfile = () => {
                         <dt className="text-sm text-muted-foreground">Business Model</dt>
                         <dd className="font-medium text-foreground">{company.business_model || '—'}</dd>
                       </div>
-                      {company.primary_domain && (
-                        <div>
-                          <dt className="text-sm text-muted-foreground">Domain</dt>
+                      <div>
+                        <dt className="text-sm text-muted-foreground">Stage</dt>
+                        <dd className="font-medium text-foreground">{company.stage || '—'}</dd>
+                      </div>
+                      {company.website && (
+                        <div className="col-span-2">
+                          <dt className="text-sm text-muted-foreground">Website</dt>
                           <dd>
                             <a
-                              href={`https://${company.primary_domain}`}
+                              href={company.website}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="font-medium text-primary hover:underline flex items-center gap-1"
                             >
-                              {company.primary_domain}
+                              {company.website}
                               <ExternalLink className="h-3 w-3" />
                             </a>
                           </dd>
+                        </div>
+                      )}
+                      {company.employee_count && (
+                        <div>
+                          <dt className="text-sm text-muted-foreground">Employees</dt>
+                          <dd className="font-medium text-foreground">
+                            {company.employee_count.toLocaleString()}+
+                          </dd>
+                        </div>
+                      )}
+                      {company.hiring_status && (
+                        <div>
+                          <dt className="text-sm text-muted-foreground">Hiring Status</dt>
+                          <dd className="font-medium text-foreground">{company.hiring_status}</dd>
+                        </div>
+                      )}
+                      {company.valuation_range && (
+                        <div>
+                          <dt className="text-sm text-muted-foreground">Valuation Range</dt>
+                          <dd className="font-medium text-foreground">{company.valuation_range}</dd>
+                        </div>
+                      )}
+                      {company.revenue_range && (
+                        <div>
+                          <dt className="text-sm text-muted-foreground">Revenue Range</dt>
+                          <dd className="font-medium text-foreground">{company.revenue_range}</dd>
                         </div>
                       )}
                       {company.sub_sector && (
@@ -345,41 +377,17 @@ const StartupProfile = () => {
                 <TabsContent value="team" className="mt-6">
                   <div className="bg-card rounded-xl border border-border p-6">
                     <h2 className="text-lg font-semibold text-foreground mb-6">Leadership Team</h2>
-                    {founders.length > 0 ? (
+                    {company.founder ? (
                       <div className="grid sm:grid-cols-2 gap-4">
-                        {founders.map((cf: any) => cf.founder && (
-                          <div
-                            key={cf.founder.id}
-                            className="flex items-center gap-4 p-4 rounded-lg bg-secondary/50"
-                          >
-                            <div className="w-14 h-14 rounded-full bg-card overflow-hidden flex items-center justify-center">
-                              {cf.founder.avatar_url ? (
-                                <img
-                                  src={cf.founder.avatar_url}
-                                  alt={cf.founder.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <Users className="h-6 w-6 text-muted-foreground" />
-                              )}
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-foreground">{cf.founder.name}</h3>
-                              <p className="text-sm text-muted-foreground">{cf.role || cf.founder.title || 'Founder'}</p>
-                              {cf.founder.linkedin_url && (
-                                <a
-                                  href={cf.founder.linkedin_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary text-sm hover:underline flex items-center gap-1 mt-1"
-                                >
-                                  <Linkedin className="h-3 w-3" />
-                                  LinkedIn
-                                </a>
-                              )}
-                            </div>
+                        <div className="flex items-center gap-4 p-4 rounded-lg bg-secondary/50">
+                          <div className="w-14 h-14 rounded-full bg-card overflow-hidden flex items-center justify-center">
+                            <Users className="h-6 w-6 text-muted-foreground" />
                           </div>
-                        ))}
+                          <div>
+                            <h3 className="font-semibold text-foreground">{company.founder}</h3>
+                            <p className="text-sm text-muted-foreground">Founder</p>
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       <div className="text-center py-8">

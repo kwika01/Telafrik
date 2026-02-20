@@ -163,18 +163,12 @@ const Auth = () => {
       <div className="hidden lg:flex lg:w-1/2 relative bg-muted/30 border-r border-border">
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 py-12">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 mb-12 group">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-semibold text-foreground group-hover:text-emerald transition-colors">
-                TelAfrik
-              </span>
-              <span className="text-xs text-muted-foreground">
-                by Ennylytics
-              </span>
-            </div>
+          <Link to="/" className="flex items-center mb-12">
+            <img
+              src="/logo.png"
+              alt="TelAfrik by Ennylytics"
+              className="h-12 w-auto object-contain"
+            />
           </Link>
           
           {/* Headline */}
@@ -235,11 +229,12 @@ const Auth = () => {
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden mb-8">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-                <Sparkles className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-semibold text-foreground">TelAfrik</span>
+            <Link to="/" className="flex items-center">
+              <img
+                src="/logo.png"
+                alt="TelAfrik by Ennylytics"
+                className="h-10 w-auto object-contain"
+              />
             </Link>
           </div>
 

@@ -13,11 +13,17 @@
   
   /* === Light Theme (Default) === */
   :root {
+    /* === SURFACE TIER SYSTEM === */
+    --page: 40 25% 98%;               /* Subtle warm Africa-inspired tint (less cold SaaS) */
+    --surface: 0 0% 100%;             /* #FFFFFF - pure white cards */
+    --surface-elevated: 0 0% 100%;    /* #FFFFFF - elevated panels (use with stronger shadow) */
+    --surface-alt: 40 20% 97%;        /* #F8F7F5 - warm sand tint for alternating sections */
+    
     /* === Core Background & Foreground === */
-    --background: 0 0% 98%;           /* #FAFAFA - off-white */
+    --background: 0 0% 98%;           /* #FAFAFA - off-white (legacy, prefer --page) */
     --foreground: 222 47% 11%;        /* #111827 - charcoal */
 
-    /* === Card Surfaces === */
+    /* === Card Surfaces (legacy, prefer --surface) === */
     --card: 0 0% 100%;                /* #FFFFFF - pure white */
     --card-foreground: 222 47% 11%;
     --card-hover: 220 20% 98%;
@@ -125,19 +131,19 @@
     --space-20: 5rem;
     --space-24: 6rem;
 
-    /* === Shadow System (light mode) === */
-    --shadow-xs: 0 1px 2px 0 hsl(222 47% 11% / 0.05);
-    --shadow-sm: 0 1px 3px 0 hsl(222 47% 11% / 0.08), 0 1px 2px -1px hsl(222 47% 11% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(222 47% 11% / 0.08), 0 2px 4px -2px hsl(222 47% 11% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(222 47% 11% / 0.08), 0 4px 6px -4px hsl(222 47% 11% / 0.04);
-    --shadow-xl: 0 20px 25px -5px hsl(222 47% 11% / 0.1), 0 8px 10px -6px hsl(222 47% 11% / 0.05);
-    --shadow-2xl: 0 25px 50px -12px hsl(222 47% 11% / 0.15);
+    /* === DEPTH + ELEVATION SYSTEM === */
+    --shadow-xs: 0 1px 2px 0 hsl(222 47% 11% / 0.04);
+    --shadow-sm: 0 1px 3px 0 hsl(222 47% 11% / 0.06), 0 1px 2px -1px hsl(222 47% 11% / 0.04);
+    --shadow-md: 0 4px 8px -2px hsl(222 47% 11% / 0.08), 0 2px 4px -2px hsl(222 47% 11% / 0.05);
+    --shadow-lg: 0 12px 20px -4px hsl(222 47% 11% / 0.1), 0 4px 8px -4px hsl(222 47% 11% / 0.06);
+    --shadow-xl: 0 20px 30px -6px hsl(222 47% 11% / 0.12), 0 8px 12px -6px hsl(222 47% 11% / 0.08);
+    --shadow-2xl: 0 30px 50px -12px hsl(222 47% 11% / 0.18);
     --shadow-inner: inset 0 2px 4px 0 hsl(222 47% 11% / 0.05);
     
-    /* Glow shadows (subtle in light mode) */
-    --shadow-glow-sm: 0 0 15px hsl(222 47% 11% / 0.08);
-    --shadow-glow-md: 0 0 30px hsl(222 47% 11% / 0.1);
-    --shadow-glow-lg: 0 0 50px hsl(222 47% 11% / 0.12);
+    /* Card-specific shadows */
+    --shadow-card: 0 2px 8px -1px hsl(222 47% 11% / 0.06), 0 1px 3px -1px hsl(222 47% 11% / 0.04);
+    --shadow-card-hover: 0 8px 16px -4px hsl(222 47% 11% / 0.1), 0 4px 8px -2px hsl(222 47% 11% / 0.06);
+    --shadow-elevated: 0 16px 32px -8px hsl(222 47% 11% / 0.12), 0 6px 12px -4px hsl(222 47% 11% / 0.08);
 
     /* === Animation Timing === */
     --duration-fast: 150ms;
@@ -163,20 +169,26 @@
     --z-toast: 800;
     --z-max: 999;
 
-    /* === Custom Gradients (light mode) === */
-    --gradient-hero: linear-gradient(135deg, hsl(220 20% 97%) 0%, hsl(220 14% 94%) 100%);
-    --gradient-primary: linear-gradient(135deg, hsl(222 47% 11%) 0%, hsl(222 47% 20%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(270 70% 50%) 0%, hsl(300 70% 50%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(152 55% 42%) 0%, hsl(160 60% 38%) 100%);
-    --gradient-warning: linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(25 95% 50%) 100%);
-    --gradient-rainbow: linear-gradient(90deg, hsl(270 70% 50%), hsl(300 70% 50%), hsl(22 73% 45%), hsl(43 74% 52%));
-    --gradient-gold: linear-gradient(135deg, hsl(43 74% 52%) 0%, hsl(43 74% 62%) 50%, hsl(22 73% 45%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 20% 98%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.9) 0%, hsl(220 14% 96% / 0.7) 100%);
+    /* === MAP BACKGROUND SUPPORT (Premium Data-Product Quality) === */
+    --map-base: 
+      radial-gradient(ellipse 70% 60% at 50% 35%, hsl(158 94% 30% / 0.02) 0%, transparent 50%),
+      radial-gradient(ellipse at center, hsl(220 15% 96%) 0%, hsl(220 13% 97%) 60%, hsl(40 20% 98%) 100%);
+    
+    /* === DEPRECATED: Legacy Gradients (DO NOT USE) === */
+    /* Use solid colors with shadows for depth instead */
+    --gradient-secondary: none;       /* DEPRECATED: Use solid emerald/gold/terracotta */
+    --gradient-rainbow: none;         /* DEPRECATED: No rainbow gradients */
+    --gradient-gold: none;            /* DEPRECATED: Use solid --gold */
   }
 
   /* === Dark Theme (add class="dark" to html/body to enable) === */
   .dark {
+    /* === SURFACE TIER SYSTEM === */
+    --page: 222 47% 8%;               /* Deep charcoal base */
+    --surface: 222 47% 11%;           /* Elevated card surface */
+    --surface-elevated: 222 45% 14%; /* Higher elevation panels */
+    --surface-alt: 220 45% 10%;       /* Alternate tinted sections */
+    
     --background: 222 47% 8%;
     --foreground: 210 40% 98%;
 
@@ -254,17 +266,18 @@
     --sidebar-border: 250 25% 14%;
     --sidebar-ring: 173 80% 45%;
 
+    /* === DEPTH + ELEVATION SYSTEM (Dark Mode) === */
     --shadow-xs: 0 1px 2px 0 hsl(222 47% 5% / 0.3);
-    --shadow-sm: 0 1px 3px 0 hsl(222 47% 5% / 0.3), 0 1px 2px -1px hsl(222 47% 5% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(222 47% 5% / 0.3), 0 2px 4px -2px hsl(222 47% 5% / 0.2);
-    --shadow-lg: 0 10px 15px -3px hsl(222 47% 5% / 0.3), 0 4px 6px -4px hsl(222 47% 5% / 0.2);
-    --shadow-xl: 0 20px 25px -5px hsl(222 47% 5% / 0.3), 0 8px 10px -6px hsl(222 47% 5% / 0.2);
-    --shadow-2xl: 0 25px 50px -12px hsl(222 47% 5% / 0.5);
-    --shadow-inner: inset 0 2px 4px 0 hsl(222 47% 5% / 0.2);
+    --shadow-sm: 0 1px 3px 0 hsl(222 47% 5% / 0.3), 0 1px 2px -1px hsl(222 47% 5% / 0.25);
+    --shadow-md: 0 4px 8px -2px hsl(222 47% 5% / 0.35), 0 2px 4px -2px hsl(222 47% 5% / 0.25);
+    --shadow-lg: 0 12px 20px -4px hsl(222 47% 5% / 0.4), 0 4px 8px -4px hsl(222 47% 5% / 0.3);
+    --shadow-xl: 0 20px 30px -6px hsl(222 47% 5% / 0.5), 0 8px 12px -6px hsl(222 47% 5% / 0.35);
+    --shadow-2xl: 0 30px 50px -12px hsl(222 47% 5% / 0.6);
+    --shadow-inner: inset 0 2px 4px 0 hsl(222 47% 5% / 0.3);
     
-    --shadow-glow-sm: 0 0 15px hsl(173 80% 45% / 0.15);
-    --shadow-glow-md: 0 0 30px hsl(173 80% 45% / 0.2);
-    --shadow-glow-lg: 0 0 50px hsl(173 80% 45% / 0.25);
+    --shadow-card: 0 2px 8px -1px hsl(222 47% 5% / 0.35), 0 1px 3px -1px hsl(222 47% 5% / 0.25);
+    --shadow-card-hover: 0 8px 16px -4px hsl(222 47% 5% / 0.4), 0 4px 8px -2px hsl(222 47% 5% / 0.3);
+    --shadow-elevated: 0 16px 32px -8px hsl(222 47% 5% / 0.5), 0 6px 12px -4px hsl(222 47% 5% / 0.35);
 
     --gradient-hero: linear-gradient(135deg, hsl(250 35% 12%) 0%, hsl(270 40% 15%) 50%, hsl(250 35% 10%) 100%);
     --gradient-primary: linear-gradient(135deg, hsl(173 80% 45%) 0%, hsl(185 85% 50%) 100%);
@@ -295,7 +308,7 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased font-sans;
+    @apply bg-page text-foreground antialiased font-sans;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -338,6 +351,23 @@
 }
 
 @layer components {
+  /* ============================================
+     SURFACE SYSTEM COMPONENTS
+     ============================================ */
+  
+  /* === Section Spacing Utilities === */
+  .section-sm {
+    @apply py-section-sm;
+  }
+
+  .section {
+    @apply py-section;
+  }
+
+  .section-lg {
+    @apply py-section-lg;
+  }
+
   /* === Layout Containers === */
   .container-wide {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
@@ -351,28 +381,58 @@
     @apply max-w-3xl mx-auto px-4 sm:px-6;
   }
 
-  /* === Card Components === */
-  .glass-card {
-    @apply bg-card/80 backdrop-blur-md border border-border/50 rounded-xl;
-    box-shadow: var(--shadow-lg);
+  /* ============================================
+     CARD SYSTEM (Updated for Surface Tiers)
+     ============================================ */
+  
+  /* Base Card - Standard white surface */
+  .card-base {
+    @apply bg-surface border border-border rounded-xl shadow-card transition-all duration-200;
   }
 
+  .card-base:hover {
+    @apply shadow-card-hover;
+  }
+
+  /* Elevated Card - Higher z-axis feel */
+  .card-elevated {
+    @apply bg-surface-elevated border border-border rounded-xl shadow-elevated;
+  }
+
+  /* Interactive Card - For clickable cards */
+  .card-interactive {
+    @apply card-base cursor-pointer;
+  }
+
+  .card-interactive:hover {
+    @apply shadow-lg -translate-y-0.5;
+  }
+
+  .card-interactive:active {
+    @apply translate-y-0;
+  }
+
+  /* Data Card - For analytics/stats */
   .data-card {
-    @apply bg-card border border-border rounded-xl p-5 transition-all duration-200;
+    @apply bg-surface border border-border rounded-xl p-5 shadow-card transition-all duration-200;
   }
 
   .data-card:hover {
-    border-color: hsl(var(--border-hover));
-    box-shadow: var(--shadow-md);
+    @apply shadow-card-hover;
   }
 
+  /* Stat Card - Compact metrics */
   .stat-card {
-    @apply bg-card border border-border rounded-xl p-5 flex flex-col gap-2 transition-all duration-200;
+    @apply bg-surface border border-border rounded-xl p-4 flex flex-col gap-2 shadow-card transition-all duration-200;
   }
 
   .stat-card:hover {
-    @apply border-primary/30;
-    box-shadow: var(--shadow-glow-sm);
+    @apply shadow-md;
+  }
+
+  /* Glass Card - Subtle transparency */
+  .glass-card {
+    @apply bg-surface/80 backdrop-blur-md border border-border/50 rounded-xl shadow-lg;
   }
 
   /* === Metric Components === */
@@ -427,11 +487,11 @@
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent;
+    @apply flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent;
   }
 
   .sidebar-link-active {
-    @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg bg-sidebar-accent text-sidebar-foreground border-l-2 border-primary;
+    @apply flex items-center gap-3 px-3 py-2.5 text-sm font-bold rounded-lg bg-sidebar-accent text-foreground border-l-[3px] border-primary shadow-sm;
   }
 
   /* === Table Components === */
@@ -524,38 +584,172 @@
 }
 
 @layer utilities {
-  /* === Text Gradients === */
-  .text-gradient-primary {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-primary);
+  /* ============================================
+     AFRICAN ACCENT BADGE UTILITIES
+     ============================================ */
+  
+  /* Emerald (Primary Brand) */
+  .bg-accent-emerald {
+    @apply bg-emerald/10 border border-emerald/20 text-emerald;
   }
 
+  /* Gold (Secondary Accent) */
+  .bg-accent-gold {
+    @apply bg-gold/10 border border-gold/20 text-gold;
+  }
+
+  /* Terracotta (Supporting) */
+  .bg-accent-terracotta {
+    @apply bg-terracotta/10 border border-terracotta/20 text-terracotta;
+  }
+
+  /* Indigo (Supporting) */
+  .bg-accent-indigo {
+    @apply bg-indigo/10 border border-indigo/20 text-indigo;
+  }
+
+  /* ============================================
+     MAP BACKGROUND UTILITY
+     ============================================ */
+  
+  .bg-map-base {
+    background: var(--map-base);
+  }
+
+  /* ============================================
+     GOLD INTERACTION MICRO-ACCENTS
+     Subtle intelligence signals (not large blocks)
+     ============================================ */
+  
+  /* Hover underline with gold shimmer */
+  .link-gold-underline {
+    @apply relative;
+    text-decoration: none;
+  }
+  
+  .link-gold-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: hsl(var(--gold));
+    transition: width 200ms ease-out;
+  }
+  
+  .link-gold-underline:hover::after {
+    width: 100%;
+  }
+
+  /* Gold focus ring (more subtle than default) */
+  .focus-gold:focus-visible {
+    @apply outline-none ring-2 ring-gold/60 ring-offset-2 ring-offset-background;
+  }
+
+  /* Gold hover glow for interactive elements */
+  .hover-gold-glow {
+    transition: box-shadow 200ms ease-out;
+  }
+  
+  .hover-gold-glow:hover {
+    box-shadow: 0 0 0 1px hsl(var(--gold) / 0.2), 0 2px 8px -1px hsl(var(--gold) / 0.15);
+  }
+
+  /* Subtle gold shimmer on map hover (for future map interactions) */
+  .map-hover-shimmer {
+    transition: filter 150ms ease-out;
+  }
+  
+  .map-hover-shimmer:hover {
+    filter: drop-shadow(0 0 2px hsl(var(--gold) / 0.3));
+  }
+
+  /* ============================================
+     PREMIUM MAP MODULE COMPONENTS
+     ============================================ */
+
+  /* Premium Map Container with Structural Color Anchors */
+  .map-container-premium {
+    @apply relative bg-surface-elevated rounded-2xl overflow-hidden;
+    border: 1px solid hsl(220 13% 88%);
+    box-shadow: 
+      0 0 0 1px hsl(0 0% 0% / 0.08) inset,
+      0 20px 40px -8px hsl(222 47% 11% / 0.15),
+      0 8px 16px -6px hsl(222 47% 11% / 0.1),
+      0 0 0 1px hsl(158 94% 30% / 0.06) inset;  /* Subtle emerald inner glow */
+  }
+
+  /* Map Content Area with Intelligence Color Layers */
+  .map-content-area {
+    @apply relative p-6;
+    background: 
+      /* Intelligence emerald center (AI/data signal) */
+      radial-gradient(ellipse 70% 60% at 50% 35%, hsl(158 94% 30% / 0.06) 0%, transparent 50%),
+      /* Premium gold warmth bottom-right */
+      radial-gradient(ellipse 40% 40% at 75% 80%, hsl(43 74% 52% / 0.04) 0%, transparent 60%),
+      /* Neutral depth base */
+      radial-gradient(ellipse at center, hsl(220 15% 95%) 0%, hsl(220 13% 96%) 60%, hsl(40 20% 97%) 100%);
+  }
+
+  /* Continental Vignette with Color Edge Hints */
+  .map-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: 
+      /* Emerald edge hint top-left (Africa identity) */
+      radial-gradient(ellipse 30% 30% at 15% 15%, hsl(158 94% 30% / 0.03) 0%, transparent 70%),
+      /* Gold edge hint bottom-right (premium warmth) */
+      radial-gradient(ellipse 30% 30% at 85% 85%, hsl(43 74% 52% / 0.025) 0%, transparent 70%),
+      /* Standard vignette depth */
+      radial-gradient(
+        ellipse 80% 70% at 50% 40%,
+        transparent 0%,
+        transparent 55%,
+        hsl(var(--foreground) / 0.04) 100%
+      );
+  }
+
+  /* ============================================
+     DASHBOARD COLOR INTELLIGENCE UTILITIES
+     ============================================ */
+
+  /* Meaning-Based Hover Micro-Glows */
+  .hover-glow-emerald {
+    @apply hover:shadow-[0_0_0_1px_hsl(var(--emerald)/0.15),0_8px_16px_-4px_hsl(var(--emerald)/0.1)];
+  }
+
+  .hover-glow-gold {
+    @apply hover:shadow-[0_0_0_1px_hsl(var(--gold)/0.15),0_8px_16px_-4px_hsl(var(--gold)/0.1)];
+  }
+
+  .hover-glow-terracotta {
+    @apply hover:shadow-[0_0_0_1px_hsl(var(--terracotta)/0.15),0_8px_16px_-4px_hsl(var(--terracotta)/0.1)];
+  }
+
+  .hover-glow-indigo {
+    @apply hover:shadow-[0_0_0_1px_hsl(var(--indigo)/0.15),0_8px_16px_-4px_hsl(var(--indigo)/0.1)];
+  }
+
+  /* ============================================
+     DEPRECATED: Legacy Gradient Utilities
+     These are kept for backward compatibility but should not be used
+     ============================================ */
+  
   .text-gradient-secondary {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-secondary);
-  }
-
-  .text-gradient-gold {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-gold);
+    /* DEPRECATED: Use text-emerald instead */
+    color: hsl(var(--emerald));
   }
 
   .text-gradient-rainbow {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-rainbow);
-  }
-
-  /* === Background Gradients === */
-  .bg-gradient-hero {
-    background-image: var(--gradient-hero);
-  }
-
-  .bg-gradient-primary {
-    background-image: var(--gradient-primary);
+    /* DEPRECATED: Use text-foreground instead */
+    color: hsl(var(--foreground));
   }
 
   .bg-gradient-secondary {
-    background-image: var(--gradient-secondary);
+    /* DEPRECATED: Use bg-emerald instead */
+    background-color: hsl(var(--emerald));
   }
 
   .bg-gradient-card {

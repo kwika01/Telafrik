@@ -1,38 +1,35 @@
 /**
  * Investors Service
- * 
- * Supabase queries for investor data.
- * This layer contains raw queries - no React hooks.
+ *
+ * TelAfrik schema: investors(fund_id, fund_name, investor_type, hq_country)
  */
 import { supabase } from '@/integrations/supabase/client';
 import type { InvestorListItem, PaginatedResponse } from '@/types/domain';
 
-// Query result type for investor list
-export interface InvestorQueryResult {
-  id: string;
-  name: string;
-  slug: string;
-  type: string;
-  logo_url: string | null;
-  total_investments: number | null;
-  portfolio_count: number | null;
-  hq_country: {
-    name: string;
-    code: string;
-  } | null;
+interface TelAfrikInvestorRow {
+  fund_id: string | number;
+  fund_name: string;
+  investor_type?: string | null;
+  hq_country?: string | null;
 }
 
-// Select for investor list queries
-const INVESTOR_LIST_SELECT = `
-  id,
-  name,
-  slug,
-  type,
-  logo_url,
-  total_investments,
-  portfolio_count,
-  hq_country:countries!investors_hq_country_id_fkey(name, code)
-`;
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+function mapRowToInvestor(row: TelAfrikInvestorRow): InvestorListItem {
+  const type = (row.investor_type || 'VC').toUpperCase();
+  return {
+    id: String(row.fund_id),
+    name: row.fund_name || 'Unknown',
+    slug: slugify(row.fund_name || String(row.fund_id)),
+    type: type === 'VC' || type === 'ANGEL' || type === 'CVC' || type === 'PE' ? (type as InvestorListItem['type']) : 'VC',
+    logoUrl: null,
+    hqCountry: row.hq_country ? { name: row.hq_country, code: '' } : null,
+    totalInvestments: 0,
+    portfolioCount: 0,
+  };
+}
 
 interface GetInvestorsOptions {
   page?: number;
@@ -42,150 +39,128 @@ interface GetInvestorsOptions {
 }
 
 /**
- * Maps raw query result to domain type
- */
-function mapToInvestorListItem(row: InvestorQueryResult): InvestorListItem {
-  return {
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    type: row.type as InvestorListItem['type'],
-    logoUrl: row.logo_url,
-    hqCountry: row.hq_country,
-    totalInvestments: row.total_investments || 0,
-    portfolioCount: row.portfolio_count || 0,
-  };
-}
-
-/**
- * Fetches a paginated list of investors
+ * Fetches a paginated list of investors (TelAfrik schema)
  */
 export async function getInvestors(
   options: GetInvestorsOptions = {}
 ): Promise<PaginatedResponse<InvestorListItem>> {
-  const {
-    page = 1,
-    pageSize = 20,
-    type,
-    search,
-  } = options;
-
+  const { page = 1, pageSize = 20, type, search } = options;
   const offset = (page - 1) * pageSize;
 
   let query = supabase
     .from('investors')
-    .select(INVESTOR_LIST_SELECT, { count: 'exact' });
+    .select('fund_id, fund_name, investor_type, hq_country', { count: 'exact' });
 
   if (search) {
-    query = query.ilike('name', `%${search}%`);
+    query = query.ilike('fund_name', `%${search}%`);
   }
 
   if (type) {
-    query = query.eq('type', type);
+    query = query.eq('investor_type', type);
   }
 
-  query = query
-    .order('portfolio_count', { ascending: false })
-    .range(offset, offset + pageSize - 1);
+  query = query.order('fund_name', { ascending: true }).range(offset, offset + pageSize - 1);
 
   const { data, error, count } = await query;
 
-  if (error) {
-    throw new Error(`Failed to fetch investors: ${error.message}`);
-  }
+  if (error) throw new Error(`Failed to fetch investors: ${error.message}`);
 
-  const items = ((data as unknown as InvestorQueryResult[]) || []).map(mapToInvestorListItem);
-  const totalCount = count || 0;
+  const items = ((data || []) as TelAfrikInvestorRow[]).map(mapRowToInvestor);
 
   return {
     data: items,
-    totalCount,
+    totalCount: count ?? 0,
     page,
     pageSize,
-    totalPages: Math.ceil(totalCount / pageSize),
+    totalPages: Math.ceil((count ?? 0) / pageSize),
   };
 }
 
 /**
- * Fetches a single investor by slug with full details
+ * Fetches a single investor by slug (TelAfrik: match fund_name)
  */
 export async function getInvestorBySlug(slug: string) {
+  const target = slug.replace(/-/g, ' ');
   const { data, error } = await supabase
     .from('investors')
-    .select(`
-      *,
-      hq_country:countries!investors_hq_country_id_fkey(name, code, flag_emoji),
-      investor_sectors(
-        sector:sectors(id, name, slug)
-      ),
-      investor_regions(region)
-    `)
-    .eq('slug', slug)
-    .single();
+    .select('fund_id, fund_name, investor_type, hq_country')
+    .ilike('fund_name', `%${target}%`)
+    .limit(1);
 
-  if (error) {
-    if (error.code === 'PGRST116') {
-      return null;
-    }
-    throw new Error(`Failed to fetch investor: ${error.message}`);
-  }
+  if (error || !data?.length) return null;
 
-  return data;
+  const row = data[0] as TelAfrikInvestorRow;
+  return {
+    id: String(row.fund_id),
+    name: row.fund_name,
+    slug: slugify(row.fund_name),
+    type: row.investor_type || 'VC',
+    hq_country: row.hq_country ? { name: row.hq_country, code: '' } : null,
+    investor_sectors: [],
+    investor_regions: [],
+  };
 }
 
 /**
- * Fetches investors for search/autocomplete
+ * Fetches investors for search/autocomplete (TelAfrik schema)
  */
-export async function searchInvestors(
-  searchTerm: string,
-  limit: number = 10
-): Promise<InvestorListItem[]> {
+export async function searchInvestors(searchTerm: string, limit = 10): Promise<InvestorListItem[]> {
   const { data, error } = await supabase
     .from('investors')
-    .select(INVESTOR_LIST_SELECT)
-    .ilike('name', `%${searchTerm}%`)
-    .order('portfolio_count', { ascending: false })
+    .select('fund_id, fund_name, investor_type, hq_country')
+    .ilike('fund_name', `%${searchTerm}%`)
     .limit(limit);
 
-  if (error) {
-    throw new Error(`Failed to search investors: ${error.message}`);
-  }
-
-  return ((data as unknown as InvestorQueryResult[]) || []).map(mapToInvestorListItem);
+  if (error) throw new Error(`Failed to search investors: ${error.message}`);
+  return ((data || []) as TelAfrikInvestorRow[]).map(mapRowToInvestor);
 }
 
 /**
- * Fetches portfolio companies for an investor
+ * Fetches portfolio companies for an investor (TelAfrik: from TelAfrik Investors Companies)
  */
 export async function getInvestorPortfolio(investorId: string) {
-  const { data, error } = await supabase
-    .from('funding_round_investors')
-    .select(`
-      funding_round:funding_rounds(
-        company:companies(
-          id,
-          name,
-          slug,
-          logo_url,
-          tagline,
-          sector:sectors(name, slug)
-        )
-      )
-    `)
-    .eq('investor_id', investorId);
+  const { data: investor } = await supabase
+    .from('investors')
+    .select('fund_name')
+    .eq('fund_id', investorId)
+    .single();
 
-  if (error) {
-    throw new Error(`Failed to fetch investor portfolio: ${error.message}`);
+  if (!investor) return [];
+
+  const { data, error } = await supabase
+    .from('TelAfrik Investors Companies')
+    .select('*')
+    .eq('fund_id', investorId)
+    .limit(100);
+
+  if (error || !data?.length) return [];
+
+  const { data: companies } = await supabase
+    .from('companies')
+    .select('company_id, company, slug, sector');
+
+  const companyMap = new Map<string, { id: string; name: string; slug: string; sector?: { name: string; slug: string } }>();
+  for (const c of companies || []) {
+    const row = c as { company_id: string; company: string; slug: string; sector?: string };
+    companyMap.set(String(row.company_id), {
+      id: String(row.company_id),
+      name: row.company,
+      slug: row.slug,
+      sector: row.sector ? { name: row.sector, slug: row.sector.toLowerCase().replace(/\s+/g, '-') } : undefined,
+    });
   }
 
-  // Extract unique companies from funding rounds
-  const companiesMap = new Map();
-  data?.forEach((item: any) => {
-    const company = item.funding_round?.company;
-    if (company && !companiesMap.has(company.id)) {
-      companiesMap.set(company.id, company);
-    }
-  });
+  const icRows = data as { company_id?: string; company?: string }[];
+  const result: { id: string; name: string; slug: string; sector?: { name: string; slug: string } }[] = [];
+  const seen = new Set<string>();
 
-  return Array.from(companiesMap.values());
+  for (const row of icRows) {
+    const cid = row.company_id ?? row.company;
+    if (!cid || seen.has(String(cid))) continue;
+    seen.add(String(cid));
+    const company = companyMap.get(String(cid)) ?? { id: String(cid), name: row.company ?? '—', slug: String(cid) };
+    result.push(company);
+  }
+
+  return result;
 }

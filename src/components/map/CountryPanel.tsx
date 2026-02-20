@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Building2, TrendingUp, Layers, ArrowRight, X, Sparkles } from 'lucide-react';
+import { Building2, Layers, ArrowRight, X, Sparkles, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -12,6 +12,7 @@ interface CountryPanelProps {
   topSectors: { name: string; count: number }[];
   trendingStartups: { id: string; name: string; sector: string }[];
   onClose: () => void;
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -20,13 +21,14 @@ const CountryPanel = ({
   countryName,
   flagEmoji,
   startupCount,
-  topSectors,
-  trendingStartups,
+  topSectors = [],
+  trendingStartups = [],
   onClose,
+  isLoading = false,
   className,
 }: CountryPanelProps) => {
   // Calculate max count for progress bars
-  const maxSectorCount = Math.max(...topSectors.map(s => s.count), 1);
+  const maxSectorCount = Math.max(...(topSectors ?? []).map(s => s.count), 1);
 
   return (
     <AnimatePresence>
@@ -77,6 +79,12 @@ const CountryPanel = ({
 
             {/* Top Sectors with mini progress bars */}
             <div>
+              {isLoading && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Loading ecosystem data...</span>
+                </div>
+              )}
               <div className="flex items-center gap-2 mb-3">
                 <Layers className="h-3.5 w-3.5 text-indigo" />
                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Top Sectors</span>

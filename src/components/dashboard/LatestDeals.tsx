@@ -27,7 +27,7 @@ const LatestDeals = ({ deals }: LatestDealsProps) => {
           <div className="p-1.5 rounded-lg bg-gold/10 border border-gold/20">
             <DollarSign className="h-4 w-4 text-gold" />
           </div>
-          <h2 className="font-semibold text-foreground">Latest Deals</h2>
+          <h2 className="font-bold text-foreground tracking-tight">Latest Deals</h2>
         </div>
         <Button variant="ghost" size="sm" asChild className="group">
           <Link to="/deals" className="text-muted-foreground hover:text-foreground">
@@ -51,13 +51,13 @@ const LatestDeals = ({ deals }: LatestDealsProps) => {
                 <span className="text-xs font-bold text-emerald">{deal.company.charAt(0)}</span>
               </div>
               <div>
-                <div className="font-medium text-foreground group-hover:text-emerald transition-colors">
+                <div className="font-semibold text-foreground group-hover:text-emerald transition-colors">
                   {deal.company}
                 </div>
-                <div className="text-xs text-muted-foreground">{deal.round} • {deal.date}</div>
+                <div className="text-xs text-muted-foreground font-medium">{deal.round} • {deal.date}</div>
               </div>
             </div>
-            <div className="text-lg font-bold text-gold">
+            <div className="text-lg font-extrabold text-gold tabular-nums">
               {deal.amount}
             </div>
           </motion.div>

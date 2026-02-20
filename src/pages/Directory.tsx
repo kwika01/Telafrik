@@ -26,7 +26,7 @@ import type { DirectoryFilters } from '@/types/domain';
 type ViewMode = 'grid' | 'list';
 type SortOption = 'trending' | 'most-funded' | 'recently-added' | 'name';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 48; // Divisible by 3 for grid layout, reduces total pages significantly
 
 import { CompanyCardSkeleton } from '@/components/common/Skeletons';
 

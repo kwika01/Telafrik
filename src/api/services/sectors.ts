@@ -1,96 +1,56 @@
 /**
  * Sectors Service
- * 
- * Supabase queries for sector data.
+ *
+ * TelAfrik: derive sectors from companies.sector (no sectors table)
  */
 import { supabase } from '@/integrations/supabase/client';
 import type { Sector } from '@/types/domain';
 
 /**
- * Fetches all sectors with company counts
+ * Fetches sectors with startup counts (derived from companies.sector)
  */
 export async function getSectors(): Promise<Sector[]> {
   const { data, error } = await supabase
-    .from('sectors')
-    .select(`
-      id,
-      name,
-      slug,
-      description,
-      market_overview,
-      icon
-    `)
-    .order('name');
-
-  if (error) {
-    throw new Error(`Failed to fetch sectors: ${error.message}`);
-  }
-
-  // Get company counts per sector
-  const { data: counts, error: countError } = await supabase
     .from('companies')
-    .select('sector_id')
-    .not('sector_id', 'is', null);
+    .select('sector')
+    .not('sector', 'is', null);
 
-  if (countError) {
-    console.warn('Could not fetch company counts:', countError.message);
+  if (error) throw new Error(`Failed to fetch sectors: ${error.message}`);
+
+  const countMap = new Map<string, number>();
+  for (const row of data || []) {
+    const s = (row as { sector: string }).sector?.trim();
+    if (s) countMap.set(s, (countMap.get(s) || 0) + 1);
   }
 
-  // Count companies per sector
-  const countMap = new Map<string, number>();
-  counts?.forEach((row: any) => {
-    const sectorId = row.sector_id;
-    countMap.set(sectorId, (countMap.get(sectorId) || 0) + 1);
-  });
+  const sectorIcons: Record<string, string> = {
+    Fintech: '💳',
+    Healthtech: '🏥',
+    'E-Commerce': '🛒',
+    Logistics: '📦',
+    Agritech: '🌾',
+    Cleantech: '♻️',
+    Edtech: '📚',
+    Insurtech: '🛡️',
+  };
 
-  return (data || []).map((row: any) => ({
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    description: row.description || '',
-    marketOverview: row.market_overview || '',
-    icon: row.icon || '🏢',
-    startupCount: countMap.get(row.id) || 0,
-  }));
+  return [...countMap.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, startupCount]) => ({
+      id: name.toLowerCase().replace(/\s+/g, '-'),
+      name,
+      slug: name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+      description: '',
+      marketOverview: '',
+      icon: sectorIcons[name] || '🏢',
+      startupCount,
+    }));
 }
 
 /**
- * Fetches a single sector by slug
+ * Fetches a single sector by slug (TelAfrik: match sector name)
  */
 export async function getSectorBySlug(slug: string): Promise<Sector | null> {
-  const { data, error } = await supabase
-    .from('sectors')
-    .select(`
-      id,
-      name,
-      slug,
-      description,
-      market_overview,
-      icon
-    `)
-    .eq('slug', slug)
-    .single();
-
-  if (error) {
-    if (error.code === 'PGRST116') {
-      return null;
-    }
-    throw new Error(`Failed to fetch sector: ${error.message}`);
-  }
-
-  // Get company count for this sector
-  const { count } = await supabase
-    .from('companies')
-    .select('*', { count: 'exact', head: true })
-    .eq('sector_id', data.id);
-
-  return {
-    id: data.id,
-    name: data.name,
-    slug: data.slug,
-    description: data.description || '',
-    marketOverview: data.market_overview || '',
-    icon: data.icon || '🏢',
-    startupCount: count || 0,
-  };
+  const sectors = await getSectors();
+  return sectors.find((s) => s.slug === slug) || null;
 }

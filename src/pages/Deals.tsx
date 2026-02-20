@@ -8,115 +8,57 @@ import {
   Building2,
   Calendar,
   ArrowUpRight,
-  TrendingUp,
-  Filter,
 } from 'lucide-react';
-import { useState } from 'react';
-
-// Mock deals data
-const deals = [
-  {
-    id: '1',
-    company: 'Moniepoint',
-    companySlug: 'moniepoint',
-    amount: '$110M',
-    round: 'Series C',
-    date: 'Jan 2024',
-    investors: ['QED Investors', 'Development Partners International'],
-    sector: 'Fintech',
-    country: 'Nigeria',
-    valuation: '$1B+ (Est)',
-  },
-  {
-    id: '2',
-    company: 'Flutterwave',
-    companySlug: 'flutterwave',
-    amount: '$250M',
-    round: 'Series D',
-    date: 'Dec 2023',
-    investors: ['Tiger Global', 'Avenir Growth'],
-    sector: 'Fintech',
-    country: 'Nigeria',
-    valuation: '$3B',
-  },
-  {
-    id: '3',
-    company: 'MNT-Halan',
-    companySlug: 'mnt-halan',
-    amount: '$400M',
-    round: 'Series C',
-    date: 'Nov 2023',
-    investors: ['Apis Partners', 'Lorax Capital'],
-    sector: 'Fintech',
-    country: 'Egypt',
-    valuation: '$1.5B',
-  },
-  {
-    id: '4',
-    company: 'OPay',
-    companySlug: 'opay',
-    amount: '$120M',
-    round: 'Series C',
-    date: 'Oct 2023',
-    investors: ['Softbank Vision Fund'],
-    sector: 'Fintech',
-    country: 'Nigeria',
-    valuation: '$2B',
-  },
-  {
-    id: '5',
-    company: 'Wave',
-    companySlug: 'wave',
-    amount: '$200M',
-    round: 'Series A',
-    date: 'Sep 2023',
-    investors: ['Stripe', 'Sequoia', 'Founders Fund'],
-    sector: 'Fintech',
-    country: 'Senegal',
-    valuation: '$1.7B',
-  },
-  {
-    id: '6',
-    company: 'SeamlessHR',
-    companySlug: 'seamlesshr',
-    amount: '$10M',
-    round: 'Series A',
-    date: 'Aug 2023',
-    investors: ['Tencent', 'Ventures Platform'],
-    sector: 'HR Tech',
-    country: 'Nigeria',
-    valuation: '$50M (Est)',
-  },
-  {
-    id: '7',
-    company: 'Andela',
-    companySlug: 'andela',
-    amount: '$200M',
-    round: 'Series E',
-    date: 'Jul 2023',
-    investors: ['Softbank Vision Fund 2', 'Google Ventures'],
-    sector: 'HR Tech',
-    country: 'Pan-Africa',
-    valuation: '$1.5B',
-  },
-];
+import { useState, useMemo } from 'react';
+import { useDeals } from '@/api/queries/useFunding';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 const roundTypes = ['All Rounds', 'Pre-seed', 'Seed', 'Series A', 'Series B', 'Series C', 'Series D+'];
-const sectors = ['All Sectors', 'Fintech', 'HR Tech', 'Healthtech', 'Agritech', 'E-commerce'];
+const sectors = ['All Sectors', 'Fintech', 'HR Tech', 'Healthtech', 'Agritech', 'E-commerce', 'Edtech', 'Logistics', 'Cleantech'];
 
 const Deals = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRound, setSelectedRound] = useState('All Rounds');
   const [selectedSector, setSelectedSector] = useState('All Sectors');
 
-  const filteredDeals = deals.filter((deal) => {
-    const matchesSearch = deal.company.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRound = selectedRound === 'All Rounds' || deal.round.includes(selectedRound.replace('Series ', ''));
-    const matchesSector = selectedSector === 'All Sectors' || deal.sector === selectedSector;
-    return matchesSearch && matchesRound && matchesSector;
-  });
+  const { data: deals = [], isLoading, error } = useDeals();
 
-  const totalFunding = '$1.29B';
+  const filteredDeals = useMemo(() => {
+    return deals.filter((deal) => {
+      const matchesSearch = deal.company.toLowerCase().includes(searchQuery.toLowerCase());
+      const roundMatch = selectedRound === 'All Rounds' || deal.round === selectedRound;
+      const matchesSector = selectedSector === 'All Sectors' || deal.sector === selectedSector;
+      return matchesSearch && roundMatch && matchesSector;
+    });
+  }, [deals, searchQuery, selectedRound, selectedSector]);
+
+  const totalFunding = useMemo(() => {
+    const sum = deals.reduce((acc, d) => acc + (d.amountUsd ?? 0), 0);
+    if (sum >= 1e9) return `$${(sum / 1e9).toFixed(2)}B`;
+    if (sum >= 1e6) return `$${(sum / 1e6).toFixed(1)}M`;
+    if (sum >= 1e3) return `$${(sum / 1e3).toFixed(1)}K`;
+    return `$${sum.toLocaleString()}`;
+  }, [deals]);
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <LoadingSpinner />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout>
+        <div className="empty-state data-card py-12 m-6">
+          <p className="text-destructive">Failed to load deals. Please try again later.</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>

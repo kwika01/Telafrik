@@ -10,107 +10,9 @@ import {
   ArrowUpRight,
   Globe,
 } from 'lucide-react';
-import { useState } from 'react';
-
-// Mock data for countries
-const countries = [
-  { 
-    name: 'Nigeria', 
-    flag: '🇳🇬', 
-    slug: 'nigeria',
-    region: 'West Africa',
-    companies: 892, 
-    startups: 456,
-    totalFunding: '$2.1B',
-    topSectors: ['Fintech', 'HR Tech', 'E-commerce'],
-    recentDeals: 23,
-    growth: '+18%',
-  },
-  { 
-    name: 'Kenya', 
-    flag: '🇰🇪', 
-    slug: 'kenya',
-    region: 'East Africa',
-    companies: 456, 
-    startups: 289,
-    totalFunding: '$890M',
-    topSectors: ['Fintech', 'Agritech', 'Logistics'],
-    recentDeals: 15,
-    growth: '+22%',
-  },
-  { 
-    name: 'South Africa', 
-    flag: '🇿🇦', 
-    slug: 'south-africa',
-    region: 'Southern Africa',
-    companies: 398, 
-    startups: 234,
-    totalFunding: '$780M',
-    topSectors: ['Fintech', 'Healthtech', 'Cleantech'],
-    recentDeals: 12,
-    growth: '+15%',
-  },
-  { 
-    name: 'Egypt', 
-    flag: '🇪🇬', 
-    slug: 'egypt',
-    region: 'North Africa',
-    companies: 312, 
-    startups: 198,
-    totalFunding: '$650M',
-    topSectors: ['Fintech', 'E-commerce', 'Logistics'],
-    recentDeals: 18,
-    growth: '+28%',
-  },
-  { 
-    name: 'Ghana', 
-    flag: '🇬🇭', 
-    slug: 'ghana',
-    region: 'West Africa',
-    companies: 187, 
-    startups: 112,
-    totalFunding: '$220M',
-    topSectors: ['Fintech', 'Agritech', 'Edtech'],
-    recentDeals: 8,
-    growth: '+12%',
-  },
-  { 
-    name: 'Rwanda', 
-    flag: '🇷🇼', 
-    slug: 'rwanda',
-    region: 'East Africa',
-    companies: 134, 
-    startups: 89,
-    totalFunding: '$120M',
-    topSectors: ['Fintech', 'Healthtech', 'Cleantech'],
-    recentDeals: 5,
-    growth: '+35%',
-  },
-  { 
-    name: 'Tanzania', 
-    flag: '🇹🇿', 
-    slug: 'tanzania',
-    region: 'East Africa',
-    companies: 98, 
-    startups: 67,
-    totalFunding: '$85M',
-    topSectors: ['Agritech', 'Fintech', 'Logistics'],
-    recentDeals: 4,
-    growth: '+20%',
-  },
-  { 
-    name: 'Ethiopia', 
-    flag: '🇪🇹', 
-    slug: 'ethiopia',
-    region: 'East Africa',
-    companies: 76, 
-    startups: 45,
-    totalFunding: '$45M',
-    topSectors: ['HR Tech', 'Agritech', 'Logistics'],
-    recentDeals: 3,
-    growth: '+42%',
-  },
-];
+import { useState, useMemo } from 'react';
+import { useCountriesWithStats } from '@/api/queries/useCountries';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 const regions = ['All Regions', 'West Africa', 'East Africa', 'North Africa', 'Southern Africa', 'Central Africa'];
 
@@ -118,17 +20,56 @@ const Countries = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All Regions');
 
-  const filteredCountries = countries.filter((country) => {
-    const matchesSearch = country.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRegion = selectedRegion === 'All Regions' || country.region === selectedRegion;
-    return matchesSearch && matchesRegion;
-  });
+  const { data: countries = [], isLoading, error } = useCountriesWithStats();
 
-  const totalStats = {
+  const filteredCountries = useMemo(() => {
+    return countries.filter((country) => {
+      const matchesSearch = country.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesRegion = selectedRegion === 'All Regions' || country.region === selectedRegion;
+      return matchesSearch && matchesRegion;
+    });
+  }, [countries, searchQuery, selectedRegion]);
+
+  const totalStats = useMemo(() => ({
     companies: filteredCountries.reduce((sum, c) => sum + c.companies, 0),
-    funding: '$4.9B',
+    funding: filteredCountries.reduce((sum, c) => {
+      const raw = c.totalFunding.replace(/[$,KMB]/g, '');
+      const num = parseFloat(raw);
+      if (isNaN(num)) return sum;
+      if (c.totalFunding.includes('B')) return sum + num * 1e9;
+      if (c.totalFunding.includes('M')) return sum + num * 1e6;
+      if (c.totalFunding.includes('K')) return sum + num * 1e3;
+      return sum + num;
+    }, 0),
     deals: filteredCountries.reduce((sum, c) => sum + c.recentDeals, 0),
-  };
+  }), [filteredCountries]);
+
+  const totalFundingFormatted = useMemo(() => {
+    const s = totalStats.funding;
+    if (s >= 1e9) return `$${(s / 1e9).toFixed(2)}B`;
+    if (s >= 1e6) return `$${(s / 1e6).toFixed(1)}M`;
+    return `$${s.toLocaleString()}`;
+  }, [totalStats.funding]);
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <LoadingSpinner />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout>
+        <div className="empty-state data-card py-12 m-6">
+          <p className="text-destructive">Failed to load countries. Please try again later.</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -155,7 +96,7 @@ const Countries = () => {
               <DollarSign className="h-4 w-4" />
               <span className="text-xs font-medium">Total Funding</span>
             </div>
-            <div className="text-2xl font-semibold text-foreground">{totalStats.funding}</div>
+            <div className="text-2xl font-semibold text-foreground">{totalFundingFormatted}</div>
           </div>
           <div className="stat-card">
             <div className="flex items-center gap-2 text-muted-foreground">

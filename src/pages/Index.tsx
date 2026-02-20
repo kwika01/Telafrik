@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, DollarSign, Building2, Users, Globe, Zap, Sparkles, Loader2, MapPin, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -7,55 +7,59 @@ import GlobalSearch from '@/components/search/GlobalSearch';
 import StartupCard from '@/components/startups/StartupCard';
 import { AfricaMapSVG, CountryPanel, COUNTRY_NAMES } from '@/components/map';
 import { Button } from '@/components/ui/button';
+import { Particles } from '@/components/ui/particles';
 import { useTrendingCompanies } from '@/api/queries/useCompanies';
 import { useSectors } from '@/api/queries/useSectors';
-import { useCountries } from '@/api/queries/useCountries';
-
-// Mock data for map (will be replaced with real data)
-const MOCK_STARTUP_COUNTS: Record<string, number> = {
-  NG: 890, KE: 520, ZA: 480, EG: 350, GH: 220,
-  RW: 85, TZ: 75, ET: 120, SN: 95, CI: 60,
-  MA: 180, TN: 90, UG: 110, CM: 45, DZ: 40,
-  ZW: 25, BW: 15, ZM: 20, AO: 12, MZ: 18,
-};
-
-const MOCK_SECTORS: Record<string, { name: string; count: number }[]> = {
-  NG: [{ name: 'Fintech', count: 245 }, { name: 'E-commerce', count: 120 }, { name: 'Healthtech', count: 85 }, { name: 'Agritech', count: 78 }],
-  KE: [{ name: 'Fintech', count: 145 }, { name: 'Agritech', count: 95 }, { name: 'Logistics', count: 70 }, { name: 'Healthtech', count: 55 }],
-  ZA: [{ name: 'Fintech', count: 130 }, { name: 'Insurtech', count: 85 }, { name: 'E-commerce', count: 75 }, { name: 'Cleantech', count: 60 }],
-  EG: [{ name: 'Fintech', count: 95 }, { name: 'E-commerce', count: 80 }, { name: 'Edtech', count: 45 }, { name: 'Logistics', count: 40 }],
-  GH: [{ name: 'Fintech', count: 65 }, { name: 'Agritech', count: 45 }, { name: 'E-commerce', count: 35 }, { name: 'Healthtech', count: 25 }],
-};
-
-const MOCK_TRENDING: Record<string, { id: string; name: string; sector: string }[]> = {
-  NG: [{ id: 'flutterwave', name: 'Flutterwave', sector: 'Fintech' }, { id: 'paystack', name: 'Paystack', sector: 'Fintech' }, { id: 'andela', name: 'Andela', sector: 'HR Tech' }],
-  KE: [{ id: 'mpesa', name: 'M-Pesa', sector: 'Fintech' }, { id: 'twiga', name: 'Twiga Foods', sector: 'Agritech' }, { id: 'sendy', name: 'Sendy', sector: 'Logistics' }],
-  ZA: [{ id: 'yoco', name: 'Yoco', sector: 'Fintech' }, { id: 'takealot', name: 'Takealot', sector: 'E-commerce' }],
-  EG: [{ id: 'swvl', name: 'Swvl', sector: 'Transport' }, { id: 'fawry', name: 'Fawry', sector: 'Fintech' }],
-  GH: [{ id: 'expresspay', name: 'ExpressPay', sector: 'Fintech' }, { id: 'farmerline', name: 'Farmerline', sector: 'Agritech' }],
-};
+import { useCountries, useCountriesWithCounts, useCountryEcosystem } from '@/api/queries/useCountries';
+import { useDashboardStats } from '@/api/queries/useDashboard';
 
 const Index = () => {
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [particleColor, setParticleColor] = useState("#10b981");
+
   const { data: trendingCompanies = [], isLoading: trendingLoading } = useTrendingCompanies(6);
   const { data: sectors = [] } = useSectors();
   const { data: countries = [] } = useCountries();
+  const { data: countriesWithCounts = [] } = useCountriesWithCounts();
+  const { data: dashboardStats } = useDashboardStats();
+  const { data: countryEcosystem, isLoading: ecosystemLoading } = useCountryEcosystem(selectedCountry);
 
-  // Map state
-  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  // Detect dark mode via DOM class
+  useEffect(() => {
+    const update = () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setParticleColor(isDark ? '#ffffff' : '#10b981');
+    };
+    update();
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  const startupCountsByCode = useMemo(() => {
+    const m = new Map<string, number>();
+    countriesWithCounts.forEach((c: { code: string; startupCount: number }) => {
+      m.set(c.code, c.startupCount);
+    });
+    return m;
+  }, [countriesWithCounts]);
 
   const selectedCountryInfo = useMemo(() => {
     if (!selectedCountry) return null;
-    const country = countries.find(c => c.code === selectedCountry);
+    const country = countries.find((c: { code: string }) => c.code === selectedCountry);
+    const ecosystem = countryEcosystem ?? { startupCount: 0, topSectors: [], trendingStartups: [] };
+    const countFromMap = startupCountsByCode.get(selectedCountry) ?? 0;
     return {
       code: selectedCountry,
       name: country?.name || COUNTRY_NAMES[selectedCountry] || selectedCountry,
       flagEmoji: country?.flagEmoji || '🌍',
-      startupCount: MOCK_STARTUP_COUNTS[selectedCountry] || 0,
-      topSectors: MOCK_SECTORS[selectedCountry] || [],
-      trendingStartups: MOCK_TRENDING[selectedCountry] || [],
+      startupCount: ecosystem.startupCount || countFromMap,
+      topSectors: ecosystem.topSectors,
+      trendingStartups: ecosystem.trendingStartups,
+      isLoading: ecosystemLoading,
     };
-  }, [selectedCountry, countries]);
+  }, [selectedCountry, countries, countryEcosystem, ecosystemLoading, startupCountsByCode]);
 
   const hoveredCountryName = useMemo(() => {
     if (!hoveredCountry) return null;
@@ -74,13 +78,15 @@ const Index = () => {
   const displaySectors = sectors.slice(0, 10);
   const displayCountries = countries.slice(0, 15);
 
-  // Stats with African accent colors
+  // Stats with African accent colors (from Supabase)
+  const formatFunding = (n: number) =>
+    n >= 1e9 ? `$${(n / 1e9).toFixed(1)}B` : n >= 1e6 ? `$${(n / 1e6).toFixed(0)}M` : `$${n.toLocaleString()}`;
   const stats = [
-    { label: 'Startups Tracked', value: '2,400+', icon: Building2, accent: 'emerald' },
-    { label: 'Total Funding', value: '$8.2B', icon: DollarSign, accent: 'gold' },
-    { label: 'Investors', value: '450+', icon: Users, accent: 'indigo' },
-    { label: 'Countries', value: '54', icon: Globe, accent: 'terracotta' },
-  ] as const;
+    { label: 'Startups Tracked', value: dashboardStats ? `${dashboardStats.totalCompanies.toLocaleString()}+` : '—', icon: Building2, accent: 'emerald' as const },
+    { label: 'Total Funding', value: dashboardStats ? formatFunding(dashboardStats.totalFundingUsd) : '—', icon: DollarSign, accent: 'gold' as const },
+    { label: 'Investors', value: dashboardStats ? `${dashboardStats.totalInvestors.toLocaleString()}+` : '—', icon: Users, accent: 'indigo' as const },
+    { label: 'Countries', value: dashboardStats ? String(dashboardStats.countriesCovered) : '—', icon: Globe, accent: 'terracotta' as const },
+  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -98,8 +104,20 @@ const Index = () => {
   return (
     <Layout>
       {/* Split Hero Section */}
-      <section className="relative bg-background border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+      <section className="relative bg-background border-b border-border overflow-hidden min-h-[520px]">
+        {/* Particles Background - needs explicit h-full to fill parent */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
+          <Particles
+            className="w-full h-full"
+            quantity={120}
+            ease={80}
+            color={particleColor}
+            staticity={40}
+            size={0.5}
+          />
+        </div>
+        
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             {/* Left Column: Hero Content */}
             <motion.div 
@@ -131,7 +149,7 @@ const Index = () => {
                 variants={itemVariants}
                 className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-lg"
               >
-                Track funding rounds, valuations, and growth metrics across 2,400+ startups in 54 African countries.
+                Track funding rounds, valuations, and growth metrics across {dashboardStats ? `${dashboardStats.totalCompanies.toLocaleString()}+` : '2,400+'}{' '}startups in {dashboardStats ? dashboardStats.countriesCovered : 54} African countries.
               </motion.p>
 
               {/* Search */}
@@ -160,10 +178,24 @@ const Index = () => {
               </motion.div>
             </motion.div>
 
-            {/* Right Column: Africa Map */}
-            <div className="relative">
-              {/* Map header - intelligence module styling */}
-              <div className="mb-4 pb-3 border-b border-border/50">
+            {/* Right Column: Africa Map Intelligence Spotlight */}
+            <div className="relative lg:-mr-8 lg:-mt-8 lg:-mb-8">
+              {/* INTELLIGENCE SPOTLIGHT CONTAINER */}
+              <div className="relative rounded-2xl lg:rounded-3xl overflow-hidden bg-surface-alt/60 backdrop-blur-sm border border-border/40 shadow-elevated p-6 lg:p-8">
+                {/* ATMOSPHERIC DEPTH LAYER (Intelligence Lighting) */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {/* Primary intelligence glow - emerald center */}
+                  <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[70%] h-[70%] bg-emerald/6 rounded-full blur-[100px]" />
+                  {/* Secondary premium glow - gold bottom */}
+                  <div className="absolute bottom-[15%] right-[20%] w-[60%] h-[60%] bg-gold/5 rounded-full blur-[80px]" />
+                  {/* Subtle warm ambient edge */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald/[0.02] via-transparent to-gold/[0.015]" />
+                </div>
+
+                {/* CONTENT (relative to atmospheric layer) */}
+                <div className="relative z-10">
+                  {/* Map header - intelligence module styling */}
+                  <div className="mb-4 pb-3 border-b border-border/50">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <div className="w-1 h-5 bg-emerald rounded-full shadow-sm shadow-emerald/20" />
@@ -187,7 +219,7 @@ const Index = () => {
                       <span className="font-semibold tracking-tight">{hoveredCountryName}</span>
                       <div className="flex items-center gap-1.5 text-background/70 text-xs border-l border-background/20 pl-3">
                         <div className="w-1 h-1 rounded-full bg-gold" />
-                        <span className="font-medium tabular-nums">{MOCK_STARTUP_COUNTS[hoveredCountry] || 0} startups</span>
+                        <span className="font-medium tabular-nums">{startupCountsByCode.get(hoveredCountry) || 0} startups</span>
                       </div>
                     </div>
                     {/* Tooltip arrow */}
@@ -196,38 +228,52 @@ const Index = () => {
                 </div>
               )}
 
-              {/* Map container - premium module styling */}
+              {/* Premium Map Module Container */}
               <div className="relative">
-                {/* Subtle outer glow */}
-                <div className="absolute inset-0 bg-emerald/5 rounded-2xl blur-xl" />
+                {/* CONTINENT AURA: Enhanced for spotlight context */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {/* Primary emerald aura - centered on map */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] bg-emerald/10 rounded-full blur-[80px]" />
+                  {/* Secondary gold warmth - bottom right */}
+                  <div className="absolute bottom-[10%] right-[10%] w-[50%] h-[50%] bg-gold/8 rounded-full blur-[60px]" />
+                </div>
                 
-                {/* Main container */}
-                <div className="relative bg-card rounded-2xl border border-border shadow-lg overflow-hidden">
-                  {/* Inner accent border */}
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald/20 to-transparent" />
+                {/* Premium elevated container with enhanced authority */}
+                <div className="map-container-premium relative shadow-[0_0_0_1px_hsl(var(--emerald)/0.08),0_20px_40px_-8px_hsl(222_47%_11%/0.18)]">
+                  {/* DATA COLOR RAILS: Top emerald intelligence line */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald/40 to-transparent" />
+                  {/* Bottom gold micro glow */}
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold/35 to-transparent" />
                   
-                  {/* Map content */}
-                  <div className="bg-gradient-to-br from-muted/30 via-muted/20 to-muted/30 p-6 relative">
+                  {/* Map content area with premium background */}
+                  <div className="map-content-area">
+                    {/* Optional continental vignette */}
+                    <div className="map-vignette" />
+                    
                     <AfricaMapSVG
                       hoveredCountry={hoveredCountry}
                       selectedCountry={selectedCountry}
                       onCountryHover={setHoveredCountry}
                       onCountryClick={handleCountryClick}
-                      className="w-full h-auto max-h-[380px]"
+                      startupCounts={startupCountsByCode}
+                      className="w-full h-auto max-h-[380px] relative z-10"
                     />
                     
-                    {/* Enhanced Legend */}
-                    <div className="absolute bottom-4 right-4 bg-card/95 backdrop-blur-md border border-border/80 rounded-xl px-4 py-3 shadow-xl">
-                      <div className="flex items-center gap-5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3.5 h-3.5 rounded bg-gold border border-gold/50 shadow-sm shadow-gold/20" />
-                          <span className="text-[11px] text-muted-foreground font-medium">Hover</span>
-                        </div>
-                        <div className="h-5 w-px bg-border" />
-                        <div className="flex items-center gap-2">
-                          <div className="w-3.5 h-3.5 rounded bg-emerald border border-emerald/50 shadow-sm shadow-emerald/20" />
-                          <span className="text-[11px] text-foreground font-semibold">Selected</span>
-                        </div>
+                    {/* Choropleth Legend */}
+                    <div className="absolute bottom-4 right-4 z-20 bg-card/95 backdrop-blur-md border border-border shadow-lg rounded-xl px-3 py-2">
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1.5 font-semibold">Startups</p>
+                      <div className="flex items-center gap-1">
+                        {[
+                          { color: 'hsl(158, 60%, 88%)', label: '<10' },
+                          { color: 'hsl(158, 70%, 75%)', label: '30+' },
+                          { color: 'hsl(158, 80%, 48%)', label: '60+' },
+                          { color: 'hsl(158, 94%, 35%)', label: '100+' },
+                        ].map(({ color, label }) => (
+                          <div key={label} className="flex flex-col items-center gap-0.5">
+                            <div className="w-5 h-3 rounded-sm" style={{ backgroundColor: color }} />
+                            <span className="text-[8px] text-muted-foreground">{label}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -236,7 +282,7 @@ const Index = () => {
 
               {/* Country Panel - appears below map when selected */}
               {selectedCountryInfo && (
-                <div className="mt-3">
+                <div className="mt-4">
                   <CountryPanel
                     countryCode={selectedCountryInfo.code}
                     countryName={selectedCountryInfo.name}
@@ -245,20 +291,26 @@ const Index = () => {
                     topSectors={selectedCountryInfo.topSectors}
                     trendingStartups={selectedCountryInfo.trendingStartups}
                     onClose={() => setSelectedCountry(null)}
+                    isLoading={selectedCountryInfo.isLoading}
                   />
                 </div>
               )}
 
               {/* Prompt to interact - only show when no country selected */}
               {!selectedCountry && (
-                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <div className="mt-5 flex items-center justify-center gap-2 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/50 border border-border">
                     <span className="inline-block w-1.5 h-1.5 rounded-full bg-gold animate-pulse shadow-sm shadow-gold/30" />
                     <span className="font-medium">Click any country to explore</span>
                   </div>
                 </div>
               )}
+                </div>
+                {/* END: Content wrapper */}
+              </div>
+              {/* END: Intelligence Spotlight Container */}
             </div>
+            {/* END: Right Column */}
           </div>
         </div>
       </section>
@@ -598,8 +650,14 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="section-lg bg-primary">
-        <div className="container-wide">
+      <section className="relative section-lg overflow-hidden bg-[#0a0f1e]">
+        {/* Particles on CTA too */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
+          <Particles className="w-full h-full" quantity={80} ease={80} color="#10b981" staticity={50} size={0.4} />
+        </div>
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald/10 via-transparent to-gold/5 pointer-events-none" />
+        <div className="container-wide relative z-10">
           <motion.div 
             className="max-w-3xl mx-auto text-center"
             initial={{ opacity: 0, y: 30 }}
@@ -607,18 +665,20 @@ const Index = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Zap className="h-10 w-10 text-gold mx-auto mb-6" />
-            <h2 className="text-3xl md:text-4xl font-semibold text-primary-foreground mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gold/20 border border-gold/30 mb-6 mx-auto">
+              <Zap className="h-7 w-7 text-gold" />
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Get Full Access to African Startup Intelligence
             </h2>
-            <p className="text-lg text-primary-foreground/70 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-white/60 mb-10 max-w-2xl mx-auto">
               Unlock advanced filters, company comparisons, data exports, and real-time alerts.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90" asChild>
-                <Link to="/signup">Start Free Trial</Link>
+              <Button size="lg" className="bg-emerald hover:bg-emerald/90 text-white font-semibold shadow-lg shadow-emerald/25" asChild>
+                <Link to="/auth">Start Free Trial</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="border-white/30 text-white hover:bg-white/10">
+              <Button size="lg" className="bg-white/10 border border-white/30 text-white hover:bg-white/20 font-semibold" asChild>
                 <Link to="/pricing">View Pricing</Link>
               </Button>
             </div>

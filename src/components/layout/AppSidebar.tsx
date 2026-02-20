@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Building2,
   Rocket,
   Users,
   Layers,
@@ -9,6 +8,7 @@ import {
   TrendingUp,
   Activity,
   FileText,
+  Shield,
   Bookmark,
   Settings,
   CreditCard,
@@ -34,7 +34,6 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
   const dataNavItems = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Ask TelAfrik', path: '/ask', icon: BrainCircuit, highlight: true },
-    { label: 'Companies', path: '/companies', icon: Building2 },
     { label: 'Startups', path: '/directory', icon: Rocket },
     { label: 'Founders', path: '/founders', icon: Users },
     { label: 'Investors', path: '/investors', icon: Users },
@@ -52,6 +51,7 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
   // TelAfrik Insights - reports & research
   const insightsNavItems = [
     { label: 'Reports', path: '/reports', icon: FileText },
+    { label: 'Regulatory Intel', path: '/regulatory-intel', icon: Shield },
   ];
 
   // KonektAfrik - connections & intros

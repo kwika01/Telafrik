@@ -1,9 +1,10 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import ScrollToTop from "@/components/common/ScrollToTop";
@@ -22,6 +23,7 @@ import Founders from "./pages/Founders";
 import Deals from "./pages/Deals";
 import Signals from "./pages/Signals";
 import Reports from "./pages/Reports";
+import RegulatoryIntel from "./pages/RegulatoryIntel";
 import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
 import Methodology from "./pages/Methodology";
@@ -45,14 +47,15 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          <ChatWidget />
-          <Routes>
+    <ThemeProvider defaultTheme="light" storageKey="telafrik-ui-theme">
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ScrollToTop />
+            <ChatWidget />
+            <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
@@ -71,11 +74,7 @@ const App = () => (
                 <Directory />
               </ProtectedRoute>
             } />
-            <Route path="/companies" element={
-              <ProtectedRoute>
-                <Directory />
-              </ProtectedRoute>
-            } />
+            <Route path="/companies" element={<Navigate to="/directory" replace />} />
             <Route path="/startup/:slug" element={
               <ProtectedRoute>
                 <StartupProfile />
@@ -134,6 +133,11 @@ const App = () => (
             <Route path="/reports" element={
               <ProtectedRoute>
                 <Reports />
+              </ProtectedRoute>
+            } />
+            <Route path="/regulatory-intel" element={
+              <ProtectedRoute>
+                <RegulatoryIntel />
               </ProtectedRoute>
             } />
             <Route path="/compare" element={
@@ -210,6 +214,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
+  </ThemeProvider>
   </QueryClientProvider>
 );
 

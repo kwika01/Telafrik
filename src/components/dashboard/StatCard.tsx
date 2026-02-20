@@ -30,23 +30,32 @@ const StatCard = ({ label, value, change, icon: Icon, index }: StatCardProps) =>
   const valueClasses = isPrimaryKpi ? accent.text : 'text-foreground';
   const topAccentClasses = isPrimaryKpi ? accent.text : 'text-border';
   
+  // ARCHITECTURAL: Strong structural emphasis for primary KPIs
+  const getHoverShadowClass = () => {
+    if (!isPrimaryKpi) return 'hover:shadow-md';
+    const colorMap = ['emerald', 'gold', 'indigo', 'terracotta', 'emerald'];
+    const color = colorMap[index % colorMap.length];
+    return `hover:shadow-[0_0_0_1px_hsl(var(--${color})/0.2),0_8px_16px_-4px_hsl(var(--${color})/0.14)]`;
+  };
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.4 }}
       whileHover={{ y: -2, transition: { duration: 0.2 } }}
-      className="relative overflow-hidden rounded-xl border border-border bg-card p-4 hover:shadow-md transition-all duration-200"
+      className={`relative overflow-hidden rounded-xl ${isPrimaryKpi ? 'border-2 border-border shadow-md' : 'border border-border'} bg-card ${isPrimaryKpi ? 'p-5' : 'p-4'} ${getHoverShadowClass()} transition-all duration-200`}
     >
-      <div className={`absolute top-0 left-0 right-0 h-0.5 ${topAccentClasses} bg-current`} />
+      {/* ARCHITECTURAL: Stronger rail for primary KPIs */}
+      <div className={`absolute top-0 left-0 right-0 ${isPrimaryKpi ? 'h-1' : 'h-0.5'} ${topAccentClasses} bg-current`} />
       <div className="flex items-center gap-2 text-muted-foreground mb-2">
         <div className={`p-1.5 rounded-lg border ${iconBadgeClasses}`}>
           <Icon className={`h-3.5 w-3.5 ${iconClasses}`} />
         </div>
-        <span className="text-xs font-medium">{label}</span>
+        <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
       </div>
-      <div className={`text-2xl font-bold tracking-tight ${valueClasses}`}>{value}</div>
-      <div className="text-xs text-muted-foreground mt-1">{change}</div>
+      <div className={`text-2xl font-extrabold tracking-tighter ${valueClasses}`}>{value}</div>
+      <div className="text-xs text-muted-foreground mt-1 font-medium">{change}</div>
     </motion.div>
   );
 };

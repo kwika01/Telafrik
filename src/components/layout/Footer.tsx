@@ -99,21 +99,12 @@ const Footer = () => {
         >
           {/* Brand */}
           <motion.div variants={itemVariants} className="col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-4 group">
-              <motion.div 
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-accent to-violet-500 shadow-lg shadow-primary/30"
-              >
-                <Sparkles className="h-5 w-5 text-primary-foreground" />
-              </motion.div>
-              <div className="flex flex-col">
-                <span className="text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent leading-tight group-hover:from-primary group-hover:to-accent transition-all">
-                  TelAfrik
-                </span>
-                <span className="text-[10px] text-muted-foreground -mt-0.5">
-                  by Ennylytics
-                </span>
-              </div>
+            <Link to="/" className="flex items-center mb-4">
+              <img
+                src="/logo.png"
+                alt="TelAfrik by Ennylytics"
+                className="h-10 w-auto object-contain"
+              />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mb-5">
               The definitive intelligence platform for African markets.

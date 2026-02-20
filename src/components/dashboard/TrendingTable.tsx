@@ -21,14 +21,14 @@ const TrendingTable = ({ companies }: TrendingTableProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.5 }}
-      className="lg:col-span-2 rounded-xl border border-border bg-card p-5"
+      className="rounded-xl border border-border bg-card p-5"
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-terracotta/10 border border-terracotta/20">
             <TrendingUp className="h-4 w-4 text-terracotta" />
           </div>
-          <h2 className="font-semibold text-foreground">Trending Companies</h2>
+          <h2 className="font-bold text-foreground tracking-tight">Trending Startups</h2>
         </div>
         <Button variant="ghost" size="sm" asChild className="group">
           <Link to="/signals" className="text-muted-foreground hover:text-foreground">
@@ -40,12 +40,12 @@ const TrendingTable = ({ companies }: TrendingTableProps) => {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border">
-              <th className="text-left py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Company</th>
-              <th className="text-left py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Sector</th>
-              <th className="text-left py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Country</th>
-              <th className="text-right py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Momentum</th>
-              <th className="text-right py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Change</th>
+            <tr className="border-b-2 border-border">
+              <th className="text-left py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Company</th>
+              <th className="text-left py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Sector</th>
+              <th className="text-left py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Country</th>
+              <th className="text-right py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Momentum</th>
+              <th className="text-right py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Change</th>
             </tr>
           </thead>
           <tbody>
@@ -55,9 +55,9 @@ const TrendingTable = ({ companies }: TrendingTableProps) => {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 + index * 0.05 }}
-                className="border-b border-border/50 hover:bg-muted/50 transition-colors cursor-pointer group"
+                className="border-b border-border/60 hover:bg-muted/50 transition-colors cursor-pointer group"
               >
-                <td className="py-3">
+                <td className="py-2.5">
                   <div className="flex items-center gap-3">
                     <span className="w-5 h-5 flex items-center justify-center rounded-full bg-muted/70 border border-border text-xs font-medium text-muted-foreground">
                       {index + 1}
@@ -80,17 +80,21 @@ const TrendingTable = ({ companies }: TrendingTableProps) => {
                         initial={{ width: 0 }}
                         animate={{ width: `${company.momentum}%` }}
                         transition={{ delay: 0.5 + index * 0.1, duration: 0.8, ease: 'easeOut' }}
-                        className="h-full bg-terracotta rounded-full"
+                        className="h-full bg-gradient-to-r from-terracotta/90 via-terracotta to-terracotta/90 rounded-full"
                       />
                     </div>
-                    <span className="text-sm font-medium text-foreground w-8">{company.momentum}</span>
+                    <span className="text-sm font-bold text-foreground w-8 tabular-nums">{company.momentum}</span>
                   </div>
                 </td>
-                <td className="py-3 text-right">
-                  <span className="inline-flex items-center text-sm font-medium text-emerald">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    {company.change}
-                  </span>
+                <td className="py-2.5 text-right">
+                  {company.change ? (
+                    <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald tabular-nums">
+                      <TrendingUp className="h-3.5 w-3.5" />
+                      <span>+{company.change}</span>
+                    </span>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">—</span>
+                  )}
                 </td>
               </motion.tr>
             ))}

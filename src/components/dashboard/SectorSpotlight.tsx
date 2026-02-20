@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 interface SectorSpotlightProps {
   sector: {
     name: string;
+    slug?: string;
     companies: number;
     totalFunding: string;
     growth: string;
@@ -25,15 +26,15 @@ const SectorSpotlight = ({ sector }: SectorSpotlightProps) => {
         <div className="p-1.5 rounded-lg bg-gold/10 border border-gold/20">
           <Sparkles className="h-4 w-4 text-gold" />
         </div>
-        <h2 className="font-semibold text-foreground">Sector Spotlight</h2>
+        <h2 className="font-bold text-foreground tracking-tight">Sector Spotlight</h2>
       </div>
       
       <div className="space-y-4">
         <div>
-          <h3 className="text-xl font-bold text-foreground">
+          <h3 className="text-xl font-extrabold text-foreground tracking-tight">
             {sector.name}
           </h3>
-          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{sector.description}</p>
+          <p className="text-sm text-muted-foreground mt-2 leading-relaxed font-medium">{sector.description}</p>
         </div>
         
         <div className="grid grid-cols-3 gap-2">
@@ -46,20 +47,20 @@ const SectorSpotlight = ({ sector }: SectorSpotlightProps) => {
               key={item.label}
               className="text-center p-3 bg-muted/50 rounded-lg"
             >
-              <div className={`text-lg font-bold ${
+              <div className={`text-lg font-extrabold tabular-nums ${
                 item.accent === 'neutral' ? 'text-foreground' :
                 item.accent === 'gold' ? 'text-gold' : 
                 'text-terracotta'
               }`}>
                 {item.value}
               </div>
-              <div className="text-xs text-muted-foreground">{item.label}</div>
+              <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">{item.label}</div>
             </div>
           ))}
         </div>
         
         <Button variant="outline" size="sm" className="w-full group" asChild>
-          <Link to="/sectors/hr-tech">
+          <Link to={sector.slug ? `/sectors/${sector.slug}` : '/sectors'}>
             View Sector 
             <ArrowUpRight className="h-3 w-3 ml-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>

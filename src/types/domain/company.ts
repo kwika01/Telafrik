@@ -72,12 +72,29 @@ export interface CompanyListItem {
   id: string;
   name: string;
   slug: string;
-  tagline: string | null;
+  // camelCase core fields
   logoUrl: string | null;
+  tagline: string | null;
+  description: string | null;
   yearFounded: number | null;
-  hqCountry: { name: string; code: string; flagEmoji: string } | null;
-  sector: { name: string; slug: string } | null;
+  hqCountry: { id?: string; name: string; code: string; flagEmoji?: string } | null;
+  sector: { id?: string; name: string; slug: string } | null;
   totalFundingUsd: number;
+  valuationUsd?: number | null;
   isVerified: boolean;
   trendingScore: number;
+  // TelAfrik-specific extras (snake_case, sourced directly from DB columns)
+  business_model?: string | null;
+  stage?: string | null;
+  employee_count?: number | null;
+  website?: string | null;
+  linkedin?: string | null;
+  facebook?: string | null;
+  twitter?: string | null;
+  operating_countries?: string | null;
+  hiring_status?: string | null;
+  revenue_range?: string | null;
+  valuation_range?: string | null;
+  valuation_confidence?: string | null;
+  founder?: string | null;
 }

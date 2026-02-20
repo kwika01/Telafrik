@@ -46,11 +46,11 @@ const Header = () => {
     { label: 'Startups', path: '/directory' },
     { label: 'Founders', path: '/founders' },
     { label: 'Sectors', path: '/sectors' },
-    { label: 'Companies', path: '/companies' },
     { label: 'Countries/Markets', path: '/countries' },
     { label: 'Funding & Deals', path: '/deals' },
     { label: 'Signals', path: '/signals' },
     { label: 'Reports', path: '/reports' },
+    { label: 'Regulatory Intel', path: '/regulatory-intel' },
     { label: 'Investors', path: '/investors' },
   ];
 
@@ -82,18 +82,12 @@ const Header = () => {
       <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-foreground leading-tight group-hover:text-emerald transition-colors">
-                TelAfrik
-              </span>
-              <span className="text-[10px] text-muted-foreground -mt-0.5 tracking-wide">
-                by Ennylytics
-              </span>
-            </div>
+          <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center">
+            <img
+              src="/logo.png"
+              alt="TelAfrik by Ennylytics"
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}

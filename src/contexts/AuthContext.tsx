@@ -8,6 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
+  isSuperAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -77,12 +78,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  // Superadmin check: set via Supabase dashboard → Auth → Users → Edit user → user_metadata { "role": "superadmin" }
+  const isSuperAdmin =
+    user?.user_metadata?.role === 'superadmin' ||
+    user?.app_metadata?.role === 'superadmin';
+
   const value: AuthContextType = {
     user,
     session,
     isLoading,
     signOut,
     isAuthenticated: !!user,
+    isSuperAdmin,
   };
 
   return (
