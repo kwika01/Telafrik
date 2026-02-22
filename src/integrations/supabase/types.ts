@@ -838,6 +838,63 @@ export type Database = {
           },
         ]
       }
+      regulatory_authorities: {
+        Row: {
+          authority_type: string
+          country_id: string | null
+          created_at: string
+          id: string
+          license_required: string
+          official_name: string | null
+          official_website_url: string | null
+          regulatory_authority_class: string
+          regulatory_scope: string | null
+          sector_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          authority_type: string
+          country_id?: string | null
+          created_at?: string
+          id?: string
+          license_required: string
+          official_name?: string | null
+          official_website_url?: string | null
+          regulatory_authority_class: string
+          regulatory_scope?: string | null
+          sector_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          authority_type?: string
+          country_id?: string | null
+          created_at?: string
+          id?: string
+          license_required?: string
+          official_name?: string | null
+          official_website_url?: string | null
+          regulatory_authority_class?: string
+          regulatory_scope?: string | null
+          sector_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regulatory_authorities_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "regulatory_authorities_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "sectors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       revenue_metrics: {
         Row: {
           as_of_date: string | null
