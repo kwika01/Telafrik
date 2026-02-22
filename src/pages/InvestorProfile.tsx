@@ -5,38 +5,6 @@ import StartupCard from '@/components/startups/StartupCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useInvestor, useInvestorPortfolio } from '@/api/queries/useInvestors';
-import type { CompanyListItem } from '@/types/domain';
-
-// Adapter: Convert domain type to StartupCard expected format
-const CompanyCard = ({ company }: { company: any }) => {
-  const startupAdapter = {
-    id: company.id,
-    name: company.name,
-    slug: company.slug,
-    logo: company.logo_url || '',
-    tagline: company.tagline || '',
-    description: '',
-    yearFounded: 0,
-    hqCountry: '',
-    operatingCountries: [],
-    sector: company.sector?.name || '',
-    subSector: '',
-    businessModel: 'B2B' as const,
-    domain: '',
-    socialLinks: {},
-    revenue: { range: '', metricType: 'ARR' as const, source: 'Estimated' as const, confidenceScore: 0 },
-    valuation: { range: '', type: 'Post-money' as const, source: 'Estimated' as const, confidenceScore: 0 },
-    totalFunding: '',
-    fundingRounds: [],
-    founders: [],
-    headcount: '',
-    hiringStatus: 'Not Hiring' as const,
-    stage: 'Seed' as const,
-    trending: false,
-  };
-
-  return <StartupCard startup={startupAdapter} />;
-};
 
 const InvestorProfile = () => {
   const { slug } = useParams();
@@ -93,32 +61,25 @@ const InvestorProfile = () => {
             <div className="flex items-start gap-5">
               <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-card border border-border overflow-hidden flex-shrink-0 flex items-center justify-center">
                 {investor.logo_url ? (
-                  <img
-                    src={investor.logo_url}
-                    alt={investor.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={investor.logo_url} alt={investor.name} className="w-full h-full object-cover" />
                 ) : (
                   <Building2 className="h-10 w-10 text-muted-foreground" />
                 )}
               </div>
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                    {investor.name}
-                  </h1>
+                  <h1 className="text-2xl md:text-3xl font-bold text-foreground">{investor.name}</h1>
                   <Badge variant="secondary">{investor.type}</Badge>
                 </div>
-                
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   <div className="flex items-center gap-1.5 text-muted-foreground">
                     <Building2 className="h-4 w-4" />
-                    <span className="font-medium text-foreground">{investor.portfolio_count || 0}</span> portfolio companies
+                    <span className="font-medium text-foreground">{portfolioCompanies.length}</span> portfolio companies
                   </div>
                   {investor.hq_country && (
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <MapPin className="h-4 w-4" />
-                      {investor.hq_country.flag_emoji} {investor.hq_country.name}
+                      {investor.hq_country.name}
                     </div>
                   )}
                 </div>
@@ -150,27 +111,23 @@ const InvestorProfile = () => {
       <section className="py-10">
         <div className="container-wide">
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Column */}
             <div className="lg:col-span-2 space-y-8">
-              {/* About */}
               <div className="bg-card rounded-xl border border-border p-6">
                 <h2 className="text-lg font-semibold text-foreground mb-4">About {investor.name}</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  {investor.description || (
-                    `${investor.name} is a ${investor.type.toLowerCase()} focused on investing in high-growth African startups. 
-                    With a portfolio of ${investor.portfolio_count || 0}+ companies, they have been instrumental in building 
-                    Africa's technology ecosystem.`
-                  )}
+                  {investor.description || `${investor.name} is a ${investor.type.toLowerCase()} focused on investing in high-growth African startups.`}
                 </p>
               </div>
 
-              {/* Portfolio Companies */}
               <div>
                 <h2 className="text-lg font-semibold text-foreground mb-4">Portfolio Companies</h2>
                 {portfolioCompanies.length > 0 ? (
                   <div className="grid md:grid-cols-2 gap-4">
                     {portfolioCompanies.slice(0, 6).map((company: any) => (
-                      <CompanyCard key={company.id} company={company} />
+                      <Link key={company.id} to={`/startups/${company.slug}`} className="block p-4 rounded-lg border border-border bg-card hover:border-primary/30 transition-colors">
+                        <h3 className="font-medium text-foreground">{company.name}</h3>
+                        {company.sector && <p className="text-sm text-muted-foreground">{company.sector.name}</p>}
+                      </Link>
                     ))}
                   </div>
                 ) : (
@@ -182,14 +139,11 @@ const InvestorProfile = () => {
               </div>
             </div>
 
-            {/* Sidebar */}
             <aside className="space-y-6">
-              {/* Investment Focus */}
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="font-semibold text-foreground mb-4">Investment Focus</h3>
-                
                 <div className="space-y-4">
-                  {investor.investor_sectors && investor.investor_sectors.length > 0 && (
+                  {investor.investor_sectors?.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
                         <Target className="h-4 w-4" />
@@ -202,8 +156,7 @@ const InvestorProfile = () => {
                       </div>
                     </div>
                   )}
-
-                  {investor.investor_regions && investor.investor_regions.length > 0 && (
+                  {investor.investor_regions?.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
                         <MapPin className="h-4 w-4" />
@@ -219,7 +172,6 @@ const InvestorProfile = () => {
                 </div>
               </div>
 
-              {/* Quick Stats */}
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="font-semibold text-foreground mb-4">Quick Stats</h3>
                 <dl className="space-y-3">
@@ -229,16 +181,8 @@ const InvestorProfile = () => {
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-sm text-muted-foreground">Portfolio Size</dt>
-                    <dd className="text-sm font-medium text-foreground">{investor.portfolio_count || 0}</dd>
+                    <dd className="text-sm font-medium text-foreground">{portfolioCompanies.length}</dd>
                   </div>
-                  {investor.total_investments && investor.total_investments > 0 && (
-                    <div className="flex justify-between">
-                      <dt className="text-sm text-muted-foreground">Total Invested</dt>
-                      <dd className="text-sm font-medium text-foreground">
-                        ${(investor.total_investments / 1000000).toFixed(0)}M
-                      </dd>
-                    </div>
-                  )}
                 </dl>
               </div>
             </aside>

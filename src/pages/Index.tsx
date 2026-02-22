@@ -18,6 +18,11 @@ const Index = () => {
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
+  const { data: trendingCompanies = [], isLoading: trendingLoading } = useTrendingCompanies();
+  const { data: sectors = [] } = useSectors();
+  const { data: countries = [] } = useCountries();
+  const { data: countriesWithCounts = [] } = useCountriesWithCounts();
+  const { data: dashboardStats } = useDashboardStats();
 
   const startupCountsByCode = useMemo(() => {
     const m = new Map<string, number>();
@@ -26,6 +31,8 @@ const Index = () => {
     });
     return m;
   }, [countriesWithCounts]);
+
+  const { data: countryEcosystem, isLoading: ecosystemLoading } = useCountryEcosystem(selectedCountry || '');
 
   const selectedCountryInfo = useMemo(() => {
     if (!selectedCountry) return null;
@@ -567,10 +574,6 @@ const Index = () => {
 
       {/* CTA Section */}
       <section className="relative section-lg overflow-hidden bg-[#0a0f1e]">
-        {/* Particles on CTA too */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none">
-          <Particles className="w-full h-full" quantity={80} ease={80} color="#10b981" staticity={50} size={0.4} />
-        </div>
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald/10 via-transparent to-gold/5 pointer-events-none" />
         <div className="container-wide relative z-10">

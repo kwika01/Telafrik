@@ -6,6 +6,8 @@ interface PageTransitionProps {
   className?: string;
 }
 
+const customEase = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number];
+
 const pageVariants = {
   initial: {
     opacity: 0,
@@ -16,8 +18,8 @@ const pageVariants = {
     y: 0,
     transition: {
       duration: 0.4,
-      ease: [0.25, 0.46, 0.45, 0.94], // Custom easing
-      when: "beforeChildren",
+      ease: customEase,
+      when: "beforeChildren" as const,
       staggerChildren: 0.1,
     },
   },
@@ -26,7 +28,7 @@ const pageVariants = {
     y: -10,
     transition: {
       duration: 0.2,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: customEase,
     },
   },
 };
@@ -41,7 +43,7 @@ const childVariants = {
     y: 0,
     transition: {
       duration: 0.3,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: customEase,
     },
   },
 };
@@ -98,7 +100,7 @@ const listItemVariants = {
     x: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut",
+      ease: "easeOut" as const,
     },
   },
 };

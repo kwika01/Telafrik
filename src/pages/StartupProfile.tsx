@@ -35,7 +35,7 @@ const StartupProfile = () => {
   const { slug } = useParams();
   const { data: company, isLoading, error } = useCompanyDetails(slug);
   const { data: similarCompanies = [] } = useSimilarCompanies(
-    company?.sector?.name ?? company?.sector_id,
+    company?.sector?.name,
     company?.id
   );
 
@@ -73,7 +73,7 @@ const StartupProfile = () => {
   const founders = company.founder ? [{ name: company.founder, role: 'Founder' }] : [];
   const fundingRounds = company.funding_rounds || [];
   const operatingCountries = company.operating_countries || '';
-  const isTrending = (company.trending_score || 0) > 50;
+  const isTrending = false;
 
   // Calculate total funding
   const totalFundingUsd = company.total_funding_usd || 0;
@@ -91,15 +91,7 @@ const StartupProfile = () => {
             {/* Logo & Basic Info */}
             <div className="flex items-start gap-5">
               <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-card border border-border overflow-hidden flex-shrink-0 flex items-center justify-center">
-                {company.logo_url ? (
-                  <img
-                    src={company.logo_url}
-                    alt={company.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <Building2 className="h-10 w-10 text-muted-foreground" />
-                )}
+                <Building2 className="h-10 w-10 text-muted-foreground" />
               </div>
               <div>
                 <div className="flex items-center gap-3 mb-2">
@@ -118,7 +110,7 @@ const StartupProfile = () => {
                   {company.hq_country?.name && (
                     <span className="flex items-center gap-1.5 text-muted-foreground">
                       <MapPin className="h-4 w-4" />
-                      {company.hq_country.flag_emoji || ''} {company.hq_country.name}
+                      {company.hq_country.flagEmoji || ''} {company.hq_country.name}
                     </span>
                   )}
                   {company.sector?.name && (
@@ -244,7 +236,7 @@ const StartupProfile = () => {
                   <div className="bg-card rounded-xl border border-border p-6">
                     <h2 className="text-lg font-semibold text-foreground mb-4">About {company.name}</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                      {company.description || company.tagline || 'No description available yet.'}
+                      {company.about || company.tagline || 'No description available yet.'}
                     </p>
                   </div>
 
