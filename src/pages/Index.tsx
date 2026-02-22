@@ -1,13 +1,14 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, DollarSign, Building2, Users, Globe, Zap, Sparkles, Loader2, MapPin, Layers } from 'lucide-react';
+
 import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import GlobalSearch from '@/components/search/GlobalSearch';
 import StartupCard from '@/components/startups/StartupCard';
 import { AfricaMapSVG, CountryPanel, COUNTRY_NAMES } from '@/components/map';
 import { Button } from '@/components/ui/button';
-import { Particles } from '@/components/ui/particles';
+
 import { useTrendingCompanies } from '@/api/queries/useCompanies';
 import { useSectors } from '@/api/queries/useSectors';
 import { useCountries, useCountriesWithCounts, useCountryEcosystem } from '@/api/queries/useCountries';
@@ -16,26 +17,7 @@ import { useDashboardStats } from '@/api/queries/useDashboard';
 const Index = () => {
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [particleColor, setParticleColor] = useState("#10b981");
 
-  const { data: trendingCompanies = [], isLoading: trendingLoading } = useTrendingCompanies(6);
-  const { data: sectors = [] } = useSectors();
-  const { data: countries = [] } = useCountries();
-  const { data: countriesWithCounts = [] } = useCountriesWithCounts();
-  const { data: dashboardStats } = useDashboardStats();
-  const { data: countryEcosystem, isLoading: ecosystemLoading } = useCountryEcosystem(selectedCountry);
-
-  // Detect dark mode via DOM class
-  useEffect(() => {
-    const update = () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      setParticleColor(isDark ? '#ffffff' : '#10b981');
-    };
-    update();
-    const observer = new MutationObserver(update);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
 
   const startupCountsByCode = useMemo(() => {
     const m = new Map<string, number>();
@@ -103,65 +85,46 @@ const Index = () => {
 
   return (
     <Layout>
-      {/* Split Hero Section */}
-      <section className="relative bg-background border-b border-border overflow-hidden min-h-[520px]">
-        {/* Particles Background - needs explicit h-full to fill parent */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none">
-          <Particles
-            className="w-full h-full"
-            quantity={120}
-            ease={80}
-            color={particleColor}
-            staticity={40}
-            size={0.5}
-          />
-        </div>
-        
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+      {/* Hero Section */}
+      <section className="relative bg-background border-b border-border overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Column: Hero Content */}
-            <motion.div 
-              className="lg:py-8"
+            <motion.div
               initial="hidden"
               animate="visible"
               variants={containerVariants}
             >
-              {/* Eyebrow */}
-              <motion.div 
+              <motion.div
                 variants={itemVariants}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20 text-foreground text-sm font-medium mb-6"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald/10 border border-emerald/20 text-sm font-medium mb-6"
               >
-                <Sparkles className="h-4 w-4 text-gold" />
-                Africa's Investment Intelligence Platform
+                <Sparkles className="h-3.5 w-3.5 text-emerald" />
+                <span className="text-emerald">Africa's Startup Intelligence</span>
               </motion.div>
-              
-              {/* Headline */}
-              <motion.h1 
+
+              <motion.h1
                 variants={itemVariants}
                 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground mb-4 leading-[1.15] tracking-tight"
               >
                 Discover Africa's Most{' '}
                 <span className="text-emerald">Promising Startups</span>
               </motion.h1>
-              
-              {/* Subheadline */}
-              <motion.p 
+
+              <motion.p
                 variants={itemVariants}
                 className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-lg"
               >
-                Track funding rounds, valuations, and growth metrics across {dashboardStats ? `${dashboardStats.totalCompanies.toLocaleString()}+` : '2,400+'}{' '}startups in {dashboardStats ? dashboardStats.countriesCovered : 54} African countries.
+                Track funding rounds, valuations, and growth metrics across{' '}
+                {dashboardStats ? `${dashboardStats.totalCompanies.toLocaleString()}+` : '2,400+'} startups in{' '}
+                {dashboardStats ? dashboardStats.countriesCovered : 54} African countries.
               </motion.p>
 
-              {/* Search */}
-              <motion.div 
-                variants={itemVariants}
-                className="mb-6"
-              >
+              <motion.div variants={itemVariants} className="mb-6">
                 <GlobalSearch size="lg" />
               </motion.div>
 
-              {/* Popular searches */}
-              <motion.div 
+              <motion.div
                 variants={itemVariants}
                 className="flex flex-wrap items-center gap-2 text-sm"
               >
@@ -178,139 +141,92 @@ const Index = () => {
               </motion.div>
             </motion.div>
 
-            {/* Right Column: Africa Map Intelligence Spotlight */}
-            <div className="relative lg:-mr-8 lg:-mt-8 lg:-mb-8">
-              {/* INTELLIGENCE SPOTLIGHT CONTAINER */}
-              <div className="relative rounded-2xl lg:rounded-3xl overflow-hidden bg-surface-alt/60 backdrop-blur-sm border border-border/40 shadow-elevated p-6 lg:p-8">
-                {/* ATMOSPHERIC DEPTH LAYER (Intelligence Lighting) */}
-                <div className="absolute inset-0 pointer-events-none">
-                  {/* Primary intelligence glow - emerald center */}
-                  <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[70%] h-[70%] bg-emerald/6 rounded-full blur-[100px]" />
-                  {/* Secondary premium glow - gold bottom */}
-                  <div className="absolute bottom-[15%] right-[20%] w-[60%] h-[60%] bg-gold/5 rounded-full blur-[80px]" />
-                  {/* Subtle warm ambient edge */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald/[0.02] via-transparent to-gold/[0.015]" />
-                </div>
-
-                {/* CONTENT (relative to atmospheric layer) */}
-                <div className="relative z-10">
-                  {/* Map header - intelligence module styling */}
-                  <div className="mb-4 pb-3 border-b border-border/50">
-                <div className="flex items-center justify-between mb-2">
+            {/* Right Column: Africa Map */}
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div className="rounded-2xl border border-border bg-card shadow-card p-5">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-3 pb-3 border-b border-border">
                   <div className="flex items-center gap-2">
-                    <div className="w-1 h-5 bg-emerald rounded-full shadow-sm shadow-emerald/20" />
-                    <h3 className="text-sm font-semibold text-foreground tracking-tight">Africa Startup Intelligence</h3>
+                    <Globe className="h-4 w-4 text-emerald" />
+                    <span className="text-sm font-semibold text-foreground">Ecosystem Map</span>
                   </div>
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald/5 border border-emerald/10">
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald/10 border border-emerald/20">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
                     <span className="text-[10px] font-medium text-emerald uppercase tracking-wider">Live</span>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Interactive ecosystem map • Hover to preview • Click to explore
-                </p>
-              </div>
 
-              {/* Premium hover tooltip */}
-              {hoveredCountry && !selectedCountry && hoveredCountryName && (
-                <div className="absolute top-[4.5rem] left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-                  <div className="bg-foreground/95 backdrop-blur-sm text-background rounded-xl px-5 py-3 shadow-2xl border border-background/10">
-                    <div className="flex items-center gap-3.5">
-                      <span className="font-semibold tracking-tight">{hoveredCountryName}</span>
-                      <div className="flex items-center gap-1.5 text-background/70 text-xs border-l border-background/20 pl-3">
-                        <div className="w-1 h-1 rounded-full bg-gold" />
-                        <span className="font-medium tabular-nums">{startupCountsByCode.get(hoveredCountry) || 0} startups</span>
-                      </div>
-                    </div>
-                    {/* Tooltip arrow */}
-                    <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-foreground/95 rotate-45 border-b border-r border-background/10" />
-                  </div>
-                </div>
-              )}
-
-              {/* Premium Map Module Container */}
-              <div className="relative">
-                {/* CONTINENT AURA: Enhanced for spotlight context */}
-                <div className="absolute inset-0 pointer-events-none">
-                  {/* Primary emerald aura - centered on map */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] bg-emerald/10 rounded-full blur-[80px]" />
-                  {/* Secondary gold warmth - bottom right */}
-                  <div className="absolute bottom-[10%] right-[10%] w-[50%] h-[50%] bg-gold/8 rounded-full blur-[60px]" />
-                </div>
-                
-                {/* Premium elevated container with enhanced authority */}
-                <div className="map-container-premium relative shadow-[0_0_0_1px_hsl(var(--emerald)/0.08),0_20px_40px_-8px_hsl(222_47%_11%/0.18)]">
-                  {/* DATA COLOR RAILS: Top emerald intelligence line */}
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald/40 to-transparent" />
-                  {/* Bottom gold micro glow */}
-                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold/35 to-transparent" />
-                  
-                  {/* Map content area with premium background */}
-                  <div className="map-content-area">
-                    {/* Optional continental vignette */}
-                    <div className="map-vignette" />
-                    
-                    <AfricaMapSVG
-                      hoveredCountry={hoveredCountry}
-                      selectedCountry={selectedCountry}
-                      onCountryHover={setHoveredCountry}
-                      onCountryClick={handleCountryClick}
-                      startupCounts={startupCountsByCode}
-                      className="w-full h-auto max-h-[380px] relative z-10"
-                    />
-                    
-                    {/* Choropleth Legend */}
-                    <div className="absolute bottom-4 right-4 z-20 bg-card/95 backdrop-blur-md border border-border shadow-lg rounded-xl px-3 py-2">
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1.5 font-semibold">Startups</p>
-                      <div className="flex items-center gap-1">
-                        {[
-                          { color: 'hsl(158, 60%, 88%)', label: '<10' },
-                          { color: 'hsl(158, 70%, 75%)', label: '30+' },
-                          { color: 'hsl(158, 80%, 48%)', label: '60+' },
-                          { color: 'hsl(158, 94%, 35%)', label: '100+' },
-                        ].map(({ color, label }) => (
-                          <div key={label} className="flex flex-col items-center gap-0.5">
-                            <div className="w-5 h-3 rounded-sm" style={{ backgroundColor: color }} />
-                            <span className="text-[8px] text-muted-foreground">{label}</span>
-                          </div>
-                        ))}
+                {/* Hover tooltip */}
+                {hoveredCountry && !selectedCountry && hoveredCountryName && (
+                  <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+                    <div className="bg-foreground text-background rounded-lg px-4 py-2 shadow-lg text-sm">
+                      <div className="flex items-center gap-3">
+                        <span className="font-semibold">{hoveredCountryName}</span>
+                        <span className="text-background/60 text-xs tabular-nums">
+                          {startupCountsByCode.get(hoveredCountry) || 0} startups
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                )}
 
-              {/* Country Panel - appears below map when selected */}
-              {selectedCountryInfo && (
-                <div className="mt-4">
-                  <CountryPanel
-                    countryCode={selectedCountryInfo.code}
-                    countryName={selectedCountryInfo.name}
-                    flagEmoji={selectedCountryInfo.flagEmoji}
-                    startupCount={selectedCountryInfo.startupCount}
-                    topSectors={selectedCountryInfo.topSectors}
-                    trendingStartups={selectedCountryInfo.trendingStartups}
-                    onClose={() => setSelectedCountry(null)}
-                    isLoading={selectedCountryInfo.isLoading}
+                {/* Map */}
+                <div className="relative">
+                  <AfricaMapSVG
+                    hoveredCountry={hoveredCountry}
+                    selectedCountry={selectedCountry}
+                    onCountryHover={setHoveredCountry}
+                    onCountryClick={handleCountryClick}
+                    startupCounts={startupCountsByCode}
+                    className="w-full h-auto max-h-[400px]"
                   />
-                </div>
-              )}
 
-              {/* Prompt to interact - only show when no country selected */}
-              {!selectedCountry && (
-                <div className="mt-5 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/50 border border-border">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-gold animate-pulse shadow-sm shadow-gold/30" />
-                    <span className="font-medium">Click any country to explore</span>
+                  {/* Legend */}
+                  <div className="absolute bottom-3 right-3 bg-card/95 backdrop-blur-sm border border-border rounded-lg px-2.5 py-1.5">
+                    <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1 font-semibold">Startups</p>
+                    <div className="flex items-center gap-1">
+                      {[
+                        { color: 'hsl(158, 60%, 88%)', label: '<10' },
+                        { color: 'hsl(158, 70%, 75%)', label: '30+' },
+                        { color: 'hsl(158, 80%, 48%)', label: '60+' },
+                        { color: 'hsl(158, 94%, 35%)', label: '100+' },
+                      ].map(({ color, label }) => (
+                        <div key={label} className="flex flex-col items-center gap-0.5">
+                          <div className="w-4 h-2.5 rounded-sm" style={{ backgroundColor: color }} />
+                          <span className="text-[8px] text-muted-foreground">{label}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              )}
-                </div>
-                {/* END: Content wrapper */}
+
+                {/* Country Panel */}
+                {selectedCountryInfo ? (
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <CountryPanel
+                      countryCode={selectedCountryInfo.code}
+                      countryName={selectedCountryInfo.name}
+                      flagEmoji={selectedCountryInfo.flagEmoji}
+                      startupCount={selectedCountryInfo.startupCount}
+                      topSectors={selectedCountryInfo.topSectors}
+                      trendingStartups={selectedCountryInfo.trendingStartups}
+                      onClose={() => setSelectedCountry(null)}
+                      isLoading={selectedCountryInfo.isLoading}
+                    />
+                  </div>
+                ) : (
+                  <p className="text-center text-xs text-muted-foreground mt-3 pt-3 border-t border-border">
+                    <MapPin className="inline h-3 w-3 mr-1" />
+                    Click any country to explore its ecosystem
+                  </p>
+                )}
               </div>
-              {/* END: Intelligence Spotlight Container */}
-            </div>
-            {/* END: Right Column */}
+            </motion.div>
           </div>
         </div>
       </section>
