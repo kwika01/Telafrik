@@ -1,7 +1,5 @@
 /**
- * Funding Service
- *
- * TelAfrik: deals from "TelAfrik Investors Companies" (fund_name, fund_amount)
+ * Funding Service - uses actual DB schema (funding_rounds table)
  */
 import { supabase } from '@/integrations/supabase/client';
 
@@ -35,77 +33,49 @@ function formatAmount(amountUsd: number | null): string {
   return `$${amountUsd}`;
 }
 
-function parseAmount(val: string | null | undefined): number | null {
-  if (!val) return null;
-  const raw = String(val).replace(/[$,KMB]/g, '');
-  const num = parseFloat(raw);
-  if (isNaN(num)) return null;
-  if (String(val).includes('B')) return num * 1e9;
-  if (String(val).includes('M')) return num * 1e6;
-  if (String(val).includes('K')) return num * 1e3;
-  return num;
-}
-
-/**
- * Fetches latest deals (TelAfrik Investors Companies)
- */
 export async function getLatestFundingRounds(limit = 5): Promise<LatestDeal[]> {
   const { data, error } = await supabase
-    .from('TelAfrik Investors Companies')
-    .select('id, fund_name, fund_amount')
-    .limit(limit * 3);
+    .from('funding_rounds')
+    .select('id, stage, amount_usd, date, companies:company_id(name, sectors:sector_id(name))')
+    .order('date', { ascending: false })
+    .limit(limit);
 
   if (error) {
-    console.warn('TelAfrik Investors Companies not available:', error.message);
+    console.warn('funding_rounds not available:', error.message);
     return [];
   }
 
-  const seen = new Set<string>();
-  const deals: LatestDeal[] = [];
-  for (const row of data || []) {
-    const r = row as { id: string; fund_name: string; fund_amount?: string };
-    const key = `${r.fund_name}-${r.fund_amount}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    deals.push({
-      company: r.fund_name ?? '—',
-      amount: r.fund_amount ?? '—',
-      round: '—',
-      date: '—',
-      sector: '—',
-    });
-    if (deals.length >= limit) break;
-  }
-  return deals;
+  return (data || []).map((row: any) => ({
+    company: row.companies?.name ?? '—',
+    amount: formatAmount(row.amount_usd),
+    round: row.stage || '—',
+    date: row.date || '—',
+    sector: row.companies?.sectors?.name ?? '—',
+  }));
 }
 
-/**
- * Fetches all deals for Deals page (TelAfrik Investors Companies)
- */
 export async function getDeals(): Promise<Deal[]> {
   const { data, error } = await supabase
-    .from('TelAfrik Investors Companies')
-    .select('id, fund_name, fund_amount');
+    .from('funding_rounds')
+    .select('id, stage, amount_usd, date, valuation_usd, companies:company_id(name, slug, sectors:sector_id(name), countries:hq_country_id(name))')
+    .order('date', { ascending: false });
 
   if (error) {
-    console.warn('TelAfrik Investors Companies not available:', error.message);
+    console.warn('funding_rounds not available:', error.message);
     return [];
   }
 
-  return (data || []).map((row: { id: string; fund_name: string; fund_amount?: string }) => {
-    const amountUsd = parseAmount(row.fund_amount);
-    return {
-      id: String(row.id),
-      company: row.fund_name ?? '—',
-      companySlug: (row.fund_name ?? '').toLowerCase().replace(/\s+/g, '-'),
-      amount: row.fund_amount ?? formatAmount(amountUsd),
-      amountUsd,
-      round: '—',
-      date: '—',
-      investors: [row.fund_name].filter(Boolean),
-      sector: '—',
-      country: '—',
-      valuation: '—',
-    };
-  });
+  return (data || []).map((row: any) => ({
+    id: row.id,
+    company: row.companies?.name ?? '—',
+    companySlug: row.companies?.slug ?? '',
+    amount: formatAmount(row.amount_usd),
+    amountUsd: row.amount_usd,
+    round: row.stage || '—',
+    date: row.date || '—',
+    investors: [],
+    sector: row.companies?.sectors?.name ?? '—',
+    country: row.companies?.countries?.name ?? '—',
+    valuation: formatAmount(row.valuation_usd),
+  }));
 }
