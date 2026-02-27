@@ -145,12 +145,19 @@ IMPORTANT: You have been given the following LIVE data from the TelAfrik databas
 
 ${contextText}
 
-Guidelines:
-- Answer using ONLY the data provided above.
-- Present companies or investors as clear bullet-point lists with key details.
-- Include country, sector, stage, and valuation whenever available.
-- Be concise but thorough. If the list is long, highlight the top 5–10.
-- Never invent data not present above.`;
+FORMATTING RULES (strictly follow these):
+- Do NOT use markdown asterisks like **bold** or *italic*. Plain text only.
+- Use numbered lists like: 1. Company Name — Sector | Country | Stage | Valuation
+- Keep each entry on one line, separated by " | "
+- Start with a single short intro sentence, then the numbered list.
+- If the list is long, show the top 10 most relevant entries.
+- Never invent data not present above.
+
+Example format:
+Here are the top fintech startups in Ghana:
+
+1. Zeepay — Fintech | Ghana | Seed | $120M-$200M
+2. PaySwitch — Fintech | Ghana | Growth | $25M-$50M`;
 }
 
 async function callOpenAI(

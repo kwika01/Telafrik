@@ -73,26 +73,16 @@ const ResultCard = ({ result, index }: { result: EntityResult; index: number }) 
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <div>
+              <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
                   {result.name}
                 </h4>
-                <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                  {result.headline}
-                </p>
+                {result.headline && (
+                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                    {result.headline}
+                  </p>
+                )}
               </div>
-              
-              {/* Score Badge */}
-              <Badge 
-                variant="outline" 
-                className={`flex-shrink-0 ${
-                  result.score >= 80 ? 'border-emerald-500 text-emerald-600 bg-emerald-500/10' :
-                  result.score >= 60 ? 'border-amber-500 text-amber-600 bg-amber-500/10' :
-                  'border-muted-foreground'
-                }`}
-              >
-                {result.score}%
-              </Badge>
             </div>
 
             {/* Meta info */}
@@ -233,14 +223,11 @@ export const ResultsPanel = ({ response, isLoading, onSaveToCollection }: Result
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    <span className="font-medium text-sm text-primary">AI Summary</span>
-                    <Badge variant="outline" className="text-xs">
-                      {response.confidence}% confidence
-                    </Badge>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm text-primary">AI Summary</span>
                   </div>
-                  <p className="text-foreground leading-relaxed">
+                  <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">
                     {response.answer_summary}
                   </p>
                 </div>
