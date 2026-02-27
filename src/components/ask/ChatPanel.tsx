@@ -26,11 +26,15 @@ interface ChatPanelProps {
   onSelectResult?: (response: unknown) => void;
 }
 
-const QUICK_PROMPTS = [
-  { text: "Top fintech startups in Ghana", icon: Building2 },
-  { text: "Investors active in climate in East Africa", icon: Users },
-  { text: "Seed-stage investors in Nigeria", icon: Wallet },
-  { text: "Recent Series A funding rounds", icon: TrendingUp },
+const QUICK_PROMPTS: { text: string; icon: typeof Building2; scope: SearchScope }[] = [
+  { text: "Top fintech startups in Nigeria", icon: Building2, scope: 'startups' },
+  { text: "Healthtech startups in Kenya and South Africa", icon: Building2, scope: 'startups' },
+  { text: "Agritech startups across East Africa", icon: Building2, scope: 'startups' },
+  { text: "Series A startups in Ghana and Egypt", icon: Building2, scope: 'startups' },
+  { text: "Which investors back seed-stage startups in Africa?", icon: Users, scope: 'investors' },
+  { text: "Investors focused on cleantech and agritech", icon: Wallet, scope: 'investors' },
+  { text: "Series B and growth-stage startups in Africa", icon: TrendingUp, scope: 'funding' },
+  { text: "E-commerce and logistics startups in Nigeria", icon: Building2, scope: 'startups' },
 ];
 
 const SCOPE_OPTIONS: { value: SearchScope; label: string; icon: typeof Building2 }[] = [
@@ -80,7 +84,8 @@ export const ChatPanel = ({
     setInput('');
   };
 
-  const handleQuickPrompt = (prompt: string) => {
+  const handleQuickPrompt = (prompt: string, promptScope: SearchScope) => {
+    onScopeChange(promptScope);
     onSendMessage(prompt);
   };
 
@@ -253,13 +258,13 @@ export const ChatPanel = ({
                   {QUICK_PROMPTS.map((prompt, i) => (
                     <button
                       key={i}
-                      onClick={() => handleQuickPrompt(prompt.text)}
+                      onClick={() => handleQuickPrompt(prompt.text, prompt.scope)}
                       className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-all text-left group"
                     >
-                      <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                         <prompt.icon className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-sm">{prompt.text}</span>
+                      <span className="text-sm leading-snug">{prompt.text}</span>
                     </button>
                   ))}
                 </div>
