@@ -115,7 +115,10 @@ const InvestorProfile = () => {
               <div className="bg-card rounded-xl border border-border p-6">
                 <h2 className="text-lg font-semibold text-foreground mb-4">About {investor.name}</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  {investor.description || `${investor.name} is a ${investor.type.toLowerCase()} focused on investing in high-growth African startups.`}
+                  {`${investor.name} is a ${(investor.type as string).toLowerCase()} investing in high-growth African startups.`
+                    + (investor.stage_focus ? ` Stage focus: ${investor.stage_focus}.` : '')
+                    + (investor.sector_focus ? ` Sector focus: ${investor.sector_focus}.` : '')
+                    + (investor.regions ? ` Active regions: ${investor.regions}.` : '')}
                 </p>
               </div>
 
@@ -123,11 +126,15 @@ const InvestorProfile = () => {
                 <h2 className="text-lg font-semibold text-foreground mb-4">Portfolio Companies</h2>
                 {portfolioCompanies.length > 0 ? (
                   <div className="grid md:grid-cols-2 gap-4">
-                    {portfolioCompanies.slice(0, 6).map((company: any) => (
-                      <Link key={company.id} to={`/startups/${company.slug}`} className="block p-4 rounded-lg border border-border bg-card hover:border-primary/30 transition-colors">
+                    {portfolioCompanies.slice(0, 12).map((company: any) => (
+                      <div key={company.id} className="block p-4 rounded-lg border border-border bg-card">
                         <h3 className="font-medium text-foreground">{company.name}</h3>
-                        {company.sector && <p className="text-sm text-muted-foreground">{company.sector.name}</p>}
-                      </Link>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {company.round && <p className="text-xs text-muted-foreground">{company.round}</p>}
+                          {company.amount && <p className="text-xs font-semibold text-primary">{company.amount}</p>}
+                          {company.year && <p className="text-xs text-muted-foreground">{company.year}</p>}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 ) : (
@@ -142,34 +149,32 @@ const InvestorProfile = () => {
             <aside className="space-y-6">
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="font-semibold text-foreground mb-4">Investment Focus</h3>
-                <div className="space-y-4">
-                  {investor.investor_sectors?.length > 0 && (
+                <dl className="space-y-3">
+                  {investor.stage_focus && (
                     <div>
-                      <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
-                        <Target className="h-4 w-4" />
-                        Sectors
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {investor.investor_sectors.map((is: any) => (
-                          <Badge key={is.sector?.id} variant="secondary">{is.sector?.name}</Badge>
-                        ))}
-                      </div>
+                      <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Stage</dt>
+                      <dd className="text-sm text-foreground">{investor.stage_focus}</dd>
                     </div>
                   )}
-                  {investor.investor_regions?.length > 0 && (
+                  {investor.sector_focus && (
                     <div>
-                      <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        Regions
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {investor.investor_regions.map((ir: any, idx: number) => (
-                          <Badge key={idx} variant="outline">{ir.region}</Badge>
-                        ))}
-                      </div>
+                      <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Sectors</dt>
+                      <dd className="text-sm text-foreground">{investor.sector_focus}</dd>
                     </div>
                   )}
-                </div>
+                  {investor.regions && (
+                    <div>
+                      <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Regions</dt>
+                      <dd className="text-sm text-foreground">{investor.regions}</dd>
+                    </div>
+                  )}
+                  {investor.check_size_usd && (
+                    <div>
+                      <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Check Size</dt>
+                      <dd className="text-sm font-semibold text-primary">{investor.check_size_usd}</dd>
+                    </div>
+                  )}
+                </dl>
               </div>
 
               <div className="bg-card rounded-xl border border-border p-5">
@@ -180,7 +185,7 @@ const InvestorProfile = () => {
                     <dd className="text-sm font-medium text-foreground">{investor.type}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-sm text-muted-foreground">Portfolio Size</dt>
+                    <dt className="text-sm text-muted-foreground">Deals Tracked</dt>
                     <dd className="text-sm font-medium text-foreground">{portfolioCompanies.length}</dd>
                   </div>
                 </dl>

@@ -89,7 +89,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     supabase.from('companies').select('company_id', { count: 'exact', head: true }),
     supabase.from('investors').select('fund_id', { count: 'exact', head: true }),
     db.from('companies').select('sector').not('sector', 'is', null).limit(10000),
-    db.from('companies').select('Country').not('Country', 'is', null).limit(10000),
+    db.from('companies').select('country').not('country', 'is', null).limit(10000),
     // Pull fund_amount from TelAfrik Investors Companies — this is where actual deal data lives
     db.from('TelAfrik Investors Companies').select('fund_amount').limit(10000),
   ]);
@@ -105,10 +105,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   );
   const activeSectors = sectorSet.size;
 
-  // Countries covered - from companies.Country
+  // Countries covered - from companies.country
   const countrySet = new Set<string>(
-    ((countryRes.data as { Country?: string }[]) || [])
-      .map((r) => r.Country?.trim())
+    ((countryRes.data as { country?: string }[]) || [])
+      .map((r) => r.country?.trim())
       .filter((s): s is string => !!s)
   );
   const countriesCovered = countrySet.size;
@@ -152,12 +152,12 @@ export async function getMarketHeatmap(limit = 8): Promise<MarketHeatmapItem[]> 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = await (supabase as any)
     .from('companies')
-    .select('Country')
-    .not('Country', 'is', null);
+    .select('country')
+    .not('country', 'is', null);
 
   const byCountry = new Map<string, number>();
-  for (const row of (data as { Country?: string }[]) || []) {
-    const c = row.Country?.trim();
+  for (const row of (data as { country?: string }[]) || []) {
+    const c = row.country?.trim();
     if (c) byCountry.set(c, (byCountry.get(c) || 0) + 1);
   }
 
@@ -178,23 +178,23 @@ export async function getMarketHeatmap(limit = 8): Promise<MarketHeatmapItem[]> 
 }
 
 /**
- * Fetches top sector for spotlight
+ * Fetches top sector for spotlight, including computed funding total
  */
 export async function getSectorSpotlight(): Promise<SectorSpotlightData | null> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: companyRows } = await (supabase as any)
     .from('companies')
-    .select('sector, company')
+    .select('sector, company, valuation_range, stage')
     .not('sector', 'is', null);
 
-  const bySector = new Map<string, { companies: number; names: string[] }>();
-  for (const row of (companyRows as { sector: string; company: string }[]) || []) {
-    const r = row;
-    const s = r.sector?.trim();
+  const bySector = new Map<string, { companies: number; names: string[]; totalFunding: number }>();
+  for (const row of (companyRows as { sector: string; company: string; valuation_range?: string; stage?: string }[]) || []) {
+    const s = row.sector?.trim();
     if (!s) continue;
-    const existing = bySector.get(s) ?? { companies: 0, names: [] };
+    const existing = bySector.get(s) ?? { companies: 0, names: [], totalFunding: 0 };
     existing.companies += 1;
-    if (r.company) existing.names.push(r.company);
+    existing.totalFunding += parseRangeToUsd(row.valuation_range);
+    if (row.company) existing.names.push(row.company);
     bySector.set(s, existing);
   }
 
@@ -208,7 +208,7 @@ export async function getSectorSpotlight(): Promise<SectorSpotlightData | null> 
     name: topSectorName,
     slug,
     companies: stats.companies,
-    totalFunding: '—',
+    totalFunding: formatFunding(stats.totalFunding),
     growth: '+—',
     description: `${topSectorName} startups across Africa.`,
     topCompanies: stats.names.slice(0, 5),

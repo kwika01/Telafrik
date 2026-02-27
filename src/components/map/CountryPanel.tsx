@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Building2, Layers, ArrowRight, X, Sparkles, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 interface CountryPanelProps {
   countryCode: string | null;
@@ -25,38 +23,34 @@ const CountryPanel = ({
   trendingStartups = [],
   onClose,
   isLoading = false,
-  className,
 }: CountryPanelProps) => {
-  // Calculate max count for progress bars
   const maxSectorCount = Math.max(...(topSectors ?? []).map(s => s.count), 1);
 
   return (
     <AnimatePresence>
       {countryCode && (
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 8 }}
-          transition={{ duration: 0.15, ease: 'easeOut' }}
-          className={cn(
-            'bg-card border border-border rounded-xl shadow-lg overflow-hidden',
-            className
-          )}
+          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 6, scale: 0.98 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="bg-slate-900/70 backdrop-blur border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
         >
-          {/* Header with accent bar */}
-          <div className="bg-emerald/5 border-b border-border px-5 py-4 relative">
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-emerald" />
-            <div className="flex items-start justify-between">
+          {/* Header */}
+          <div className="relative bg-gradient-to-r from-emerald-500/10 to-transparent border-b border-white/5 px-6 py-5">
+            {/* Accent line */}
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-emerald-500/0" />
+            <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <span className="text-2xl leading-none">{flagEmoji}</span>
+                <span className="text-3xl leading-none">{flagEmoji}</span>
                 <div>
-                  <h3 className="text-base font-semibold text-foreground leading-tight">{countryName}</h3>
-                  <p className="text-[11px] text-muted-foreground mt-1">Startup Ecosystem</p>
+                  <h3 className="text-white font-bold text-lg leading-tight">{countryName}</h3>
+                  <p className="text-slate-400 text-xs mt-0.5">Startup Ecosystem</p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground -mt-1 -mr-1"
+                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-slate-400 hover:text-white -mt-0.5"
                 aria-label="Close panel"
               >
                 <X className="h-4 w-4" />
@@ -64,90 +58,100 @@ const CountryPanel = ({
             </div>
           </div>
 
-          {/* Content */}
+          {/* Body */}
           <div className="p-5 space-y-5">
-            {/* Stats card */}
-            <div className="flex items-center gap-4 bg-muted/50 rounded-lg p-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald/10 flex items-center justify-center flex-shrink-0">
-                <Building2 className="h-5 w-5 text-emerald" />
+            {/* Startup count stat */}
+            <div className="flex items-center gap-4 bg-white/5 border border-white/8 rounded-xl p-4">
+              <div className="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                <Building2 className="h-5 w-5 text-emerald-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground leading-none">{startupCount.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground mt-1">Startups Tracked</p>
+                <p className="text-2xl font-bold text-white leading-none tabular-nums">
+                  {startupCount.toLocaleString()}
+                </p>
+                <p className="text-slate-400 text-xs mt-1">Startups Tracked</p>
               </div>
             </div>
 
-            {/* Top Sectors with mini progress bars */}
+            {/* Top Sectors */}
             <div>
-              {isLoading && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Loading ecosystem data...</span>
+              {isLoading ? (
+                <div className="flex items-center gap-2 text-sm text-slate-400 mb-3">
+                  <Loader2 className="h-4 w-4 animate-spin text-emerald-400" />
+                  <span>Loading ecosystem data…</span>
                 </div>
-              )}
+              ) : null}
               <div className="flex items-center gap-2 mb-3">
-                <Layers className="h-3.5 w-3.5 text-indigo" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Top Sectors</span>
+                <Layers className="h-3.5 w-3.5 text-slate-400" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  Top Sectors
+                </span>
               </div>
               {topSectors.length > 0 ? (
-                <div className="space-y-2.5">
-                  {topSectors.slice(0, 4).map((sector) => (
-                    <div key={sector.name} className="group">
-                      <div className="flex items-center justify-between text-sm mb-1">
-                        <span className="text-foreground">{sector.name}</span>
-                        <span className="text-xs font-medium text-muted-foreground tabular-nums">{sector.count}</span>
+                <div className="space-y-3">
+                  {topSectors.slice(0, 4).map((sector, i) => (
+                    <div key={sector.name}>
+                      <div className="flex items-center justify-between text-sm mb-1.5">
+                        <span className="text-slate-200 font-medium">{sector.name}</span>
+                        <span className="text-xs font-semibold text-emerald-400 tabular-nums">
+                          {sector.count}
+                        </span>
                       </div>
-                      {/* Progress bar */}
-                      <div className="h-1 bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-indigo/40 rounded-full transition-all duration-300"
-                          style={{ width: `${(sector.count / maxSectorCount) * 100}%` }}
+                      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${(sector.count / maxSectorCount) * 100}%` }}
+                          transition={{ duration: 0.5, delay: i * 0.07, ease: 'easeOut' }}
                         />
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground italic">No sector data available</p>
+                <p className="text-sm text-slate-500 italic">No sector data available</p>
               )}
             </div>
 
-            {/* Trending Startups */}
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="h-3.5 w-3.5 text-terracotta" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Notable Startups</span>
-              </div>
-              {trendingStartups.length > 0 ? (
+            {/* Notable Startups */}
+            {trendingStartups.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    Notable Startups
+                  </span>
+                </div>
                 <div className="space-y-1">
-                  {trendingStartups.slice(0, 3).map((startup, index) => (
+                  {trendingStartups.slice(0, 4).map((startup, index) => (
                     <Link
                       key={startup.id}
                       to={`/startup/${startup.id}`}
-                      className="flex items-center gap-3 text-sm hover:bg-muted/50 rounded-lg px-2 py-2 -mx-2 transition-colors group"
+                      className="flex items-center gap-3 text-sm hover:bg-white/5 rounded-xl px-3 py-2.5 -mx-1 transition-colors group"
                     >
-                      <span className="w-5 h-5 rounded bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                      <span className="w-5 h-5 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-slate-400 group-hover:bg-emerald-500/20 group-hover:text-emerald-300 transition-colors flex-shrink-0">
                         {index + 1}
                       </span>
-                      <span className="text-foreground font-medium flex-1 truncate">{startup.name}</span>
-                      <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex-shrink-0">
+                      <span className="text-slate-200 font-medium flex-1 truncate group-hover:text-white transition-colors">
+                        {startup.name}
+                      </span>
+                      <span className="text-[10px] text-slate-400 bg-white/5 px-2 py-0.5 rounded-full flex-shrink-0 truncate max-w-[70px]">
                         {startup.sector}
                       </span>
                     </Link>
                   ))}
                 </div>
-              ) : (
-                <p className="text-sm text-muted-foreground italic">No notable startups yet</p>
-              )}
-            </div>
+              </div>
+            )}
 
-            {/* Action */}
-            <Button asChild className="w-full group" size="sm">
-              <Link to={`/directory?country=${countryCode}`}>
-                View All {startupCount} Startups
-                <ArrowRight className="ml-2 h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </Button>
+            {/* CTA */}
+            <Link
+              to={`/directory?country=${encodeURIComponent(countryName)}`}
+              className="flex items-center justify-center gap-2 w-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold rounded-xl py-3 transition-colors group"
+            >
+              View All {startupCount} Startups
+              <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
         </motion.div>
       )}

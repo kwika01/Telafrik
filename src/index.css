@@ -1,5 +1,5 @@
-/* TelAfrik Typography System - Inter (body) + Playfair Display (headings) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* TelAfrik Typography System - Inter (body) + Source Serif 4 (headings) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -14,42 +14,42 @@
   /* === Light Theme (Default) === */
   :root {
     /* === SURFACE TIER SYSTEM === */
-    --page: 40 25% 98%;               /* Subtle warm Africa-inspired tint (less cold SaaS) */
-    --surface: 0 0% 100%;             /* #FFFFFF - pure white cards */
-    --surface-elevated: 0 0% 100%;    /* #FFFFFF - elevated panels (use with stronger shadow) */
-    --surface-alt: 40 20% 97%;        /* #F8F7F5 - warm sand tint for alternating sections */
+    --page: 0 0% 100%;
+    --surface: 0 0% 100%;
+    --surface-elevated: 0 0% 100%;
+    --surface-alt: 215 15% 98%;
     
     /* === Core Background & Foreground === */
-    --background: 0 0% 98%;           /* #FAFAFA - off-white (legacy, prefer --page) */
-    --foreground: 222 47% 11%;        /* #111827 - charcoal */
+    --background: 0 0% 100%;
+    --foreground: 215 25% 15%;
 
-    /* === Card Surfaces (legacy, prefer --surface) === */
-    --card: 0 0% 100%;                /* #FFFFFF - pure white */
-    --card-foreground: 222 47% 11%;
-    --card-hover: 220 20% 98%;
+    /* === Card Surfaces === */
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+    --card-hover: 215 15% 98%;
     --card-elevated: 0 0% 100%;
 
     /* === Popover/Dropdown === */
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 215 25% 15%;
 
-    /* === Primary (Charcoal/Navy) === */
-    --primary: 222 47% 11%;           /* #0F172A - charcoal */
+    /* === Primary (Brand Blue) === */
+    --primary: 215 85% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 222 47% 15%;
-    --primary-muted: 222 20% 85%;
+    --primary-hover: 215 85% 40%;
+    --primary-muted: 215 40% 85%;
 
     /* === Secondary === */
-    --secondary: 220 14% 96%;         /* #F3F4F6 */
-    --secondary-foreground: 222 47% 20%;
-    --secondary-hover: 220 14% 92%;
+    --secondary: 215 15% 95%;
+    --secondary-foreground: 215 25% 25%;
+    --secondary-hover: 215 15% 91%;
 
     /* === Muted Tones === */
-    --muted: 220 14% 96%;             /* #F3F4F6 */
-    --muted-foreground: 220 9% 46%;   /* #6B7280 */
+    --muted: 215 15% 96%;
+    --muted-foreground: 215 15% 45%;
 
-    /* === Accent (teal for CTAs) === */
-    --accent: 173 58% 39%;
+    /* === Accent === */
+    --accent: 215 85% 45%;
     --accent-foreground: 0 0% 100%;
 
     /* === Semantic Colors === */
@@ -93,23 +93,23 @@
     --orange-foreground: 0 0% 100%;
 
     /* === Border & Input === */
-    --border: 220 13% 91%;            /* subtle border */
-    --border-hover: 220 13% 85%;
-    --input: 220 13% 91%;
-    --ring: 222 47% 11%;              /* charcoal focus ring */
+    --border: 215 20% 90%;
+    --border-hover: 215 20% 82%;
+    --input: 215 20% 90%;
+    --ring: 215 85% 45%;
 
     /* === Sidebar === */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 222 47% 20%;
-    --sidebar-primary: 222 47% 11%;
+    --sidebar-background: 215 15% 98%;
+    --sidebar-foreground: 215 25% 25%;
+    --sidebar-primary: 215 85% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 96%;
-    --sidebar-accent-foreground: 222 47% 20%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 222 47% 11%;
+    --sidebar-accent: 215 15% 94%;
+    --sidebar-accent-foreground: 215 25% 25%;
+    --sidebar-border: 215 20% 90%;
+    --sidebar-ring: 215 85% 45%;
 
     /* === Radius System === */
-    --radius: 0.75rem;                /* 12px base */
+    --radius: 0.625rem;               /* 10px base - matches live site */
     --radius-sm: 0.5rem;
     --radius-md: 0.75rem;
     --radius-lg: 1rem;
@@ -132,18 +132,18 @@
     --space-24: 6rem;
 
     /* === DEPTH + ELEVATION SYSTEM === */
-    --shadow-xs: 0 1px 2px 0 hsl(222 47% 11% / 0.04);
-    --shadow-sm: 0 1px 3px 0 hsl(222 47% 11% / 0.06), 0 1px 2px -1px hsl(222 47% 11% / 0.04);
-    --shadow-md: 0 4px 8px -2px hsl(222 47% 11% / 0.08), 0 2px 4px -2px hsl(222 47% 11% / 0.05);
-    --shadow-lg: 0 12px 20px -4px hsl(222 47% 11% / 0.1), 0 4px 8px -4px hsl(222 47% 11% / 0.06);
-    --shadow-xl: 0 20px 30px -6px hsl(222 47% 11% / 0.12), 0 8px 12px -6px hsl(222 47% 11% / 0.08);
-    --shadow-2xl: 0 30px 50px -12px hsl(222 47% 11% / 0.18);
-    --shadow-inner: inset 0 2px 4px 0 hsl(222 47% 11% / 0.05);
+    --shadow-xs: 0 1px 2px 0 hsl(215 25% 15% / 0.04);
+    --shadow-sm: 0 1px 2px 0 hsl(215 25% 15% / 0.04);
+    --shadow-md: 0 4px 6px -1px hsl(215 25% 15% / 0.06), 0 2px 4px -2px hsl(215 25% 15% / 0.04);
+    --shadow-lg: 0 10px 15px -3px hsl(215 25% 15% / 0.08), 0 4px 6px -4px hsl(215 25% 15% / 0.04);
+    --shadow-xl: 0 20px 25px -5px hsl(215 25% 15% / 0.1), 0 8px 10px -6px hsl(215 25% 15% / 0.06);
+    --shadow-2xl: 0 25px 50px -12px hsl(215 25% 15% / 0.15);
+    --shadow-inner: inset 0 2px 4px 0 hsl(215 25% 15% / 0.05);
     
     /* Card-specific shadows */
-    --shadow-card: 0 2px 8px -1px hsl(222 47% 11% / 0.06), 0 1px 3px -1px hsl(222 47% 11% / 0.04);
-    --shadow-card-hover: 0 8px 16px -4px hsl(222 47% 11% / 0.1), 0 4px 8px -2px hsl(222 47% 11% / 0.06);
-    --shadow-elevated: 0 16px 32px -8px hsl(222 47% 11% / 0.12), 0 6px 12px -4px hsl(222 47% 11% / 0.08);
+    --shadow-card: 0 1px 3px 0 hsl(215 25% 15% / 0.06), 0 1px 2px -1px hsl(215 25% 15% / 0.04);
+    --shadow-card-hover: 0 4px 6px -1px hsl(215 25% 15% / 0.08), 0 2px 4px -2px hsl(215 25% 15% / 0.05);
+    --shadow-elevated: 0 10px 15px -3px hsl(215 25% 15% / 0.08), 0 4px 6px -4px hsl(215 25% 15% / 0.04);
 
     /* === Animation Timing === */
     --duration-fast: 150ms;
@@ -184,36 +184,36 @@
   /* === Dark Theme (add class="dark" to html/body to enable) === */
   .dark {
     /* === SURFACE TIER SYSTEM === */
-    --page: 222 47% 8%;               /* Deep charcoal base */
-    --surface: 222 47% 11%;           /* Elevated card surface */
-    --surface-elevated: 222 45% 14%; /* Higher elevation panels */
-    --surface-alt: 220 45% 10%;       /* Alternate tinted sections */
+    --page: 215 50% 7%;
+    --surface: 215 45% 10%;
+    --surface-elevated: 215 40% 13%;
+    --surface-alt: 215 45% 9%;
     
-    --background: 222 47% 8%;
-    --foreground: 210 40% 98%;
+    --background: 215 50% 7%;
+    --foreground: 210 20% 98%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
-    --card-hover: 222 45% 13%;
-    --card-elevated: 222 45% 14%;
+    --card: 215 45% 10%;
+    --card-foreground: 210 20% 98%;
+    --card-hover: 215 40% 13%;
+    --card-elevated: 215 40% 13%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 215 45% 10%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 173 80% 45%;
-    --primary-foreground: 222 47% 8%;
-    --primary-hover: 173 80% 40%;
-    --primary-muted: 173 60% 25%;
+    --primary: 75 85% 45%;
+    --primary-foreground: 215 50% 7%;
+    --primary-hover: 75 85% 40%;
+    --primary-muted: 75 60% 25%;
 
-    --secondary: 250 30% 18%;
-    --secondary-foreground: 210 40% 95%;
-    --secondary-hover: 250 30% 22%;
+    --secondary: 215 40% 14%;
+    --secondary-foreground: 210 20% 95%;
+    --secondary-hover: 215 40% 18%;
 
-    --muted: 250 25% 17%;
-    --muted-foreground: 215 20% 60%;
+    --muted: 215 35% 13%;
+    --muted-foreground: 215 15% 55%;
 
-    --accent: 185 85% 50%;
-    --accent-foreground: 222 47% 8%;
+    --accent: 75 85% 45%;
+    --accent-foreground: 215 50% 7%;
 
     --success: 155 75% 45%;
     --success-foreground: 0 0% 100%;
@@ -252,32 +252,32 @@
     --orange: 25 95% 55%;
     --orange-foreground: 0 0% 100%;
 
-    --border: 250 25% 20%;
-    --border-hover: 250 25% 28%;
-    --input: 250 25% 20%;
-    --ring: 173 80% 45%;
+    --border: 215 35% 16%;
+    --border-hover: 215 35% 22%;
+    --input: 215 35% 16%;
+    --ring: 75 85% 45%;
 
-    --sidebar-background: 250 35% 7%;
-    --sidebar-foreground: 210 40% 95%;
-    --sidebar-primary: 173 80% 45%;
-    --sidebar-primary-foreground: 222 47% 8%;
-    --sidebar-accent: 250 30% 14%;
-    --sidebar-accent-foreground: 210 40% 95%;
-    --sidebar-border: 250 25% 14%;
-    --sidebar-ring: 173 80% 45%;
+    --sidebar-background: 215 55% 5%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 75 85% 45%;
+    --sidebar-primary-foreground: 215 50% 7%;
+    --sidebar-accent: 215 40% 12%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 215 35% 14%;
+    --sidebar-ring: 75 85% 45%;
 
     /* === DEPTH + ELEVATION SYSTEM (Dark Mode) === */
-    --shadow-xs: 0 1px 2px 0 hsl(222 47% 5% / 0.3);
-    --shadow-sm: 0 1px 3px 0 hsl(222 47% 5% / 0.3), 0 1px 2px -1px hsl(222 47% 5% / 0.25);
-    --shadow-md: 0 4px 8px -2px hsl(222 47% 5% / 0.35), 0 2px 4px -2px hsl(222 47% 5% / 0.25);
-    --shadow-lg: 0 12px 20px -4px hsl(222 47% 5% / 0.4), 0 4px 8px -4px hsl(222 47% 5% / 0.3);
-    --shadow-xl: 0 20px 30px -6px hsl(222 47% 5% / 0.5), 0 8px 12px -6px hsl(222 47% 5% / 0.35);
-    --shadow-2xl: 0 30px 50px -12px hsl(222 47% 5% / 0.6);
-    --shadow-inner: inset 0 2px 4px 0 hsl(222 47% 5% / 0.3);
+    --shadow-xs: 0 1px 2px 0 hsl(215 50% 4% / 0.3);
+    --shadow-sm: 0 1px 3px 0 hsl(215 50% 4% / 0.3), 0 1px 2px -1px hsl(215 50% 4% / 0.25);
+    --shadow-md: 0 4px 8px -2px hsl(215 50% 4% / 0.35), 0 2px 4px -2px hsl(215 50% 4% / 0.25);
+    --shadow-lg: 0 12px 20px -4px hsl(215 50% 4% / 0.4), 0 4px 8px -4px hsl(215 50% 4% / 0.3);
+    --shadow-xl: 0 20px 30px -6px hsl(215 50% 4% / 0.5), 0 8px 12px -6px hsl(215 50% 4% / 0.35);
+    --shadow-2xl: 0 30px 50px -12px hsl(215 50% 4% / 0.6);
+    --shadow-inner: inset 0 2px 4px 0 hsl(215 50% 4% / 0.3);
     
-    --shadow-card: 0 2px 8px -1px hsl(222 47% 5% / 0.35), 0 1px 3px -1px hsl(222 47% 5% / 0.25);
-    --shadow-card-hover: 0 8px 16px -4px hsl(222 47% 5% / 0.4), 0 4px 8px -2px hsl(222 47% 5% / 0.3);
-    --shadow-elevated: 0 16px 32px -8px hsl(222 47% 5% / 0.5), 0 6px 12px -4px hsl(222 47% 5% / 0.35);
+    --shadow-card: 0 2px 8px -1px hsl(215 50% 4% / 0.35), 0 1px 3px -1px hsl(215 50% 4% / 0.25);
+    --shadow-card-hover: 0 8px 16px -4px hsl(215 50% 4% / 0.4), 0 4px 8px -2px hsl(215 50% 4% / 0.3);
+    --shadow-elevated: 0 16px 32px -8px hsl(215 50% 4% / 0.5), 0 6px 12px -4px hsl(215 50% 4% / 0.35);
 
     --gradient-hero: linear-gradient(135deg, hsl(250 35% 12%) 0%, hsl(270 40% 15%) 50%, hsl(250 35% 10%) 100%);
     --gradient-primary: linear-gradient(135deg, hsl(173 80% 45%) 0%, hsl(185 85% 50%) 100%);

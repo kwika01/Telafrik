@@ -13,9 +13,6 @@ import {
   Settings,
   CreditCard,
   Handshake,
-  Sparkles,
-  MessageSquare,
-  UserPlus,
   BrainCircuit,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -30,36 +27,31 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
   const isActive = (path: string) => 
     location.pathname === path || location.pathname.startsWith(path + '/');
 
-  // TelAfrik Data - startup & investor database
-  const dataNavItems = [
+  type NavItem = { label: string; path: string; icon: React.ElementType; highlight?: boolean; soon?: boolean };
+
+  const dataNavItems: NavItem[] = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Ask TelAfrik', path: '/ask', icon: BrainCircuit, highlight: true },
     { label: 'Startups', path: '/directory', icon: Rocket },
-    { label: 'Founders', path: '/founders', icon: Users },
+    { label: 'Founders', path: '/founders', icon: Users, soon: true },
     { label: 'Investors', path: '/investors', icon: Users },
     { label: 'Sectors', path: '/sectors', icon: Layers },
     { label: 'Countries', path: '/countries', icon: Globe },
   ];
 
-  // TelAfrik Signals - funding & growth alerts
-  const signalsNavItems = [
+  const signalsNavItems: NavItem[] = [
     { label: 'Deals', path: '/deals', icon: TrendingUp },
-    { label: 'Signals', path: '/signals', icon: Activity },
-    { label: 'Watchlist', path: '/watchlist', icon: Bookmark },
+    { label: 'Signals', path: '/signals', icon: Activity, soon: true },
+    { label: 'Watchlist', path: '/watchlist', icon: Bookmark, soon: true },
   ];
 
-  // TelAfrik Insights - reports & research
-  const insightsNavItems = [
-    { label: 'Reports', path: '/reports', icon: FileText },
-    { label: 'Regulatory Intel', path: '/regulatory-intel', icon: Shield },
+  const insightsNavItems: NavItem[] = [
+    { label: 'Reports', path: '/reports', icon: FileText, soon: true },
+    { label: 'Regulatory Intel', path: '/regulatory-intel', icon: Shield, soon: true },
   ];
 
-  // KonektAfrik - connections & intros
-  const konektNavItems = [
-    { label: 'Network Hub', path: '/konekt', icon: Handshake },
-    { label: 'Find Matches', path: '/konekt/matches', icon: Sparkles },
-    { label: 'Intro Requests', path: '/konekt/intros', icon: MessageSquare },
-    { label: 'Connections', path: '/konekt/connections', icon: UserPlus },
+  const konektNavItems: NavItem[] = [
+    { label: 'Network Hub', path: '/konekt', icon: Handshake, soon: true },
   ];
 
   return (
@@ -85,6 +77,9 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
                 {item.highlight && (
                   <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-gradient-to-r from-primary/20 to-accent/20 text-primary font-medium">AI</span>
                 )}
+                {item.soon && (
+                  <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-semibold">Soon</span>
+                )}
               </Link>
             ))}
           </nav>
@@ -104,6 +99,9 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
+                {item.soon && (
+                  <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-semibold">Soon</span>
+                )}
               </Link>
             ))}
           </nav>
@@ -123,6 +121,9 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
+                {item.soon && (
+                  <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-semibold">Soon</span>
+                )}
               </Link>
             ))}
           </nav>
@@ -132,7 +133,7 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
         <div className="px-2 mb-6">
           <h3 className="px-3 mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-indigo" /> KonektAfrik
-            <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-indigo/10 text-indigo font-medium">New</span>
+            <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-semibold">Soon</span>
           </h3>
           <nav className="space-y-1">
             {konektNavItems.map((item) => (
@@ -143,6 +144,9 @@ const AppSidebar = ({ className }: AppSidebarProps) => {
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
+                {item.soon && (
+                  <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-semibold">Soon</span>
+                )}
               </Link>
             ))}
           </nav>

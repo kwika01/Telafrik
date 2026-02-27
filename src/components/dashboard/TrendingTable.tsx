@@ -1,10 +1,10 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { TrendingUp, ArrowRight } from 'lucide-react';
+import { TrendingUp, ArrowRight, MoveUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface TrendingCompany {
   name: string;
+  slug?: string;
   sector: string;
   country: string;
   momentum: number;
@@ -17,91 +17,109 @@ interface TrendingTableProps {
 
 const TrendingTable = ({ companies }: TrendingTableProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3, duration: 0.5 }}
-      className="rounded-xl border border-border bg-card p-5"
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-terracotta/10 border border-terracotta/20">
-            <TrendingUp className="h-4 w-4 text-terracotta" />
+    <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 rounded-lg bg-primary/10">
+            <TrendingUp className="h-4 w-4 text-primary" />
           </div>
-          <h2 className="font-bold text-foreground tracking-tight">Trending Startups</h2>
+          <h2 className="font-semibold text-foreground text-base">Trending Companies</h2>
         </div>
-        <Button variant="ghost" size="sm" asChild className="group">
-          <Link to="/signals" className="text-muted-foreground hover:text-foreground">
-            View all 
-            <ArrowRight className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
+        <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground text-sm gap-1">
+          <Link to="/directory">
+            View all
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </Button>
       </div>
-      <div className="overflow-x-auto">
+
+      {/* Table */}
+      <div className="px-2">
         <table className="w-full">
           <thead>
-            <tr className="border-b-2 border-border">
-              <th className="text-left py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Company</th>
-              <th className="text-left py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Sector</th>
-              <th className="text-left py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Country</th>
-              <th className="text-right py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Momentum</th>
-              <th className="text-right py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Change</th>
+            <tr className="border-b border-border">
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest w-8">#</th>
+              <th className="text-left px-2 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Company</th>
+              <th className="text-left px-2 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Sector</th>
+              <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Momentum</th>
+              <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Change</th>
             </tr>
           </thead>
           <tbody>
             {companies.map((company, index) => (
-              <motion.tr
+              <tr
                 key={company.name}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + index * 0.05 }}
-                className="border-b border-border/60 hover:bg-muted/50 transition-colors cursor-pointer group"
+                className="border-b border-border/40 last:border-0 hover:bg-muted/30 transition-colors group"
               >
-                <td className="py-2.5">
-                  <div className="flex items-center gap-3">
-                    <span className="w-5 h-5 flex items-center justify-center rounded-full bg-muted/70 border border-border text-xs font-medium text-muted-foreground">
-                      {index + 1}
-                    </span>
-                    <span className="font-medium text-foreground group-hover:text-foreground transition-colors">
-                      {company.name}
-                    </span>
-                  </div>
+                {/* Rank */}
+                <td className="px-4 py-4">
+                  <span className="w-6 h-6 flex items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
+                    {index + 1}
+                  </span>
                 </td>
-                <td className="py-3">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted/60 border border-border text-foreground">
+
+                {/* Company name — large bold like live site */}
+                <td className="px-2 py-4">
+                  {company.slug ? (
+                    <Link
+                      to={`/startup/${company.slug}`}
+                      className="text-sm font-semibold text-foreground hover:text-primary transition-colors leading-tight"
+                    >
+                      {company.name}
+                    </Link>
+                  ) : (
+                    <span className="text-sm font-semibold text-foreground">{company.name}</span>
+                  )}
+                </td>
+
+                {/* Sector — neutral rounded pill like live site */}
+                <td className="px-2 py-4">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                     {company.sector}
                   </span>
                 </td>
-                <td className="py-3 text-muted-foreground text-sm hidden sm:table-cell">{company.country}</td>
-                <td className="py-3 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${company.momentum}%` }}
-                        transition={{ delay: 0.5 + index * 0.1, duration: 0.8, ease: 'easeOut' }}
-                        className="h-full bg-gradient-to-r from-terracotta/90 via-terracotta to-terracotta/90 rounded-full"
+
+                {/* Momentum — blue bar + bold number, wider cell */}
+                <td className="px-4 py-4 text-right">
+                  <div className="flex items-center justify-end gap-3">
+                    <div className="w-20 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full transition-all duration-700"
+                        style={{ width: `${company.momentum}%` }}
                       />
                     </div>
-                    <span className="text-sm font-bold text-foreground w-8 tabular-nums">{company.momentum}</span>
+                    <span className="text-sm font-bold text-foreground w-8 tabular-nums text-right">
+                      {company.momentum}
+                    </span>
                   </div>
                 </td>
-                <td className="py-2.5 text-right">
+
+                {/* Change — green with arrow, proper spacing */}
+                <td className="px-4 py-4 text-right">
                   {company.change ? (
-                    <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald tabular-nums">
-                      <TrendingUp className="h-3.5 w-3.5" />
-                      <span>+{company.change}</span>
+                    <span className="inline-flex items-center gap-0.5 text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">
+                      <MoveUpRight className="h-3.5 w-3.5 flex-shrink-0" />
+                      +{company.change}
                     </span>
                   ) : (
-                    <span className="text-sm text-muted-foreground">—</span>
+                    <span className="text-sm text-muted-foreground/50">—</span>
                   )}
                 </td>
-              </motion.tr>
+              </tr>
             ))}
+
+            {companies.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                  Loading trending companies…
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

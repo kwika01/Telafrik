@@ -1,230 +1,325 @@
 import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Globe, MapPin } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Globe, MapPin, TrendingUp, Building2, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import AfricaMapSVG, { COUNTRY_NAMES } from './AfricaMapSVG';
 import CountryPanel from './CountryPanel';
-import type { Country as CountryType } from '@/types/domain';
+import { useCountryMapStats } from '@/api/queries/useCompanies';
+import { COUNTRY_META } from '@/utils/countryMeta';
 
-interface AfricaExplorerSectionProps {
-  countries: CountryType[];
+// Build name→code lookup once from COUNTRY_META
+const NAME_TO_CODE: Record<string, string> = {};
+for (const [name, meta] of Object.entries(COUNTRY_META)) {
+  NAME_TO_CODE[name.toLowerCase()] = meta.code;
 }
 
-// Mock startup counts by country (will be replaced with real data)
-const MOCK_STARTUP_COUNTS: Record<string, number> = {
-  NG: 890, KE: 520, ZA: 480, EG: 350, GH: 220,
-  RW: 85, TZ: 75, ET: 120, SN: 95, CI: 60,
-  MA: 180, TN: 90, UG: 110, CM: 45, DZ: 40,
-  ZW: 25, BW: 15, ZM: 20, AO: 12, MZ: 18,
-  CD: 8, MG: 5, ML: 10, BF: 8, NE: 5,
+// Flag emoji helper using regional indicator symbols
+function countryCodeToFlag(code: string): string {
+  if (!code || code.length !== 2) return '🌍';
+  const offset = 0x1f1e6 - 65;
+  return String.fromCodePoint(code.toUpperCase().charCodeAt(0) + offset) +
+    String.fromCodePoint(code.toUpperCase().charCodeAt(1) + offset);
+}
+
+// Map of all active countries in DB (sorted by count) for the bottom ticker
+const REGION_COLORS: Record<string, string> = {
+  'North Africa': 'bg-amber-500',
+  'West Africa': 'bg-green-500',
+  'East Africa': 'bg-blue-500',
+  'Central Africa': 'bg-purple-500',
+  'Southern Africa': 'bg-rose-500',
 };
 
-// Mock sector data by country
-const MOCK_SECTORS: Record<string, { name: string; count: number }[]> = {
-  NG: [
-    { name: 'Fintech', count: 245 },
-    { name: 'E-commerce', count: 120 },
-    { name: 'Healthtech', count: 85 },
-    { name: 'Agritech', count: 78 },
-  ],
-  KE: [
-    { name: 'Fintech', count: 145 },
-    { name: 'Agritech', count: 95 },
-    { name: 'Logistics', count: 70 },
-    { name: 'Healthtech', count: 55 },
-  ],
-  ZA: [
-    { name: 'Fintech', count: 130 },
-    { name: 'Insurtech', count: 85 },
-    { name: 'E-commerce', count: 75 },
-    { name: 'Cleantech', count: 60 },
-  ],
-  EG: [
-    { name: 'Fintech', count: 95 },
-    { name: 'E-commerce', count: 80 },
-    { name: 'Edtech', count: 45 },
-    { name: 'Logistics', count: 40 },
-  ],
-  GH: [
-    { name: 'Fintech', count: 65 },
-    { name: 'Agritech', count: 45 },
-    { name: 'E-commerce', count: 35 },
-    { name: 'Healthtech', count: 25 },
-  ],
-};
-
-// Mock trending startups by country
-const MOCK_TRENDING: Record<string, { id: string; name: string; sector: string }[]> = {
-  NG: [
-    { id: 'flutterwave', name: 'Flutterwave', sector: 'Fintech' },
-    { id: 'paystack', name: 'Paystack', sector: 'Fintech' },
-    { id: 'andela', name: 'Andela', sector: 'HR Tech' },
-    { id: 'jumia', name: 'Jumia', sector: 'E-commerce' },
-    { id: 'kobo360', name: 'Kobo360', sector: 'Logistics' },
-  ],
-  KE: [
-    { id: 'mpesa', name: 'M-Pesa', sector: 'Fintech' },
-    { id: 'twiga', name: 'Twiga Foods', sector: 'Agritech' },
-    { id: 'sendy', name: 'Sendy', sector: 'Logistics' },
-    { id: 'cellulant', name: 'Cellulant', sector: 'Fintech' },
-  ],
-  ZA: [
-    { id: 'yoco', name: 'Yoco', sector: 'Fintech' },
-    { id: 'takealot', name: 'Takealot', sector: 'E-commerce' },
-    { id: 'discovery', name: 'Discovery Insure', sector: 'Insurtech' },
-  ],
-  EG: [
-    { id: 'swvl', name: 'Swvl', sector: 'Transport' },
-    { id: 'fawry', name: 'Fawry', sector: 'Fintech' },
-    { id: 'maxab', name: 'MaxAB', sector: 'E-commerce' },
-  ],
-  GH: [
-    { id: 'expresspay', name: 'ExpressPay', sector: 'Fintech' },
-    { id: 'farmerline', name: 'Farmerline', sector: 'Agritech' },
-    { id: 'complete-farmer', name: 'Complete Farmer', sector: 'Agritech' },
-  ],
-};
-
-const AfricaExplorerSection = ({ countries }: AfricaExplorerSectionProps) => {
+const AfricaExplorerSection = () => {
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
-  // Get country info from the countries data
-  const selectedCountryInfo = useMemo(() => {
+  const { data: countryStats, isLoading } = useCountryMapStats();
+
+  // Build Map<code, count> for choropleth coloring
+  const startupCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    if (!countryStats) return map;
+    for (const [name, stats] of Object.entries(countryStats)) {
+      const code = NAME_TO_CODE[name.toLowerCase()];
+      if (code) map.set(code, stats.count);
+    }
+    return map;
+  }, [countryStats]);
+
+  // Total startups across all countries
+  const totalStartups = useMemo(() => {
+    if (!countryStats) return 0;
+    return Object.values(countryStats).reduce((sum, s) => sum + s.count, 0);
+  }, [countryStats]);
+
+  const totalCountries = useMemo(() => {
+    if (!countryStats) return 0;
+    return Object.keys(countryStats).length;
+  }, [countryStats]);
+
+  // Build panel info for selected country
+  const selectedInfo = useMemo(() => {
     if (!selectedCountry) return null;
-    const country = countries.find(c => c.code === selectedCountry);
+    const name = COUNTRY_NAMES[selectedCountry] || selectedCountry;
+    const stats = countryStats?.[name] || null;
     return {
       code: selectedCountry,
-      name: country?.name || COUNTRY_NAMES[selectedCountry] || selectedCountry,
-      flagEmoji: country?.flagEmoji || '🌍',
-      startupCount: MOCK_STARTUP_COUNTS[selectedCountry] || 0,
-      topSectors: MOCK_SECTORS[selectedCountry] || [],
-      trendingStartups: MOCK_TRENDING[selectedCountry] || [],
+      name,
+      flagEmoji: countryCodeToFlag(selectedCountry),
+      startupCount: stats?.count || 0,
+      topSectors: stats?.sectors || [],
+      trendingStartups: (stats?.topCompanies || []).map(c => ({
+        id: c.slug,
+        name: c.name,
+        sector: c.sector,
+      })),
     };
-  }, [selectedCountry, countries]);
+  }, [selectedCountry, countryStats]);
 
-  // Get hovered country name for tooltip
-  const hoveredCountryName = useMemo(() => {
+  // Hover tooltip data
+  const hoveredName = useMemo(() => {
     if (!hoveredCountry) return null;
-    const country = countries.find(c => c.code === hoveredCountry);
-    return country?.name || COUNTRY_NAMES[hoveredCountry] || hoveredCountry;
-  }, [hoveredCountry, countries]);
+    return COUNTRY_NAMES[hoveredCountry] || hoveredCountry;
+  }, [hoveredCountry]);
+
+  const hoveredCount = useMemo(() => {
+    if (!hoveredCountry || !hoveredName) return 0;
+    return countryStats?.[hoveredName]?.count || 0;
+  }, [hoveredCountry, hoveredName, countryStats]);
+
+  // Top 5 countries for the stat strip
+  const topCountries = useMemo(() => {
+    if (!countryStats) return [];
+    return Object.entries(countryStats)
+      .sort((a, b) => b[1].count - a[1].count)
+      .slice(0, 5)
+      .map(([name, stats]) => ({
+        name,
+        code: NAME_TO_CODE[name.toLowerCase()] || '',
+        count: stats.count,
+        flag: countryCodeToFlag(NAME_TO_CODE[name.toLowerCase()] || ''),
+        topSector: stats.sectors[0]?.name || '',
+      }));
+  }, [countryStats]);
 
   const handleCountryClick = (code: string) => {
-    setSelectedCountry(selectedCountry === code ? null : code);
-  };
-
-  const handleClosePanel = () => {
-    setSelectedCountry(null);
+    setSelectedCountry(prev => (prev === code ? null : code));
   };
 
   return (
-    <section className="section bg-muted/30 border-y border-border">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
+    <section className="relative overflow-hidden bg-slate-950 py-20">
+      {/* Background: subtle grid + radial glow */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: `
+            radial-gradient(ellipse 80% 60% at 50% -10%, rgba(16,185,129,0.12) 0%, transparent 65%),
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: 'auto, 40px 40px, 40px 40px',
+        }}
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Section header */}
         <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center mb-14"
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Globe className="h-4 w-4 text-emerald" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-emerald">
+          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-1.5 mb-5">
+            <Globe className="h-3.5 w-3.5 text-emerald-400" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
               Explore by Region
             </span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-3">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
             Africa's Startup Ecosystems
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Click on any country to discover its startup landscape, top sectors, and trending companies.
+          <p className="text-slate-400 max-w-xl mx-auto text-base">
+            Click any country to discover startups, top sectors, and the emerging leaders shaping Africa's future.
           </p>
         </motion.div>
 
-        {/* Map and Panel Container */}
-        <div className="grid lg:grid-cols-5 gap-8 items-start">
-          {/* Map */}
-          <motion.div
-            className="lg:col-span-3 relative"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            {/* Hover tooltip */}
-            {hoveredCountry && !selectedCountry && hoveredCountryName && (
-              <motion.div
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-card border border-border rounded-lg px-4 py-2 shadow-lg"
-              >
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-gold" />
-                  <span className="font-medium text-foreground">{hoveredCountryName}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {MOCK_STARTUP_COUNTS[hoveredCountry] || 0} startups
-                  </span>
-                </div>
-              </motion.div>
-            )}
-
-            <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
-              <AfricaMapSVG
-                hoveredCountry={hoveredCountry}
-                selectedCountry={selectedCountry}
-                onCountryHover={setHoveredCountry}
-                onCountryClick={handleCountryClick}
-                className="max-w-md mx-auto lg:max-w-full"
-              />
+        {/* Stat pills */}
+        <motion.div
+          className="flex flex-wrap items-center justify-center gap-3 mb-12"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          {[
+            { icon: Building2, value: isLoading ? '...' : totalStartups.toLocaleString(), label: 'Startups Tracked' },
+            { icon: MapPin, value: isLoading ? '...' : totalCountries.toString(), label: 'Active Countries' },
+            { icon: TrendingUp, value: topCountries[0]?.name || '...', label: 'Top Ecosystem' },
+          ].map(({ icon: Icon, value, label }) => (
+            <div key={label} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-5 py-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center">
+                <Icon className="h-4 w-4 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-white font-bold text-sm leading-none">{value}</p>
+                <p className="text-slate-500 text-xs mt-0.5">{label}</p>
+              </div>
             </div>
+          ))}
+        </motion.div>
 
-            {/* Map legend */}
-            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-muted border border-border" />
-                <span>Available</span>
+        {/* Map + Panel grid */}
+        <div className="grid lg:grid-cols-5 gap-6 items-start">
+          {/* Left: Map */}
+          <motion.div
+            className="lg:col-span-3"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="relative">
+              {/* Hover tooltip */}
+              <AnimatePresence>
+                {hoveredCountry && !selectedCountry && hoveredName && (
+                  <motion.div
+                    key={hoveredCountry}
+                    initial={{ opacity: 0, y: -6, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none"
+                  >
+                    <div className="flex items-center gap-2.5 bg-slate-800/95 backdrop-blur border border-white/10 rounded-xl px-4 py-2.5 shadow-2xl">
+                      <span className="text-lg">{countryCodeToFlag(hoveredCountry)}</span>
+                      <span className="font-semibold text-white text-sm">{hoveredName}</span>
+                      {hoveredCount > 0 && (
+                        <span className="ml-1 bg-emerald-500/20 text-emerald-300 text-xs font-medium px-2 py-0.5 rounded-full">
+                          {hoveredCount} startups
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Map card */}
+              <div className="bg-slate-900/70 backdrop-blur border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                <AfricaMapSVG
+                  hoveredCountry={hoveredCountry}
+                  selectedCountry={selectedCountry}
+                  onCountryHover={setHoveredCountry}
+                  onCountryClick={handleCountryClick}
+                  startupCounts={startupCounts}
+                  className="w-full"
+                />
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-gold/60 border border-gold" />
-                <span>Hover</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-emerald border border-emerald" />
-                <span>Selected</span>
+
+              {/* Legend */}
+              <div className="flex items-center justify-center gap-1 mt-3 flex-wrap">
+                <span className="text-slate-500 text-xs mr-1">Startups:</span>
+                {[
+                  { label: '0', color: 'hsl(220,15%,88%)' },
+                  { label: '1–4', color: 'hsl(158,55%,82%)' },
+                  { label: '5–19', color: 'hsl(158,65%,68%)' },
+                  { label: '20–49', color: 'hsl(158,72%,54%)' },
+                  { label: '50–99', color: 'hsl(158,80%,44%)' },
+                  { label: '100–199', color: 'hsl(158,88%,36%)' },
+                  { label: '200+', color: 'hsl(158,95%,28%)' },
+                ].map(({ label, color }) => (
+                  <div key={label} className="flex items-center gap-1 mr-2">
+                    <div
+                      className="w-3 h-3 rounded-sm border border-white/10"
+                      style={{ backgroundColor: color }}
+                    />
+                    <span className="text-slate-400 text-[10px]">{label}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </motion.div>
 
-          {/* Panel */}
-          <div className="lg:col-span-2">
-            {selectedCountryInfo ? (
-              <CountryPanel
-                countryCode={selectedCountryInfo.code}
-                countryName={selectedCountryInfo.name}
-                flagEmoji={selectedCountryInfo.flagEmoji}
-                startupCount={selectedCountryInfo.startupCount}
-                topSectors={selectedCountryInfo.topSectors}
-                trendingStartups={selectedCountryInfo.trendingStartups}
-                onClose={handleClosePanel}
-              />
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="bg-card border border-border rounded-xl p-8 text-center"
-              >
-                <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="h-8 w-8 text-gold" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  Select a Country
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  Click on any country on the map to view its startup ecosystem details.
-                </p>
-              </motion.div>
-            )}
-          </div>
+          {/* Right: Panel */}
+          <motion.div
+            className="lg:col-span-2"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+          >
+            <AnimatePresence mode="wait">
+              {selectedInfo ? (
+                <CountryPanel
+                  key={selectedInfo.code}
+                  countryCode={selectedInfo.code}
+                  countryName={selectedInfo.name}
+                  flagEmoji={selectedInfo.flagEmoji}
+                  startupCount={selectedInfo.startupCount}
+                  topSectors={selectedInfo.topSectors}
+                  trendingStartups={selectedInfo.trendingStartups}
+                  onClose={() => setSelectedCountry(null)}
+                  isLoading={isLoading}
+                />
+              ) : (
+                <motion.div
+                  key="placeholder"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-slate-900/70 backdrop-blur border border-white/10 rounded-2xl overflow-hidden"
+                >
+                  {/* Top: click prompt */}
+                  <div className="px-6 pt-8 pb-6 text-center border-b border-white/5">
+                    <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+                      <MapPin className="h-7 w-7 text-emerald-400" />
+                    </div>
+                    <h3 className="text-white font-semibold text-lg mb-1">Select a Country</h3>
+                    <p className="text-slate-400 text-sm">
+                      Click any country on the map to explore its startup ecosystem.
+                    </p>
+                  </div>
+
+                  {/* Bottom: top countries preview */}
+                  <div className="p-5">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-4">
+                      Top Ecosystems
+                    </p>
+                    <div className="space-y-2">
+                      {topCountries.map((c, i) => (
+                        <button
+                          key={c.code}
+                          onClick={() => handleCountryClick(c.code)}
+                          className="w-full flex items-center gap-3 hover:bg-white/5 rounded-xl px-3 py-2.5 transition-colors group text-left"
+                        >
+                          <span className="text-slate-400 text-xs w-4 font-mono">{i + 1}</span>
+                          <span className="text-xl">{c.flag}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white text-sm font-medium truncate">{c.name}</p>
+                            <p className="text-slate-500 text-xs truncate">{c.topSector}</p>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-emerald-400 text-sm font-bold tabular-nums">{c.count}</span>
+                            <ChevronRight className="h-3.5 w-3.5 text-slate-600 group-hover:text-slate-400 transition-colors" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+
+                    <Link
+                      to="/directory"
+                      className="mt-5 flex items-center justify-center gap-2 w-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 text-sm font-medium rounded-xl py-3 transition-colors"
+                    >
+                      Browse All Startups
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </div>
     </section>

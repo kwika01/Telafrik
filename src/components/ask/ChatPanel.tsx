@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, ChatSession, SearchScope } from '@/hooks/useAskTelAfrik';
@@ -24,7 +23,7 @@ interface ChatPanelProps {
   onDeleteSession: (sessionId: string) => void;
   onRenameSession: (sessionId: string, title: string) => void;
   onSendMessage: (message: string) => void;
-  onSelectResult?: (response: any) => void;
+  onSelectResult?: (response: unknown) => void;
 }
 
 const QUICK_PROMPTS = [
@@ -59,11 +58,13 @@ export const ChatPanel = ({
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [showHistory, setShowHistory] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Scroll to bottom when messages change — use the container div directly
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesContainerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
   useEffect(() => {
@@ -156,7 +157,7 @@ export const ChatPanel = ({
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <ScrollArea className="flex-1">
+            <div className="flex-1 overflow-y-auto">
               <div className="p-2 space-y-1">
                 {sessions.map(session => (
                   <div
@@ -226,13 +227,13 @@ export const ChatPanel = ({
                   </p>
                 )}
               </div>
-            </ScrollArea>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Messages */}
-      <ScrollArea className="flex-1">
+      {/* Messages — plain scrollable div so scrollTop works reliably */}
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-4">
           {messages.length === 0 && !isLoading && (
             <div className="py-8">
@@ -333,9 +334,8 @@ export const ChatPanel = ({
             </motion.div>
           )}
 
-          <div ref={messagesEndRef} />
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Input */}
       <div className="p-4 border-t border-border/50 bg-card/50">

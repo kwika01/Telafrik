@@ -29,12 +29,14 @@ const SectorPage = () => {
   const [sortBy, setSortBy] = useState<string>('trending');
 
   // Build filters for companies query
+  // sector.name is needed (not slug) since the DB filter uses exact name match
+  const sectorName = sector?.name || '';
   const filters: DirectoryFilters = useMemo(() => ({
-    sectors: slug ? [slug] : [],
+    sectors: sectorName ? [sectorName] : [],
     countries: selectedCountry !== 'all' ? [selectedCountry] : [],
     regions: [],
     stages: selectedStage !== 'all' ? [selectedStage] : [],
-  }), [slug, selectedCountry, selectedStage]);
+  }), [sectorName, selectedCountry, selectedStage]);
 
   const sortByField = useMemo(() => {
     switch (sortBy) {
@@ -52,7 +54,7 @@ const SectorPage = () => {
     pageSize: 50,
     sortBy: sortByField,
     sortOrder: sortBy === 'recently-added' ? 'desc' : 'desc',
-    enabled: !!slug,
+    enabled: !!sectorName,
   });
 
   const sectorStartups = companiesData?.data || [];

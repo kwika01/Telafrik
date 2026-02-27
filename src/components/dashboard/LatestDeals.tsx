@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { DollarSign, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,56 +13,70 @@ interface LatestDealsProps {
   deals: Deal[];
 }
 
+function getInitial(name: string): string {
+  return (name || '?').trim()[0].toUpperCase();
+}
+
 const LatestDeals = ({ deals }: LatestDealsProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5, duration: 0.5 }}
-      className="rounded-xl border border-border bg-card p-5"
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-gold/10 border border-gold/20">
-            <DollarSign className="h-4 w-4 text-gold" />
+    <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 rounded-lg bg-primary/10">
+            <DollarSign className="h-4 w-4 text-primary" />
           </div>
-          <h2 className="font-bold text-foreground tracking-tight">Latest Deals</h2>
+          <h2 className="font-semibold text-foreground text-base">Latest Deals</h2>
         </div>
-        <Button variant="ghost" size="sm" asChild className="group">
-          <Link to="/deals" className="text-muted-foreground hover:text-foreground">
-            View all 
-            <ArrowRight className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
+        <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground text-sm gap-1">
+          <Link to="/deals">
+            View all
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </Button>
       </div>
-      
-      <div className="space-y-1">
-        {deals.map((deal, index) => (
-          <motion.div
-            key={deal.company}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 + index * 0.05 }}
-            className="flex items-center justify-between py-3 px-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald/10 border border-emerald/20 flex items-center justify-center">
-                <span className="text-xs font-bold text-emerald">{deal.company.charAt(0)}</span>
-              </div>
-              <div>
-                <div className="font-semibold text-foreground group-hover:text-emerald transition-colors">
-                  {deal.company}
+
+      {/* Deal list */}
+      <div className="divide-y divide-border">
+        {deals.length === 0 ? (
+          <div className="px-5 py-8 text-center text-sm text-muted-foreground">
+            No deal data available.
+          </div>
+        ) : (
+          deals.map((deal) => (
+            <div
+              key={`${deal.company}-${deal.date}`}
+              className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50 dark:hover:bg-muted/30 transition-colors"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                {/* Avatar */}
+                <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
+                  <span className="text-sm font-bold text-white select-none">
+                    {getInitial(deal.company)}
+                  </span>
                 </div>
-                <div className="text-xs text-muted-foreground font-medium">{deal.round} • {deal.date}</div>
+
+                {/* Name + meta */}
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    {deal.company}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    {deal.round}
+                    {deal.date && deal.date !== '—' ? <> &middot; {deal.date}</> : null}
+                  </p>
+                </div>
               </div>
+
+              {/* Amount */}
+              <span className="flex-shrink-0 text-sm font-bold text-primary tabular-nums ml-3">
+                {deal.amount}
+              </span>
             </div>
-            <div className="text-lg font-extrabold text-gold tabular-nums">
-              {deal.amount}
-            </div>
-          </motion.div>
-        ))}
+          ))
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,58 +14,57 @@ interface SectorSpotlightProps {
 }
 
 const SectorSpotlight = ({ sector }: SectorSpotlightProps) => {
+  const isPositiveGrowth = typeof sector.growth === 'string' && sector.growth.startsWith('+');
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4, duration: 0.5 }}
-      className="rounded-xl border border-border bg-card p-5"
-    >
-      <div className="flex items-center gap-2 mb-4">
-        <div className="p-1.5 rounded-lg bg-gold/10 border border-gold/20">
-          <Sparkles className="h-4 w-4 text-gold" />
+    <div className="rounded-2xl border border-border bg-card shadow-sm p-5 flex flex-col">
+      {/* Header */}
+      <div className="flex items-center gap-2.5 mb-5">
+        <div className="p-1.5 rounded-lg bg-primary/10">
+          <Sparkles className="h-4 w-4 text-primary" />
         </div>
-        <h2 className="font-bold text-foreground tracking-tight">Sector Spotlight</h2>
+        <h2 className="font-semibold text-foreground text-base">Sector Spotlight</h2>
       </div>
-      
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-xl font-extrabold text-foreground tracking-tight">
-            {sector.name}
-          </h3>
-          <p className="text-sm text-muted-foreground mt-2 leading-relaxed font-medium">{sector.description}</p>
-        </div>
-        
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { value: sector.companies, label: 'Companies', accent: 'neutral' as const },
-            { value: sector.totalFunding, label: 'Funding', accent: 'gold' as const },
-            { value: sector.growth, label: 'Growth', accent: 'terracotta' as const },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="text-center p-3 bg-muted/50 rounded-lg"
-            >
-              <div className={`text-lg font-extrabold tabular-nums ${
-                item.accent === 'neutral' ? 'text-foreground' :
-                item.accent === 'gold' ? 'text-gold' : 
-                'text-terracotta'
-              }`}>
-                {item.value}
-              </div>
-              <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">{item.label}</div>
-            </div>
-          ))}
-        </div>
-        
-        <Button variant="outline" size="sm" className="w-full group" asChild>
-          <Link to={sector.slug ? `/sectors/${sector.slug}` : '/sectors'}>
-            View Sector 
-            <ArrowUpRight className="h-3 w-3 ml-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </Link>
-        </Button>
+
+      {/* Sector name + description */}
+      <div className="mb-5">
+        <h3 className="text-2xl font-bold text-foreground tracking-tight mb-2">
+          {sector.name}
+        </h3>
+        <p className="text-sm text-muted-foreground leading-relaxed">{sector.description}</p>
       </div>
-    </motion.div>
+
+      {/* Stats row — 3 boxes */}
+      <div className="grid grid-cols-3 gap-2 mb-5">
+        {/* Companies */}
+        <div className="text-center p-3 bg-slate-50 dark:bg-muted/40 rounded-xl border border-border">
+          <div className="text-xl font-bold text-foreground tabular-nums">{sector.companies}</div>
+          <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-0.5">Companies</div>
+        </div>
+
+        {/* Funding */}
+        <div className="text-center p-3 bg-slate-50 dark:bg-muted/40 rounded-xl border border-border">
+          <div className="text-xl font-bold text-foreground tabular-nums">{sector.totalFunding}</div>
+          <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-0.5">Funding</div>
+        </div>
+
+        {/* Growth — green */}
+        <div className="text-center p-3 bg-slate-50 dark:bg-muted/40 rounded-xl border border-border">
+          <div className={`text-xl font-bold tabular-nums ${isPositiveGrowth ? 'text-emerald-500 dark:text-emerald-400' : 'text-foreground'}`}>
+            {sector.growth}
+          </div>
+          <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-0.5">Growth</div>
+        </div>
+      </div>
+
+      {/* View sector button — full width outline like live site */}
+      <Button variant="outline" size="sm" className="w-full mt-auto font-semibold gap-1.5" asChild>
+        <Link to={sector.slug ? `/sectors/${sector.slug}` : '/sectors'}>
+          View Sector
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </Link>
+      </Button>
+    </div>
   );
 };
 

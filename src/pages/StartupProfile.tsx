@@ -75,6 +75,11 @@ const StartupProfile = () => {
   const operatingCountries = company.operating_countries || '';
   const isTrending = false;
 
+  function getInitials(name: string) {
+    const words = name.trim().split(/\s+/);
+    return words.length === 1 ? words[0].substring(0, 2).toUpperCase() : (words[0][0] + words[1][0]).toUpperCase();
+  }
+
   // Calculate total funding
   const totalFundingUsd = company.total_funding_usd || 0;
   const totalFundingDisplay = totalFundingUsd > 0 ? formatCurrency(totalFundingUsd) : company.valuation_range || 'Not disclosed';
@@ -90,8 +95,10 @@ const StartupProfile = () => {
           <div className="flex flex-col md:flex-row md:items-start gap-6">
             {/* Logo & Basic Info */}
             <div className="flex items-start gap-5">
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-card border border-border overflow-hidden flex-shrink-0 flex items-center justify-center">
-                <Building2 className="h-10 w-10 text-muted-foreground" />
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl flex-shrink-0 flex items-center justify-center shadow-md bg-primary">
+                <span className="text-2xl md:text-3xl font-bold text-white tracking-wide select-none">
+                  {getInitials(company.name)}
+                </span>
               </div>
               <div>
                 <div className="flex items-center gap-3 mb-2">

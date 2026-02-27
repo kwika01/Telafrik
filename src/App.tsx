@@ -2,12 +2,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { ChatWidget } from "@/components/chat/ChatWidget";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import ScrollToTop from "@/components/common/ScrollToTop";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Directory from "./pages/Directory";
@@ -43,9 +43,17 @@ import KonektAfrikResults from "./pages/KonektAfrikResults";
 import KonektAfrikIntros from "./pages/KonektAfrikIntros";
 import AdminIntros from "./pages/AdminIntros";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
+  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light" storageKey="telafrik-ui-theme">
       <AuthProvider>
@@ -54,7 +62,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
-            <ChatWidget />
+            {/* ChatWidget removed */}
             <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
@@ -216,6 +224,7 @@ const App = () => (
     </AuthProvider>
   </ThemeProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

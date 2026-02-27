@@ -10,8 +10,8 @@ import {
 import { useSectors } from '@/api/queries/useSectors';
 import { useCountries } from '@/api/queries/useCountries';
 
-// Funding stages (static - from our enum)
-const FUNDING_STAGES = ['Pre-seed', 'Seed', 'Series A', 'Series B', 'Series C', 'Series D+', 'Growth'];
+// Funding stages — must match DB values in companies.stage column exactly
+const FUNDING_STAGES = ['Pre-seed', 'Seed', 'Series A', 'Series B', 'Series C', 'Series C+'];
 
 const DEFAULT_FILTERS: FilterState = {
   sectors: [],
@@ -110,8 +110,8 @@ const FilterPanel = ({ filters: controlledFilters, onFilterChange }: FilterPanel
               sectors.slice(0, 10).map((sector) => (
                 <label key={sector.slug} className="flex items-center gap-2 cursor-pointer">
                   <Checkbox
-                    checked={filters.sectors.includes(sector.slug)}
-                    onCheckedChange={() => toggleFilter('sectors', sector.slug)}
+                    checked={filters.sectors.includes(sector.name)}
+                    onCheckedChange={() => toggleFilter('sectors', sector.name)}
                   />
                   <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     {sector.icon} {sector.name}
@@ -143,8 +143,8 @@ const FilterPanel = ({ filters: controlledFilters, onFilterChange }: FilterPanel
               countries.map((country) => (
                 <label key={country.code} className="flex items-center gap-2 cursor-pointer">
                   <Checkbox
-                    checked={filters.countries.includes(country.code)}
-                    onCheckedChange={() => toggleFilter('countries', country.code)}
+                    checked={filters.countries.includes(country.name)}
+                    onCheckedChange={() => toggleFilter('countries', country.name)}
                   />
                   <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     {country.flagEmoji} {country.name}

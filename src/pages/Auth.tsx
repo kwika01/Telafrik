@@ -163,12 +163,21 @@ const Auth = () => {
       <div className="hidden lg:flex lg:w-1/2 relative bg-muted/30 border-r border-border">
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 py-12">
           {/* Logo */}
-          <Link to="/" className="flex items-center mb-12">
+          <Link to="/" className="flex items-center gap-3 mb-12 group">
             <img
               src="/logo.png"
-              alt="TelAfrik by Ennylytics"
-              className="h-12 w-auto object-contain"
+              alt="TelAfrik"
+              className="h-11 w-11 rounded-xl object-cover shadow-sm ring-1 ring-border"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
             />
+            <div className="flex flex-col leading-none">
+              <span className="text-xl font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                TelAfrik
+              </span>
+              <span className="text-xs text-muted-foreground font-medium tracking-wide">
+                by Ennylytics
+              </span>
+            </div>
           </Link>
           
           {/* Headline */}
@@ -229,12 +238,17 @@ const Auth = () => {
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden mb-8">
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center gap-2.5">
               <img
                 src="/logo.png"
-                alt="TelAfrik by Ennylytics"
-                className="h-10 w-auto object-contain"
+                alt="TelAfrik"
+                className="h-9 w-9 rounded-xl object-cover shadow-sm ring-1 ring-border"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
+              <div className="flex flex-col leading-none">
+                <span className="text-base font-bold text-foreground tracking-tight">TelAfrik</span>
+                <span className="text-[10px] text-muted-foreground font-medium tracking-wide">by Ennylytics</span>
+              </div>
             </Link>
           </div>
 

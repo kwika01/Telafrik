@@ -11,6 +11,7 @@ import {
   getSimilarCompanies,
   searchCompanies,
   getTrendingCompanies,
+  getCountryMapStats,
 } from '@/api/services/companies';
 import type { DirectoryFilters } from '@/types/domain';
 
@@ -18,8 +19,8 @@ import type { DirectoryFilters } from '@/types/domain';
 export const companyKeys = {
   all: ['companies'] as const,
   lists: () => [...companyKeys.all, 'list'] as const,
-  list: (filters: DirectoryFilters, page: number, pageSize: number) => 
-    [...companyKeys.lists(), { filters, page, pageSize }] as const,
+  list: (filters: DirectoryFilters, page: number, pageSize: number, sortBy?: string, sortOrder?: string) => 
+    [...companyKeys.lists(), { filters, page, pageSize, sortBy, sortOrder }] as const,
   details: () => [...companyKeys.all, 'detail'] as const,
   detail: (slug: string) => [...companyKeys.details(), slug] as const,
   search: (term: string) => [...companyKeys.all, 'search', term] as const,
@@ -49,7 +50,7 @@ export function useCompanies(options: UseCompaniesOptions = {}) {
   } = options;
 
   return useQuery({
-    queryKey: companyKeys.list(filters, page, pageSize),
+    queryKey: companyKeys.list(filters, page, pageSize, sortBy, sortOrder),
     queryFn: () => getCompanies({ filters, page, pageSize, sortBy, sortOrder }),
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -101,6 +102,18 @@ export function useCompanyDetails(slug: string | undefined) {
     queryFn: () => getCompanyDetailsBySlug(slug!),
     enabled: !!slug,
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+/**
+ * Hook to fetch per-country startup stats for the interactive Africa map.
+ * Returns data keyed by country name (matches DB).
+ */
+export function useCountryMapStats() {
+  return useQuery({
+    queryKey: [...companyKeys.all, 'country-map-stats'],
+    queryFn: getCountryMapStats,
+    staleTime: 10 * 60 * 1000, // 10 minutes
   });
 }
 

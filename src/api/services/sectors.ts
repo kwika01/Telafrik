@@ -1,61 +1,84 @@
 /**
- * Sectors Service - uses actual DB schema (sectors table)
+ * Sectors Service
+ * No standalone sectors table - sectors are derived from companies.sector (string column).
  */
 import { supabase } from '@/integrations/supabase/client';
 import type { Sector } from '@/types/domain';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
+
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+const SECTOR_ICONS: Record<string, string> = {
+  'Fintech': '💳',
+  'Healthtech': '🏥',
+  'Edtech': '🎓',
+  'Agritech': '🌾',
+  'Cleantech': '⚡',
+  'Logistics': '🚚',
+  'E-Commerce': '🛒',
+  'E-commerce': '🛒',
+  'Ecommerce': '🛒',
+  'SaaS': '☁️',
+  'Proptech': '🏗️',
+  'Insurtech': '🛡️',
+  'InsurTech': '🛡️',
+  'Mobility': '🚗',
+  'Media': '📱',
+  'Foodtech': '🍽️',
+  'Legaltech': '⚖️',
+  'HR Tech': '👥',
+  'HRTech': '👥',
+  'Cybersecurity': '🔒',
+  'AI/ML': '🤖',
+  'Blockchain': '⛓️',
+  'Gaming': '🎮',
+  'Travel': '✈️',
+  'Retail': '🏪',
+};
+
+function getSectorIcon(name: string): string {
+  return SECTOR_ICONS[name] || '🏢';
+}
+
 /**
- * Fetches sectors with startup counts
+ * Fetches sectors with startup counts — derived from companies.sector column
  */
 export async function getSectors(): Promise<Sector[]> {
-  const { data: sectors, error } = await supabase
-    .from('sectors')
-    .select('id, name, slug, description, market_overview, icon')
-    .order('name', { ascending: true });
+  const { data, error } = await db
+    .from('companies')
+    .select('sector')
+    .not('sector', 'is', null)
+    .limit(10000);
 
   if (error) throw new Error(`Failed to fetch sectors: ${error.message}`);
 
-  // Get company counts per sector
-  const { data: companies } = await supabase
-    .from('companies')
-    .select('sector_id')
-    .not('sector_id', 'is', null);
-
   const countMap = new Map<string, number>();
-  for (const c of companies || []) {
-    const sid = (c as any).sector_id;
-    if (sid) countMap.set(sid, (countMap.get(sid) || 0) + 1);
+  for (const row of (data || []) as { sector?: string }[]) {
+    const s = row.sector?.trim();
+    if (s) countMap.set(s, (countMap.get(s) || 0) + 1);
   }
 
-  return (sectors || []).map((row) => ({
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    description: row.description || '',
-    marketOverview: row.market_overview || '',
-    icon: row.icon || '🏢',
-    startupCount: countMap.get(row.id) || 0,
-  }));
+  return [...countMap.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count]) => ({
+      id: slugify(name),
+      name,
+      slug: slugify(name),
+      description: `${name} startups across Africa.`,
+      marketOverview: '',
+      icon: getSectorIcon(name),
+      startupCount: count,
+    }));
 }
 
 /**
  * Fetches a single sector by slug
  */
 export async function getSectorBySlug(slug: string): Promise<Sector | null> {
-  const { data, error } = await supabase
-    .from('sectors')
-    .select('id, name, slug, description, market_overview, icon')
-    .eq('slug', slug)
-    .single();
-
-  if (error || !data) return null;
-
-  return {
-    id: data.id,
-    name: data.name,
-    slug: data.slug,
-    description: data.description || '',
-    marketOverview: data.market_overview || '',
-    icon: data.icon || '🏢',
-  };
+  const sectors = await getSectors();
+  return sectors.find((s) => s.slug === slug) || null;
 }

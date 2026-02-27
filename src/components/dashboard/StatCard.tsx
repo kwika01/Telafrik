@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 
 interface StatCardProps {
@@ -9,54 +8,32 @@ interface StatCardProps {
   index: number;
 }
 
-const accentColors = [
-  { bg: 'bg-emerald/10', border: 'border-emerald/20', text: 'text-emerald' },
-  { bg: 'bg-gold/10', border: 'border-gold/20', text: 'text-gold' },
-  { bg: 'bg-indigo/10', border: 'border-indigo/20', text: 'text-indigo' },
-  { bg: 'bg-terracotta/10', border: 'border-terracotta/20', text: 'text-terracotta' },
-  { bg: 'bg-emerald/10', border: 'border-emerald/20', text: 'text-emerald' },
-];
-
 const StatCard = ({ label, value, change, icon: Icon, index }: StatCardProps) => {
-  const accent = accentColors[index % accentColors.length];
-  // Emphasize the most important KPIs without changing layout:
-  // - Total Companies (index 0)
-  // - Total Funding Tracked (index 2)
-  const isPrimaryKpi = index === 0 || index === 2;
-  const iconBadgeClasses = isPrimaryKpi
-    ? `${accent.bg} ${accent.border}`
-    : 'bg-muted/60 border-border';
-  const iconClasses = isPrimaryKpi ? accent.text : 'text-muted-foreground';
-  const valueClasses = isPrimaryKpi ? accent.text : 'text-foreground';
-  const topAccentClasses = isPrimaryKpi ? accent.text : 'text-border';
-  
-  // ARCHITECTURAL: Strong structural emphasis for primary KPIs
-  const getHoverShadowClass = () => {
-    if (!isPrimaryKpi) return 'hover:shadow-md';
-    const colorMap = ['emerald', 'gold', 'indigo', 'terracotta', 'emerald'];
-    const color = colorMap[index % colorMap.length];
-    return `hover:shadow-[0_0_0_1px_hsl(var(--${color})/0.2),0_8px_16px_-4px_hsl(var(--${color})/0.14)]`;
-  };
-  
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.4 }}
-      whileHover={{ y: -2, transition: { duration: 0.2 } }}
-      className={`relative overflow-hidden rounded-xl ${isPrimaryKpi ? 'border-2 border-border shadow-md' : 'border border-border'} bg-card ${isPrimaryKpi ? 'p-5' : 'p-4'} ${getHoverShadowClass()} transition-all duration-200`}
+    <div
+      className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm p-5 transition-shadow hover:shadow-md"
+      style={{ animationDelay: `${index * 80}ms` }}
     >
-      {/* ARCHITECTURAL: Stronger rail for primary KPIs */}
-      <div className={`absolute top-0 left-0 right-0 ${isPrimaryKpi ? 'h-1' : 'h-0.5'} ${topAccentClasses} bg-current`} />
-      <div className="flex items-center gap-2 text-muted-foreground mb-2">
-        <div className={`p-1.5 rounded-lg border ${iconBadgeClasses}`}>
-          <Icon className={`h-3.5 w-3.5 ${iconClasses}`} />
+      {/* Decorative background circle — matches live site */}
+      <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-primary/8 pointer-events-none" />
+      <div className="absolute -top-10 -right-2 w-16 h-16 rounded-full bg-primary/5 pointer-events-none" />
+
+      {/* Icon + label row */}
+      <div className="flex items-center gap-2 mb-3 relative">
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 border border-primary/15 flex-shrink-0">
+          <Icon className="h-4 w-4 text-primary" />
         </div>
-        <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
+        <span className="text-sm text-muted-foreground font-medium leading-tight">{label}</span>
       </div>
-      <div className={`text-2xl font-extrabold tracking-tighter ${valueClasses}`}>{value}</div>
-      <div className="text-xs text-muted-foreground mt-1 font-medium">{change}</div>
-    </motion.div>
+
+      {/* Big bold value */}
+      <div className="text-3xl font-bold text-foreground tracking-tight leading-none relative mb-1.5">
+        {value}
+      </div>
+
+      {/* Subtitle / change */}
+      <div className="text-xs text-muted-foreground font-medium relative">{change}</div>
+    </div>
   );
 };
 

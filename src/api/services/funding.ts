@@ -33,24 +33,29 @@ function formatAmount(amountUsd: number | null): string {
   return `$${amountUsd}`;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
+
 export async function getLatestFundingRounds(limit = 5): Promise<LatestDeal[]> {
-  const { data, error } = await supabase
-    .from('funding_rounds')
-    .select('id, stage, amount_usd, date, companies:company_id(name, sectors:sector_id(name))')
-    .order('date', { ascending: false })
+  // Uses TelAfrik Investors Companies table — actual deal data
+  const { data, error } = await db
+    .from('TelAfrik Investors Companies')
+    .select('company, fund_amount, fund_round, year, country')
+    .not('fund_amount', 'is', null)
+    .order('year', { ascending: false })
     .limit(limit);
 
   if (error) {
-    console.warn('funding_rounds not available:', error.message);
+    console.warn('TelAfrik Investors Companies not available:', error.message);
     return [];
   }
 
-  return (data || []).map((row: any) => ({
-    company: row.companies?.name ?? '—',
-    amount: formatAmount(row.amount_usd),
-    round: row.stage || '—',
-    date: row.date || '—',
-    sector: row.companies?.sectors?.name ?? '—',
+  return ((data || []) as any[]).map((row) => ({
+    company: row.company ?? '—',
+    amount: row.fund_amount ?? '—',
+    round: row.fund_round ?? '—',
+    date: row.year ? String(row.year) : '—',
+    sector: '—',
   }));
 }
 

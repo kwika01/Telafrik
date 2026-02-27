@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { LayoutGrid, List, ArrowUpDown, Loader2, AlertCircle, RefreshCw, Building2 } from 'lucide-react';
 import AppLayout from '@/components/layout/AppLayout';
 import GlobalSearch from '@/components/search/GlobalSearch';
@@ -31,16 +32,31 @@ const PAGE_SIZE = 48; // Divisible by 3 for grid layout, reduces total pages sig
 import { CompanyCardSkeleton } from '@/components/common/Skeletons';
 
 const Directory = () => {
+  const [searchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [sortBy, setSortBy] = useState<SortOption>('trending');
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState<FilterState>({
-    sectors: [],
-    countries: [],
-    stages: [],
-    fundingMin: '',
-    fundingMax: '',
+  const [filters, setFilters] = useState<FilterState>(() => {
+    // Pre-populate country filter from URL param (e.g. ?country=Nigeria from the map)
+    const country = searchParams.get('country');
+    return {
+      sectors: [],
+      countries: country ? [country] : [],
+      stages: [],
+      fundingMin: '',
+      fundingMax: '',
+    };
   });
+
+  // Also react if the URL param changes while on the page (e.g. back navigation)
+  useEffect(() => {
+    const country = searchParams.get('country');
+    if (country) {
+      setFilters(prev => ({ ...prev, countries: [country] }));
+      setPage(1);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.get('country')]);
 
   // Map UI sort options to API sort options
   const getSortParams = useCallback(() => {
@@ -94,6 +110,15 @@ const Directory = () => {
     setSortBy(newSort);
     setPage(1); // Reset to first page when sort changes
   }, []);
+
+  // Scroll to top when page changes (pagination doesn't change URL, so ScrollToTop won't run)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    const main = document.querySelector('main');
+    if (main) main.scrollTop = 0;
+  }, [page]);
 
   return (
     <AppLayout>
@@ -227,8 +252,8 @@ const Directory = () => {
                         : 'space-y-4'
                     }
                   >
-                    {data.data.map((company) => (
-                      <StartupCard key={company.id} company={company} />
+                    {data.data.map((company, i) => (
+                      <StartupCard key={company.id} company={company} index={i} />
                     ))}
                   </div>
 

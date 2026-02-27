@@ -1,25 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AppLayout from '@/components/layout/AppLayout';
 import { ChatPanel } from '@/components/ask/ChatPanel';
 import { ResultsPanel } from '@/components/ask/ResultsPanel';
 import { useAskTelAfrik, type SearchScope, type StructuredResponse } from '@/hooks/useAskTelAfrik';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/lib/toast';
 
 const Ask = () => {
-  const navigate = useNavigate();
   const [scope, setScope] = useState<SearchScope>('startups');
   const [currentResponse, setCurrentResponse] = useState<StructuredResponse | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const {
     isLoading,
     sessions,
     currentSession,
     messages,
-    fetchSessions,
     createSession,
     updateSessionTitle,
     deleteSession,
@@ -27,30 +21,11 @@ const Ask = () => {
     askQuestion,
   } = useAskTelAfrik();
 
-  // Check authentication
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsAuthenticated(false);
-        toast.info('Sign in required', {
-          description: 'Please sign in to use Ask TelAfrik',
-        });
-        navigate('/auth');
-      } else {
-        setIsAuthenticated(true);
-        fetchSessions();
-      }
-    };
-    checkAuth();
-  }, [fetchSessions, navigate]);
-
-  // Create initial session if none exists
-  useEffect(() => {
-    if (isAuthenticated && sessions.length === 0 && !currentSession) {
+    if (sessions.length === 0 && !currentSession) {
       createSession(scope);
     }
-  }, [isAuthenticated, sessions.length, currentSession, createSession, scope]);
+  }, [sessions.length, currentSession, createSession, scope]);
 
   const handleNewChat = useCallback(async () => {
     const session = await createSession(scope);
@@ -65,8 +40,7 @@ const Ask = () => {
 
   const handleSendMessage = useCallback(async (message: string) => {
     let sessionId = currentSession?.id;
-    
-    // Create session if none exists
+
     if (!sessionId) {
       const session = await createSession(scope);
       if (!session) return;
@@ -79,7 +53,6 @@ const Ask = () => {
     }
   }, [currentSession, scope, createSession, askQuestion]);
 
-  // Update response when selecting a session with messages
   useEffect(() => {
     if (messages.length > 0) {
       const lastAssistant = [...messages].reverse().find(m => m.role === 'assistant');
@@ -91,16 +64,6 @@ const Ask = () => {
     }
   }, [messages]);
 
-  if (isAuthenticated === null) {
-    return (
-      <AppLayout>
-        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-          <div className="animate-pulse text-muted-foreground">Loading...</div>
-        </div>
-      </AppLayout>
-    );
-  }
-
   return (
     <AppLayout>
       <motion.div
@@ -108,7 +71,6 @@ const Ask = () => {
         animate={{ opacity: 1 }}
         className="h-[calc(100vh-4rem)] flex"
       >
-        {/* Left Panel - Chat */}
         <div className="w-full lg:w-1/2 xl:w-2/5 border-r border-border relative">
           <ChatPanel
             sessions={sessions}
@@ -125,7 +87,6 @@ const Ask = () => {
           />
         </div>
 
-        {/* Right Panel - Results */}
         <div className="hidden lg:block lg:w-1/2 xl:w-3/5 bg-muted/20">
           <ResultsPanel
             response={currentResponse}

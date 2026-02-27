@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Globe, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,95 +12,78 @@ interface MarketHeatmapProps {
   markets: Market[];
 }
 
-const MarketHeatmap = ({ markets }: MarketHeatmapProps) => {
-  const getActivityStyles = (activity: string) => {
-    switch (activity) {
-      case 'very-high':
-        return {
-          bg: 'bg-emerald',
-          ring: 'ring-emerald/30',
-          label: 'Very High',
-        };
-      case 'high':
-        return {
-          bg: 'bg-gold',
-          ring: 'ring-gold/30',
-          label: 'High',
-        };
-      case 'medium':
-        return {
-          bg: 'bg-indigo',
-          ring: 'ring-indigo/30',
-          label: 'Medium',
-        };
-      default:
-        return {
-          bg: 'bg-muted',
-          ring: 'ring-muted/10',
-          label: 'Low',
-        };
-    }
-  };
+function getDot(activity: string): { color: string; label: string } {
+  switch (activity) {
+    case 'very-high': return { color: 'bg-emerald-500', label: 'Very High' };
+    case 'high':      return { color: 'bg-amber-500',   label: 'High'      };
+    case 'medium':    return { color: 'bg-blue-400',    label: 'Medium'    };
+    default:          return { color: 'bg-slate-300',   label: 'Low'       };
+  }
+}
 
+const MarketHeatmap = ({ markets }: MarketHeatmapProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6, duration: 0.5 }}
-      className="rounded-xl border border-border bg-card p-5"
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-indigo/10 border border-indigo/20">
-            <Globe className="h-4 w-4 text-indigo" />
+    <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 rounded-lg bg-primary/10">
+            <Globe className="h-4 w-4 text-primary" />
           </div>
-          <h2 className="font-bold text-foreground tracking-tight">Market Activity</h2>
+          <h2 className="font-semibold text-foreground text-base">Market Activity</h2>
         </div>
-        <Button variant="ghost" size="sm" asChild className="group">
-          <Link to="/countries" className="text-muted-foreground hover:text-foreground">
-            View all 
-            <ArrowRight className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
+        <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground text-sm gap-1">
+          <Link to="/countries">
+            View all
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </Button>
       </div>
-      
-      <div className="grid grid-cols-2 gap-2">
-        {markets.map((market, index) => {
-          const styles = getActivityStyles(market.activity);
-          return (
-            <motion.div
-              key={market.country}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.7 + index * 0.05 }}
-              whileHover={{ scale: 1.02 }}
-              className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all cursor-pointer group"
-            >
-              <div className={`w-3 h-3 rounded-full ${styles.bg} ring-4 ${styles.ring}`} />
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-sm text-foreground truncate group-hover:text-emerald transition-colors">
-                  {market.country}
+
+      {/* Market grid */}
+      <div className="p-4 grid grid-cols-2 gap-2.5">
+        {markets.length === 0 ? (
+          <p className="col-span-2 text-center text-sm text-muted-foreground py-6">
+            No market data available.
+          </p>
+        ) : (
+          markets.map((market) => {
+            const dot = getDot(market.activity);
+            return (
+              <div
+                key={market.country}
+                className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-muted/30 border border-border hover:border-primary/30 hover:bg-white dark:hover:bg-muted/50 transition-colors cursor-pointer"
+              >
+                {/* Activity dot */}
+                <div className={`flex-shrink-0 w-2.5 h-2.5 rounded-full ${dot.color}`} />
+
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    {market.country}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground tabular-nums">
+                    {market.companies.toLocaleString()} companies
+                  </p>
                 </div>
-                <div className="text-xs text-muted-foreground font-medium tabular-nums">{market.companies.toLocaleString()} companies</div>
               </div>
-            </motion.div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
-      
+
       {/* Legend */}
-      <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-border">
-        {['very-high', 'high', 'medium'].map((level) => {
-          const styles = getActivityStyles(level);
+      <div className="flex items-center justify-center gap-5 px-5 pb-4 pt-1">
+        {(['very-high', 'high', 'medium', 'low'] as const).map((level) => {
+          const dot = getDot(level);
           return (
-            <div key={level} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <div className={`w-2 h-2 rounded-full ${styles.bg}`} />
-              <span>{styles.label}</span>
+            <div key={level} className="flex items-center gap-1.5">
+              <div className={`w-2 h-2 rounded-full ${dot.color}`} />
+              <span className="text-[10px] text-muted-foreground font-medium">{dot.label}</span>
             </div>
           );
         })}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

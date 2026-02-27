@@ -10,7 +10,7 @@ interface AppLayoutProps {
 
 const AppLayout = ({ children, showSidebar = true }: AppLayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-background">
       <Header />
       <div className="flex-1 flex relative">
         {showSidebar && (

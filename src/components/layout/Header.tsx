@@ -43,24 +43,37 @@ const Header = () => {
   ];
 
   const resourcesNavItems = [
-    { label: 'Startups', path: '/directory' },
-    { label: 'Founders', path: '/founders' },
-    { label: 'Sectors', path: '/sectors' },
-    { label: 'Countries/Markets', path: '/countries' },
-    { label: 'Funding & Deals', path: '/deals' },
-    { label: 'Signals', path: '/signals' },
-    { label: 'Reports', path: '/reports' },
-    { label: 'Regulatory Intel', path: '/regulatory-intel' },
-    { label: 'Investors', path: '/investors' },
+    { label: 'Startups', desc: 'Browse 2,400+ African startups', path: '/directory' },
+    { label: 'Founders', desc: 'Discover founding teams', path: '/founders' },
+    { label: 'Investors', desc: 'Find VCs & angel investors', path: '/investors' },
+    { label: 'Sectors', desc: 'Explore key industries', path: '/sectors' },
+    { label: 'Countries', desc: 'Markets across Africa', path: '/countries' },
+    { label: 'Deals', desc: 'Latest funding rounds', path: '/deals' },
+    { label: 'Signals', desc: 'Growth & momentum tracking', path: '/signals' },
+    { label: 'Reports', desc: 'In-depth market research', path: '/reports' },
+    { label: 'Regulatory Intel', desc: 'Compliance across 54 countries', path: '/regulatory-intel' },
   ];
 
-  // Product navigation (logged in)
+  // Product navigation (logged in) — top-level items
   const productNavItems = [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Directory', path: '/directory' },
     { label: 'Signals', path: '/signals' },
     { label: 'Reports', path: '/reports' },
     { label: 'KonektAfrik', path: '/konekt' },
+  ];
+
+  // Product-level resources dropdown (shown in logged-in header)
+  const productResourceItems = [
+    { label: 'Startups', desc: 'Browse 2,400+ African startups', path: '/directory' },
+    { label: 'Founders', desc: 'Discover founding teams', path: '/founders' },
+    { label: 'Investors', desc: 'Find VCs & angel investors', path: '/investors' },
+    { label: 'Sectors', desc: 'Explore key industries', path: '/sectors' },
+    { label: 'Countries', desc: 'Markets across Africa', path: '/countries' },
+    { label: 'Deals', desc: 'Latest funding rounds', path: '/deals' },
+    { label: 'Signals', desc: 'Growth & momentum tracking', path: '/signals' },
+    { label: 'Reports', desc: 'In-depth market research', path: '/reports' },
+    { label: 'Regulatory Intel', desc: 'Compliance across 54 countries', path: '/regulatory-intel' },
   ];
 
   const getInitials = (name?: string | null) => {
@@ -82,44 +95,80 @@ const Header = () => {
       <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center">
+          <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2.5 group">
             <img
               src="/logo.png"
-              alt="TelAfrik by Ennylytics"
-              className="h-10 w-auto object-contain"
+              alt="TelAfrik"
+              className="h-9 w-9 rounded-xl object-cover shadow-sm ring-1 ring-border"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
             />
+            <div className="flex flex-col leading-none">
+              <span className="text-base font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                TelAfrik
+              </span>
+              <span className="text-[10px] text-muted-foreground font-medium tracking-wide">
+                by Ennylytics
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             {isAuthenticated ? (
               // Product navigation
-              productNavItems.map((item, index) => (
-                <motion.div
-                  key={item.path}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 + 0.2 }}
-                >
-                  <Link
-                    to={item.path}
-                    className={`relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                      isActive(item.path) 
-                        ? 'text-foreground bg-muted' 
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                    }`}
+              <>
+                {productNavItems.map((item, index) => (
+                  <motion.div
+                    key={item.path}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 + 0.2 }}
                   >
-                    {item.label}
-                    {isActive(item.path) && (
-                      <motion.div
-                        layoutId="activeNav"
-                        className="absolute inset-0 bg-muted rounded-lg -z-10"
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                      />
-                    )}
-                  </Link>
-                </motion.div>
-              ))
+                    <Link
+                      to={item.path}
+                      className={`relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                        isActive(item.path) 
+                          ? 'text-foreground bg-muted' 
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      }`}
+                    >
+                      {item.label}
+                      {isActive(item.path) && (
+                        <motion.div
+                          layoutId="activeNav"
+                          className="absolute inset-0 bg-muted rounded-lg -z-10"
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                        />
+                      )}
+                    </Link>
+                  </motion.div>
+                ))}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200 flex items-center gap-1">
+                      Resources
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64 p-1">
+                    {productResourceItems.map((item) => (
+                      <DropdownMenuItem key={item.path} asChild className="flex flex-col items-start gap-0 px-3 py-2.5">
+                        <Link to={item.path}>
+                          <span className="text-sm font-medium text-foreground">{item.label}</span>
+                          <span className="text-xs text-muted-foreground">{item.desc}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/pricing">Pricing</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/methodology">Methodology</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
               // Marketing navigation
               <>
@@ -159,10 +208,13 @@ const Header = () => {
                       <ChevronDown className="h-3.5 w-3.5" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuContent align="end" className="w-64 p-1">
                     {resourcesNavItems.map((item) => (
-                      <DropdownMenuItem key={item.path} asChild>
-                        <Link to={item.path}>{item.label}</Link>
+                      <DropdownMenuItem key={item.path} asChild className="flex flex-col items-start gap-0 px-3 py-2.5">
+                        <Link to={item.path}>
+                          <span className="text-sm font-medium text-foreground">{item.label}</span>
+                          <span className="text-xs text-muted-foreground">{item.desc}</span>
+                        </Link>
                       </DropdownMenuItem>
                     ))}
                     <DropdownMenuSeparator />
