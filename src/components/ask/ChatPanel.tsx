@@ -242,34 +242,37 @@ export const ChatPanel = ({
       <div ref={messagesContainerRef} className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-4">
           {messages.length === 0 && !isLoading && (
-            <div className="py-8">
-              <div className="text-center mb-6">
-                <Bot className="h-12 w-12 text-primary/40 mx-auto mb-3" />
-                <h3 className="font-semibold text-lg mb-2">Welcome to Ask TelAfrik</h3>
-                <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                  Your AI-powered copilot for exploring the African startup ecosystem. 
-                  Ask anything about startups, investors, or funding rounds.
+            <div className="flex flex-col justify-center min-h-full py-6">
+              {/* Hero */}
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 mb-4">
+                  <Sparkles className="h-7 w-7 text-primary" />
+                </div>
+                <h3 className="font-semibold text-xl mb-1">What do you want to explore?</h3>
+                <p className="text-muted-foreground text-sm">
+                  500+ startups · 77 investors · 18 African countries
                 </p>
               </div>
 
               {/* Quick Prompts */}
               <div className="space-y-2">
-                <p className="text-xs text-muted-foreground text-center mb-3">Try asking:</p>
-                <div className="grid grid-cols-1 gap-2">
-                  {QUICK_PROMPTS.map((prompt, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleQuickPrompt(prompt.text, prompt.scope)}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-all text-left group"
-                    >
-                      <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                        <prompt.icon className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="text-sm leading-snug">{prompt.text}</span>
-                    </button>
-                  ))}
-                </div>
+                {QUICK_PROMPTS.map((prompt, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleQuickPrompt(prompt.text, prompt.scope)}
+                    className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-border/60 hover:border-primary/40 hover:bg-primary/5 transition-all text-left group"
+                  >
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                      <prompt.icon className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium leading-snug">{prompt.text}</span>
+                  </button>
+                ))}
               </div>
+
+              <p className="text-xs text-muted-foreground text-center mt-6">
+                Or type your own question below
+              </p>
             </div>
           )}
 

@@ -71,7 +71,7 @@ const Ask = () => {
         animate={{ opacity: 1 }}
         className="h-[calc(100vh-4rem)] flex"
       >
-        <div className="w-full lg:w-1/2 xl:w-2/5 border-r border-border relative">
+        <div className="w-full lg:w-1/2 xl:w-2/5 border-r border-border relative h-full">
           <ChatPanel
             sessions={sessions}
             currentSession={currentSession}
@@ -87,7 +87,7 @@ const Ask = () => {
           />
         </div>
 
-        <div className="hidden lg:block lg:w-1/2 xl:w-3/5 bg-muted/20">
+        <div className="hidden lg:block lg:w-1/2 xl:w-3/5 bg-muted/20 h-full">
           <ResultsPanel
             response={currentResponse}
             isLoading={isLoading}
