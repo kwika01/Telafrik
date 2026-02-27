@@ -41,15 +41,39 @@ export interface ChatSession {
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string | undefined;
 const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 
-async function fetchCompanyContext(scope: SearchScope, question: string): Promise<string> {
+interface CompanyRow {
+  company: string;
+  sector: string;
+  country: string;
+  stage: string;
+  founding_year: string;
+  valuation_range: string;
+  about: string;
+  slug: string;
+}
+
+interface InvestorRow {
+  investor_name: string;
+  type: string;
+  hq: string;
+  stage_focus: string;
+  sector_focus: string;
+  ticket_size_usd: string;
+}
+
+async function fetchCompanyContext(
+  scope: SearchScope,
+  question: string
+): Promise<{ contextText: string; rows: CompanyRow[] | InvestorRow[] }> {
   const lowerQ = question.toLowerCase();
 
   if (scope === 'startups' || scope === 'funding') {
     let query = supabase
       .from('companies')
-      .select('company, sector, country, stage, founding_year, valuation_range, description, about')
-      .limit(80);
+      .select('company, sector, country, stage, founding_year, valuation_range, about, slug')
+      .limit(100);
 
+    // Apply sector filter if keyword found
     const sectorKeywords = ['fintech', 'healthtech', 'cleantech', 'agritech', 'edtech', 'e-commerce', 'logistics', 'hr tech', 'proptech'];
     for (const kw of sectorKeywords) {
       if (lowerQ.includes(kw)) {
@@ -58,7 +82,8 @@ async function fetchCompanyContext(scope: SearchScope, question: string): Promis
       }
     }
 
-    const countryKeywords = ['nigeria', 'kenya', 'ghana', 'south africa', 'egypt', 'rwanda', 'ethiopia', 'tanzania', 'uganda', 'senegal'];
+    // Apply country filter if keyword found
+    const countryKeywords = ['nigeria', 'kenya', 'ghana', 'south africa', 'egypt', 'rwanda', 'ethiopia', 'tanzania', 'uganda', 'senegal', 'cameroon', 'zambia'];
     for (const kw of countryKeywords) {
       if (lowerQ.includes(kw)) {
         query = query.ilike('country', `%${kw}%`);
@@ -66,46 +91,66 @@ async function fetchCompanyContext(scope: SearchScope, question: string): Promis
       }
     }
 
-    const { data } = await query;
-    if (!data?.length) return 'No matching startups found in the database.';
+    const { data, error } = await query;
+    if (error || !data?.length) {
+      // Fallback: fetch without filters
+      const { data: fallback } = await supabase
+        .from('companies')
+        .select('company, sector, country, stage, founding_year, valuation_range, about, slug')
+        .limit(80);
+      if (!fallback?.length) return { contextText: 'No startup data available.', rows: [] };
+      const rows = fallback as CompanyRow[];
+      return {
+        contextText: rows.map(c =>
+          `- ${c.company} | Sector: ${c.sector || '—'} | Country: ${c.country || '—'} | Stage: ${c.stage || '—'} | Founded: ${c.founding_year || '—'} | Valuation: ${c.valuation_range || '—'} | ${(c.about || '').slice(0, 150)}`
+        ).join('\n'),
+        rows,
+      };
+    }
 
-    return data.map((c: Record<string, unknown>) =>
-      `- ${c.company} | ${c.sector || '—'} | ${c.country || '—'} | ${c.stage || '—'} | Founded: ${c.founding_year || '—'} | Valuation: ${c.valuation_range || '—'} | ${(c.about || c.description || '').toString().slice(0, 120)}`
-    ).join('\n');
+    const rows = data as CompanyRow[];
+    return {
+      contextText: rows.map(c =>
+        `- ${c.company} | Sector: ${c.sector || '—'} | Country: ${c.country || '—'} | Stage: ${c.stage || '—'} | Founded: ${c.founding_year || '—'} | Valuation: ${c.valuation_range || '—'} | ${(c.about || '').slice(0, 150)}`
+      ).join('\n'),
+      rows,
+    };
   }
 
   if (scope === 'investors') {
     const { data } = await supabase
       .from('investors')
-      .select('investor_name, type, hq, stage_focus, sector_focus, ticket_size_usd, portfolio_size')
-      .limit(60);
+      .select('investor_name, type, hq, stage_focus, sector_focus, ticket_size_usd')
+      .limit(80);
 
-    if (!data?.length) return 'No investor data found.';
-
-    return data.map((i: Record<string, unknown>) =>
-      `- ${i.investor_name} | ${i.type || '—'} | HQ: ${i.hq || '—'} | Stage: ${i.stage_focus || '—'} | Sector: ${i.sector_focus || '—'} | Ticket: ${i.ticket_size_usd || '—'}`
-    ).join('\n');
+    if (!data?.length) return { contextText: 'No investor data found.', rows: [] };
+    const rows = data as InvestorRow[];
+    return {
+      contextText: rows.map(i =>
+        `- ${i.investor_name} | Type: ${i.type || '—'} | HQ: ${i.hq || '—'} | Stage: ${i.stage_focus || '—'} | Sector: ${i.sector_focus || '—'} | Ticket: ${i.ticket_size_usd || '—'}`
+      ).join('\n'),
+      rows,
+    };
   }
 
-  return 'No relevant data found for this scope.';
+  return { contextText: 'No relevant data found for this scope.', rows: [] };
 }
 
-function buildSystemPrompt(scope: SearchScope, context: string): string {
-  return `You are Ask TelAfrik, an AI assistant specialized in the African startup ecosystem. You help users discover startups, investors, founders, and funding rounds across Africa.
+function buildSystemPrompt(scope: SearchScope, contextText: string): string {
+  return `You are Ask TelAfrik, an AI assistant specialising in the African startup ecosystem. Help users discover startups, investors, and funding rounds across Africa.
 
 Current search scope: ${scope}
 
-You have access to the following live data from the TelAfrik database:
+IMPORTANT: You have been given the following LIVE data from the TelAfrik database. Use it to answer the user's question directly. Do NOT say you lack data — the data is right here:
 
-${context}
+${contextText}
 
 Guidelines:
-- Answer questions conversationally and helpfully using ONLY the data provided above.
-- When listing companies or investors, present them in a clear, organized format.
-- If the data doesn't contain what the user asks for, say so honestly.
-- Include relevant details like country, sector, stage, and valuation when available.
-- Be concise but thorough. Use bullet points for lists.
-- Do NOT make up data that isn't in the context above.`;
+- Answer using ONLY the data provided above.
+- Present companies or investors as clear bullet-point lists with key details.
+- Include country, sector, stage, and valuation whenever available.
+- Be concise but thorough. If the list is long, highlight the top 5–10.
+- Never invent data not present above.`;
 }
 
 async function callOpenAI(
@@ -206,16 +251,30 @@ export function useAskTelAfrik() {
     conversationRef.current.push({ role: 'user', content: question });
 
     try {
-      const context = await fetchCompanyContext(scope, question);
-      const systemPrompt = buildSystemPrompt(scope, context);
+      const { contextText, rows } = await fetchCompanyContext(scope, question);
+      const systemPrompt = buildSystemPrompt(scope, contextText);
       const reply = await callOpenAI(conversationRef.current, systemPrompt);
 
       conversationRef.current.push({ role: 'assistant', content: reply });
 
+      // Build results panel entries from fetched rows
+      const results: EntityResult[] = (rows as (CompanyRow & InvestorRow)[])
+        .slice(0, 20)
+        .map((r, i) => ({
+          entity_type: (scope === 'investors' ? 'investor' : 'startup') as EntityResult['entity_type'],
+          id: r.slug || r.investor_name || String(i),
+          name: r.company || r.investor_name || 'Unknown',
+          headline: r.about?.slice(0, 100) || r.sector_focus || '',
+          country: r.country || r.hq || '',
+          sector: r.sector || r.sector_focus || '',
+          stage: r.stage || r.stage_focus || '',
+          score: 1,
+        }));
+
       const structured: StructuredResponse = {
         answer_summary: reply,
         filters_applied: {},
-        results: [],
+        results,
         confidence: 0.85,
       };
 
