@@ -29,12 +29,8 @@ interface ChatPanelProps {
 const QUICK_PROMPTS: { text: string; icon: typeof Building2; scope: SearchScope }[] = [
   { text: "Top fintech startups in Nigeria", icon: Building2, scope: 'startups' },
   { text: "Healthtech startups in Kenya and South Africa", icon: Building2, scope: 'startups' },
-  { text: "Agritech startups across East Africa", icon: Building2, scope: 'startups' },
-  { text: "Series A startups in Ghana and Egypt", icon: Building2, scope: 'startups' },
   { text: "Which investors back seed-stage startups in Africa?", icon: Users, scope: 'investors' },
-  { text: "Investors focused on cleantech and agritech", icon: Wallet, scope: 'investors' },
   { text: "Series B and growth-stage startups in Africa", icon: TrendingUp, scope: 'funding' },
-  { text: "E-commerce and logistics startups in Nigeria", icon: Building2, scope: 'startups' },
 ];
 
 const SCOPE_OPTIONS: { value: SearchScope; label: string; icon: typeof Building2 }[] = [
@@ -65,11 +61,16 @@ export const ChatPanel = ({
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Scroll to bottom when messages change — use the container div directly
+  // Scroll to bottom whenever messages change or loading indicator appears
   useEffect(() => {
     const el = messagesContainerRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages]);
+    if (el) {
+      // Use requestAnimationFrame so the DOM has painted the new message first
+      requestAnimationFrame(() => {
+        el.scrollTop = el.scrollHeight;
+      });
+    }
+  }, [messages, isLoading]);
 
   useEffect(() => {
     if (!isLoading) {
