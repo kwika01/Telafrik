@@ -108,22 +108,22 @@ Guidelines:
 - Do NOT make up data that isn't in the context above.`;
 }
 
-async function callDeepSeek(
+async function callOpenAI(
   messages: { role: string; content: string }[],
   systemPrompt: string
 ): Promise<string> {
-  if (!DEEPSEEK_API_KEY) {
-    throw new Error('DeepSeek API key not configured. Add VITE_DEEPSEEK_API_KEY to your .env file.');
+  if (!OPENAI_API_KEY) {
+    throw new Error('OpenAI API key not configured. Add VITE_OPENAI_API_KEY to your .env file.');
   }
 
-  const response = await fetch(DEEPSEEK_URL, {
+  const response = await fetch(OPENAI_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'deepseek-chat',
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         ...messages.map(m => ({ role: m.role, content: m.content })),
@@ -135,7 +135,8 @@ async function callDeepSeek(
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error((err as Record<string, unknown>)?.error?.toString() || `DeepSeek API error: ${response.status}`);
+    const errMsg = (err as { error?: { message?: string } })?.error?.message;
+    throw new Error(errMsg || `OpenAI API error: ${response.status}`);
   }
 
   const data = await response.json();
