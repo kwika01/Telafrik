@@ -13,7 +13,7 @@ const teamMembers = [
     avatar: 'EM',
   },
   {
-    name: 'Adaeze Nwosu',
+    name: 'Alabi Emmanuel',
     role: 'Head of Data',
     bio: 'Data scientist with 8+ years experience in market research and analytics across emerging markets.',
     avatar: 'AN',
@@ -25,7 +25,7 @@ const teamMembers = [
     avatar: 'KA',
   },
   {
-    name: 'Fatima Hassan',
+    name: 'Adewara Pelumi',
     role: 'Lead Engineer',
     bio: 'Full-stack developer passionate about building tools that drive economic development in Africa.',
     avatar: 'FH',
